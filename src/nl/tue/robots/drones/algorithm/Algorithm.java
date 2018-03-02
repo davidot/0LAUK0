@@ -1,5 +1,13 @@
 package nl.tue.robots.drones.algorithm;
 
+import nl.tue.robots.drones.common.Node;
+import nl.tue.robots.drones.common.Transition;
+import nl.tue.robots.drones.model.Model;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Algorithm {
 
 	// Expanded nodes contain:
@@ -7,8 +15,7 @@ public class Algorithm {
 	// the distance from it to the root,
 	// the expected distance from it to the destination
 	// a parentExpandedNode
-	ExpandedNode testNode = new ExpandedNode(Node node, int distanceTravelled, int heuristicDistance, ExpandedNode parent);
-	ExpandedNode emptyNode = ExpandedNode(Node null, int null, int null, ExpandedNode null);
+	ExpandedNode emptyNode = new ExpandedNode(null, 0, 0, null);
 
    /**
 	* Function findPath
@@ -23,7 +30,8 @@ public class Algorithm {
 	public ArrayList<Transition> findPath(Node startNode, Node destinationNode) {
 
 		// Setup the expanded node list
-		ExpandedNode rootNode = new ExpandedNode(startNode, 0, Model.getHeuristic(startNode, destinatinoNode), emptyNode)
+		ExpandedNode rootNode = new ExpandedNode(startNode, 0, Model.getHeuristic(startNode,
+				destinationNode), emptyNode);
 		Set<ExpandedNode> seenNodes = new HashSet<ExpandedNode>();
 		seenNodes.add(rootNode);
 
@@ -35,8 +43,8 @@ public class Algorithm {
 		ArrayList<Transition> transitionList = new ArrayList<Transition>();
 
 		// Check whether foundDestination is the actual destination
-		if (foundDestination.node == destinationNode){
-			ArrayList<Transition> transitionList = getPath(destination, transitionList);	
+		if (foundDestination.getNode() == destinationNode){
+			transitionList = getPath(foundDestination, transitionList);
 		} else {
 			// something went horribly wrong. Fix it!
 		}
@@ -75,18 +83,17 @@ public class Algorithm {
 
 			// Now that the first node is removed, the new ones can be added.
 			for (ExpandedNode node : newExpandedNodes){
-				if(seenNode.add(node)){
+				if(seenNodes.add(node)){
 					frontier = sortedAdd(node, frontier);
 				}
 			}
 
 			// We have updated the frontier with new nodes, so it can start all over again.
-			pathSearch(destinationNode, seenNodes, frontier);		
-
+			return pathSearch(destinationNode, seenNodes, frontier);
 		} else {
 			// Then the frontier is empty, which means there is no path
 			// Still have to come up with what will be returned in this case.
-			return new ExpandedNode(null, null, null, null);
+			return new ExpandedNode(null, 0, 0, null);
 		}
 	}
 
@@ -100,16 +107,16 @@ public class Algorithm {
 	*		  its goal.
 	*/
 	public ArrayList<Transition> getPath(ExpandedNode lastNode, ArrayList<Transition> transitions){
-		if(lastNode.parent.node == null){
+		if(lastNode.getParent().getNode() == null){
 			// Then we have found the root, so we can return the transition list!
 			return transitions;
 		} else {
 			// Then we have not yet found the root.
-			Node currentNode = lastNode.node;
-			Node parentNode = lastNode.parentNode.node;
+			Node currentNode = lastNode.getNode();
+			Node parentNode = lastNode.getParent().getNode();
 			Transition currentTransition = Model.getTransition(parentNode, currentNode);
 			transitions.add(0, currentTransition);
-			return getPath(lastNode.parentNode, transitions);
+			return getPath(lastNode.getParent(), transitions);
 		}
 	}
 
@@ -124,8 +131,9 @@ public class Algorithm {
 	*
 	*/
 	public ExpandedNode createExpandedNode(Node node, Node destination, ExpandedNode parentNodeExpanded){
-		Node parentNode = parentNodeExpanded.node;
-		int transitionDistance = parentNodeExpanded.distanceTravelled + Model.getTransitionDistance(parentNode, node);
+		Node parentNode = parentNodeExpanded.getNode();
+		int transitionDistance = parentNodeExpanded.getDistanceTravelled() +
+                Model.getTransitionDistance(parentNode, node);
 		int heuristicDistance = Model.getHeuristic(node, destination);
 		ExpandedNode newNode = new ExpandedNode(node, transitionDistance, heuristicDistance, parentNodeExpanded);
 		return newNode;
@@ -141,14 +149,14 @@ public class Algorithm {
 	*
 	*/
 	public ArrayList<ExpandedNode> sortedAdd(ExpandedNode newNode, ArrayList<ExpandedNode> frontier){
-		int newDistance = newNode.distanceTravelled + newNode.heuristicDistance;
+		int newDistance = newNode.getDistanceTravelled() + newNode.getHeuristicDistance();
 		ExpandedNode tempNodeExpanded;
-		int arraySize = frontier.size;
+		int arraySize = frontier.size();
 
 		for (int i = 0; i < arraySize; i++){
 			tempNodeExpanded = frontier.get(i);
-			int tempDistance = tempNodeExpanded.distanceTravelled + tempNodeExpanded.heuristicDistance;
-			if ((newDistance < tempDistance) || (newDistance == tempDistance && newNode.heuristicDistance < tempNodeExpanded.heuristicDistance)){
+			int tempDistance = tempNodeExpanded.getDistanceTravelled() + tempNodeExpanded.getHeuristicDistance();
+			if ((newDistance < tempDistance) || (newDistance == tempDistance && newNode.getHeuristicDistance() < tempNodeExpanded.getHeuristicDistance())){
 				frontier.add(i, newNode);
 				return frontier;
 			}
