@@ -15,7 +15,7 @@ public class Algorithm {
 	// the distance from it to the root,
 	// the expected distance from it to the destination
 	// a parentExpandedNode
-	ExpandedNode emptyNode = new ExpandedNode(null, 0, 0, null);
+	private ExpandedNode emptyNode = new ExpandedNode(null, 0, 0, null);
 
    /**
 	* Function findPath
@@ -30,8 +30,8 @@ public class Algorithm {
 	public ArrayList<Transition> findPath(Node startNode, Node destinationNode) {
 
 		// Setup the expanded node list
-		ExpandedNode rootNode = new ExpandedNode(startNode, 0, Model.getHeuristic(startNode,
-				destinationNode), emptyNode);
+		ExpandedNode rootNode = new ExpandedNode(startNode, 0,
+                Model.getHeuristic(startNode, destinationNode), emptyNode);
 		Set<ExpandedNode> seenNodes = new HashSet<ExpandedNode>();
 		seenNodes.add(rootNode);
 
@@ -44,9 +44,10 @@ public class Algorithm {
 
 		// Check whether foundDestination is the actual destination
 		if (foundDestination.getNode() == destinationNode){
-			transitionList = getPath(foundDestination, transitionList);
+			getPath(foundDestination, transitionList);
 		} else {
 			// something went horribly wrong. Fix it!
+            System.out.println("This should not happen");
 		}
 
 		return transitionList;
@@ -61,7 +62,8 @@ public class Algorithm {
 	* @return The function returns an ExpandedNode object with the destinationNode in it.
 	*
 	*/
-	public ExpandedNode pathSearch(Node destinationNode, Set<ExpandedNode> seenNodes, ArrayList<ExpandedNode> frontier) {
+	public ExpandedNode pathSearch(Node destinationNode, Set<ExpandedNode> seenNodes,
+                                   ArrayList<ExpandedNode> frontier) {
 		// First check the frontier isn't empty
 		if (frontier.size() > 0){
 			// The frontier is not empty: expand the best node
@@ -73,7 +75,7 @@ public class Algorithm {
 			for (Node node : newNodes) {
 				newExpandedNodes.add(createExpandedNode(node, destinationNode, nodeToExpand));
 				if (node == destinationNode){
-					// 
+					//
 					return createExpandedNode(node, destinationNode, nodeToExpand);
 				}
 			}
@@ -84,7 +86,7 @@ public class Algorithm {
 			// Now that the first node is removed, the new ones can be added.
 			for (ExpandedNode node : newExpandedNodes){
 				if(seenNodes.add(node)){
-					frontier = sortedAdd(node, frontier);
+					sortedAdd(node, frontier);
 				}
 			}
 
@@ -99,26 +101,25 @@ public class Algorithm {
 
    /**
 	* Function getPath
-	* Generates a transitionlist
+	* Generates a transitionList
 	*
 	* @param lastNode is the closest node to the start node of  which the path has not been created
-	* @param transitions contains a transitionlist from lastNode to the destinationNode
+	* @param transitions contains a transitionList from lastNode to the destinationNode
 	* @return The function returns an ArrayList of Transitions which the drones has to take to reach
 	*		  its goal.
 	*/
-	public ArrayList<Transition> getPath(ExpandedNode lastNode, ArrayList<Transition> transitions){
-		if(lastNode.getParent().getNode() == null){
-			// Then we have found the root, so we can return the transition list!
-			return transitions;
-		} else {
-			// Then we have not yet found the root.
-			Node currentNode = lastNode.getNode();
-			Node parentNode = lastNode.getParent().getNode();
-			Transition currentTransition = Model.getTransition(parentNode, currentNode);
-			transitions.add(0, currentTransition);
-			return getPath(lastNode.getParent(), transitions);
-		}
-	}
+	public void getPath(ExpandedNode lastNode, ArrayList<Transition> transitions){
+        if(lastNode.getParent().getNode() != null) {
+            // Then we have not yet found the root.
+            Node currentNode = lastNode.getNode();
+            Node parentNode = lastNode.getParent().getNode();
+            Transition currentTransition = Model.getTransition(parentNode, currentNode);
+            transitions.add(0, currentTransition);
+            //recursive call
+            getPath(lastNode.getParent(), transitions);
+        }
+        // If not then we have found the root, so we don't need to add to the transition list!
+    }
 
    /**
 	* Function createExpandedNode
@@ -130,13 +131,13 @@ public class Algorithm {
 	* @return an ExpandedNode based around {@code node}
 	*
 	*/
-	public ExpandedNode createExpandedNode(Node node, Node destination, ExpandedNode parentNodeExpanded){
+	public ExpandedNode createExpandedNode(Node node, Node destination,
+                                           ExpandedNode parentNodeExpanded){
 		Node parentNode = parentNodeExpanded.getNode();
 		int transitionDistance = parentNodeExpanded.getDistanceTravelled() +
                 Model.getTransitionDistance(parentNode, node);
 		int heuristicDistance = Model.getHeuristic(node, destination);
-		ExpandedNode newNode = new ExpandedNode(node, transitionDistance, heuristicDistance, parentNodeExpanded);
-		return newNode;
+        return new ExpandedNode(node, transitionDistance, heuristicDistance, parentNodeExpanded);
 	}
 
    /**
@@ -148,22 +149,23 @@ public class Algorithm {
 	* @return frontier with all nodes in newNode integrated
 	*
 	*/
-	public ArrayList<ExpandedNode> sortedAdd(ExpandedNode newNode, ArrayList<ExpandedNode> frontier){
+	public void sortedAdd(ExpandedNode newNode, ArrayList<ExpandedNode> frontier){
 		int newDistance = newNode.getDistanceTravelled() + newNode.getHeuristicDistance();
-		ExpandedNode tempNodeExpanded;
+		ExpandedNode expandedNode;
 		int arraySize = frontier.size();
 
+		//todo move to just adding and then "normal" sort, we control ExpandedNode from algo anyway
 		for (int i = 0; i < arraySize; i++){
-			tempNodeExpanded = frontier.get(i);
-			int tempDistance = tempNodeExpanded.getDistanceTravelled() + tempNodeExpanded.getHeuristicDistance();
-			if ((newDistance < tempDistance) || (newDistance == tempDistance && newNode.getHeuristicDistance() < tempNodeExpanded.getHeuristicDistance())){
+			expandedNode = frontier.get(i);
+			int distance = expandedNode.getDistanceTravelled() + expandedNode.getHeuristicDistance();
+			if ((newDistance < distance) || (newDistance == distance &&
+                    newNode.getHeuristicDistance() < expandedNode.getHeuristicDistance())){
 				frontier.add(i, newNode);
-				return frontier;
+				return;
 			}
 		}
 
 		// If it has not been place yet, it has the highest distance yet, so can be added at the end
 		frontier.add(newNode);
-		return frontier;
 	}
 }
