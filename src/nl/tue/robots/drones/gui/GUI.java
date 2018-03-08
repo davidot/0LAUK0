@@ -1,9 +1,15 @@
 package nl.tue.robots.drones.gui;
 
+import nl.tue.robots.drones.algorithm.Algorithm;
+import nl.tue.robots.drones.common.Node;
+import nl.tue.robots.drones.common.Transition;
+import nl.tue.robots.drones.model.Building;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -14,6 +20,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferStrategy;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GUI extends Canvas implements Runnable {
@@ -41,6 +49,7 @@ public class GUI extends Canvas implements Runnable {
     private static final String TICK_OVER_PRE = "Skipping ";
     private static final String TICK_OVER_POST = " ticks is the system overloaded?";
     public static final char LINE_SEPARATOR_CHAR = '\n';
+    private static final int NODE_RADIUS = 5;
 
     //size of screen in tiles
 
@@ -61,6 +70,14 @@ public class GUI extends Canvas implements Runnable {
     //thread security
     private boolean running;
     private Thread mainThread;
+
+
+    //Drone model variables
+    private boolean checked = false;
+    private Building building;
+    private ArrayList<Transition> path;
+    private List<Node> nodes;
+    private ArrayList<Transition> transitions;
 
     private GUI() {
 
@@ -148,7 +165,15 @@ public class GUI extends Canvas implements Runnable {
 
     //private init since it should only be called once
     private void init() {
+        building = new Building();
 
+        Node from = building.getNode(0);
+        Node to = building.getNode(123);
+
+        path = new Algorithm().findPath(from, to);
+        nodes = building.getAllNodes();
+        transitions = new ArrayList<>(nodes.size());
+        building.getAllNodes().forEach(node -> transitions.addAll(node.getTransitions()));
     }
 
     @Override
@@ -208,7 +233,6 @@ public class GUI extends Canvas implements Runnable {
 
     //private to make sure the amount of ticks stays on target
     private void tick() {
-
     }
 
     private void render() {
@@ -232,12 +256,33 @@ public class GUI extends Canvas implements Runnable {
 
         g.setColor(Color.BLACK);
 
+        g.translate(20, 20);
+        int multiplier = 10;
 
-        int quater = width / 4;
+        for (Node node :nodes) {
+            g.fillOval(node.getX()*multiplier - NODE_RADIUS, node.getY()*multiplier - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+        }
 
-        g.drawLine(quater, 0, quater, height);
-        g.drawLine(2 * quater, 0, 2 * quater, height);
-        g.drawLine(3 * quater, 0, 3 * quater, height);
+        g.setStroke(new BasicStroke(3));
+
+        for (Transition transition: transitions) {
+            Node from = transition.getFrom();
+            Node to = transition.getTo();
+            g.drawLine(from.getX() * multiplier, from.getY() * multiplier,
+                    to.getX() * multiplier, to.getY() * multiplier);
+        }
+
+        g.setColor(Color.BLUE);
+
+        for (Transition transition: path) {
+            Node from = transition.getFrom();
+            Node to = transition.getTo();
+            g.drawLine(from.getX() * multiplier, from.getY() * multiplier,
+                    to.getX() * multiplier, to.getY() * multiplier);
+        }
+
+
+
 
         //stop drawing here
         g.dispose();
