@@ -68,7 +68,7 @@ public class Algorithm {
 		if (frontier.size() > 0){
 			// The frontier is not empty: expand the best node
 			ExpandedNode nodeToExpand = frontier.get(0);
-			ArrayList<Node> newNodes = Model.getOptions(nodeToExpand);
+			List<Node> newNodes = Model.getOptions(nodeToExpand);
 			ArrayList<ExpandedNode> newExpandedNodes = new ArrayList<ExpandedNode>();
 
 			// Check whether one of the nodes is the destination node
@@ -85,6 +85,8 @@ public class Algorithm {
 
 			// Now that the first node is removed, the new ones can be added.
 			for (ExpandedNode node : newExpandedNodes){
+				// TODO: If the given node only has one available transition and is not
+				// the destination, it does not have to be added to the frontier!
 				if(seenNodes.add(node)){
 					sortedAdd(node, frontier);
 				}
@@ -109,7 +111,7 @@ public class Algorithm {
 	*		  its goal.
 	*/
 	public void getPath(ExpandedNode lastNode, ArrayList<Transition> transitions){
-        if(lastNode.getParent().getNode() != null) {
+        if (lastNode.getParent().getNode() != null) {
             // Then we have not yet found the root.
             Node currentNode = lastNode.getNode();
             Node parentNode = lastNode.getParent().getNode();
