@@ -26,4 +26,19 @@ public class Node {
         return transitions.stream().map(Transition::getTo).collect(Collectors.toList());
     }
 
+<<<<<<< HEAD
+    public int getX(){
+        return this.x;
+    }
+
+    public int getY(){
+        return this.y;
+    }
+
+    public int getZ(){
+        return this.z;
+    }
+
+=======
+>>>>>>> 712715639ab902ad3242553b25dedba033eb5e11
 }
