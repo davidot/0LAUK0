@@ -1,6 +1,7 @@
 package nl.tue.robots.drones.common;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,4 +50,7 @@ public class Node {
         return (int) Math.sqrt(dx*dx + dy*dy + dz*dz);
     }
 
+    public List<Transition> getTransitions() {
+        return Collections.unmodifiableList(transitions);
+    }
 }
