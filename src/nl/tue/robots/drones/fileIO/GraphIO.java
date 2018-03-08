@@ -1,11 +1,13 @@
 package nl.tue.robots.drones.fileIO;
 
 import nl.tue.robots.drones.common.Node;
+import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.model.Building;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 public class GraphIO {
 
@@ -24,12 +26,10 @@ public class GraphIO {
                 // start reading nodes
                 String line = fileReader.readLine();
 
-                if (line.startsWith("#")) {
-                    // line is a comment skip it
-                } else if (line.startsWith("___")) {
+                if (line.startsWith("___")) {
                     // done with nodes, break to start with edges
                     break;
-                } else {
+                } else if (!line.startsWith("#")){
                     // read node
                     Scanner scan = new Scanner(line);
                     scan.useDelimiter(";");
@@ -40,8 +40,9 @@ public class GraphIO {
                     int z = scan.nextInt();
 
                     Node n = new Node(x,y,z);
-                    System.out.println("Node " + id + ": " + n);
-                }
+
+                    build.addNode(n, id);
+                } // else line is a comment skip it
 
             }
 
@@ -49,26 +50,59 @@ public class GraphIO {
                 // start reading edges
                 String line = fileReader.readLine();
 
-                if (line.startsWith("#")) {
-                    // line is a comment skip it
-                } else {
+                if (!line.startsWith("#")) {
                     // read edge
 
-                }
-            }
+                    // get string to node IDs
+                    String[] values = line.split(";");
+                    int[] nodeIDs = {Integer.parseInt(values[0]), Integer.parseInt(values[1])};
 
+                    // get mentioned nodes
+                    Node a = build.getNode(nodeIDs[0]);
+                    Node b = build.getNode(nodeIDs[1]);
+
+                    // create transitions both ways
+                    Transition transAB = new Transition(a, b);
+                    Transition transBA = new Transition(b, a);
+
+                    // add transitions to nodes
+                    a.addTransistion(transAB);
+                    b.addTransistion(transBA);
+
+                } // else line is a comment skip it
+            }
 
         } catch (IOException ex) {
             if (ex instanceof FileNotFoundException) {
                 throw new FileNotFoundException("Could not find file" + fileName);
+            } else {
+                System.err.println("Could not read file" + fileName);
             }
         }
-
 
         return build;
     }
 
-    public static void main(String[] args) {
-        try {readBuilding("test5.csv");} catch (Exception e) {System.err.println(e);}
+    public static String reportBuildingGraph(Building b) {
+        String s = "";
+
+        for (Node n : b.getAllNodes()) {
+            s += "(" + n.getX() + "," + n.getY() + "," + n.getZ() + ") : \n";
+            for (Transition t : n.getTransitions()) {
+                s += "\t[(" + t.getTo().getX() + "," + t.getTo().getY() + "," + t.getTo().getZ() + ") : " + t.getDistance() + "]\n";
+            }
+        }
+        return s;
     }
+
+    public static void main(String[] args) {
+        try {
+            Building plan1 = readBuilding("tests/Floorplan 1.csv");
+            System.out.println(reportBuildingGraph(plan1));
+
+        } catch (FileNotFoundException e) {
+            System.err.println(e);
+        }
+    }
+
 }
