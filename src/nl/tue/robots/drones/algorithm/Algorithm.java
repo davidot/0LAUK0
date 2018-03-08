@@ -5,6 +5,7 @@ import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.model.Model;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,7 +59,7 @@ public class Algorithm {
 	*
 	* @param destinationNode is the node the drone has to go to
 	* @param seenNodes is the set of nodes that have already been visited
-	* @param frontier ìs the set of nodes that still have to be expanded
+	* @param frontier Ã¬s the set of nodes that still have to be expanded
 	* @return The function returns an ExpandedNode object with the destinationNode in it.
 	*
 	*/

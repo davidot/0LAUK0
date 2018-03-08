@@ -4,18 +4,18 @@ import nl.tue.robots.drones.algorithm.ExpandedNode;
 import nl.tue.robots.drones.common.Node;
 import nl.tue.robots.drones.common.Transition;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Model {
 
-    public static int getHeuristic(Node startNode, Node destinationNode) {}
-        int xSquareDiff = Math.pow(startNode.getX() - destinationNode.getX(), 2);
-        int ySquareDiff = Math.pow(startNode.getY() - destinationNode.getY(), 2);
-        int zSquareDiff = Math.pow(startNode.getZ() - destinationNode.getZ(), 2);
-        return (int) Math.sqrt(xSquareDiff + ySquareDiff + zSquareDiff);
+    public static int getHeuristic(Node startNode, Node destinationNode) {
+        int xDiff = startNode.getX() - destinationNode.getX();
+        int yDiff = startNode.getY() - destinationNode.getY();
+        int zDiff = startNode.getZ() - destinationNode.getZ();
+        return (int) Math.sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
     }
 
-    public static ArrayList<Node> getOptions(ExpandedNode nodeToExpand) {  
+    public static List<Node> getOptions(ExpandedNode nodeToExpand) {  
         Node currentNode = nodeToExpand.getNode();
         return currentNode.getConnectedNodes();
     }
@@ -25,7 +25,6 @@ public class Model {
     }
 
     public static int getTransitionDistance(Node parentNode, Node node) {
-        Transition transition = currentNode.getTransition(parentNode);
-        return transition.get;
+        return node.distanceTo(parentNode);
     }
 }

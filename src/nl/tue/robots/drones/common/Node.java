@@ -26,7 +26,6 @@ public class Node {
         return transitions.stream().map(Transition::getTo).collect(Collectors.toList());
     }
 
-<<<<<<< HEAD
     public int getX(){
         return this.x;
     }
@@ -39,6 +38,15 @@ public class Node {
         return this.z;
     }
 
-=======
->>>>>>> 712715639ab902ad3242553b25dedba033eb5e11
+    public Transition getTransition(Node to) {
+        return transitions.stream().filter(t -> t.getTo() == to).findFirst().orElse(null);
+    }
+
+    public int distanceTo(Node to) {
+        int dx = x - to.x;
+        int dy = y - to.y;
+        int dz = z - to.z;
+        return (int) Math.sqrt(dx*dx + dy*dy + dz*dz);
+    }
+
 }
