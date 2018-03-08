@@ -10,4 +10,7 @@ public class RealObject {
     private int xBound;
     private int yBound;
 
+    public int getFloor() {
+        return floor;
+    }
 }
