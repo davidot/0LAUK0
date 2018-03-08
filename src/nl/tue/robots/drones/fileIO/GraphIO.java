@@ -74,13 +74,73 @@ public class GraphIO {
 
         } catch (IOException ex) {
             if (ex instanceof FileNotFoundException) {
-                throw new FileNotFoundException("Could not find file" + fileName);
+                throw (FileNotFoundException) ex;
             } else {
                 System.err.println("Could not read file" + fileName);
             }
         }
 
         return build;
+    }
+
+    /**
+     * Writes the provided building to a <i>new</i> file with the specified name.
+     * @param b The building to write to file
+     * @param fileName The name of the file to be created
+     * @throws IOException If something goes wrong during the writing process
+     */
+    public static void writeBuilding(Building b, String fileName) throws IOException {
+        File buildFile = new File(fileName);
+        if (!buildFile.createNewFile()) {
+            throw new IllegalArgumentException("File " + fileName + " already exists");
+        }
+
+        try (BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(buildFile, false), "UTF-8"))){
+            fileWriter.write("#ID;X;Y;Z");
+            fileWriter.newLine();
+
+            HashMap<Node, Integer> nodeToIDMap = new HashMap<>(); // map so we know node ids when writing edges
+
+            // Loop over all nodes to write them
+            int buildSize = b.getAllNodes().size();
+            for (int i = 0; i < buildSize; i++) {
+                Node n = b.getNode(i);
+
+                nodeToIDMap.put(n, i); // do bookkeeping
+
+                // write node to file
+                fileWriter.write(i + ";" + n.getX() + ";" + n.getY() + ";" + n.getZ());
+                fileWriter.newLine();
+            }
+
+            // write separator between nodes and edges
+            fileWriter.write("_______________");
+            fileWriter.newLine();
+
+            // loop over nodes to write their edges
+            for (int i = 0; i < buildSize; i++) {
+                Node n = b.getNode(i);
+                int nodeID = nodeToIDMap.get(n);
+
+                // write edges connected from this node
+                for (Transition t : n.getTransitions()) {
+                    int toID = nodeToIDMap.get(t.getTo());
+
+                    if (toID < i) {
+                        // this edge was written when visiting the other node, no need to write it again
+                        continue; // so continue with next loop iteration
+                    }
+
+                    fileWriter.write(nodeID + ";" + toID);
+                    fileWriter.newLine();
+                }
+
+            }
+
+            fileWriter.flush(); // ensure buffer is fully written to file
+        } catch (IOException e) {
+            throw e; // bounce exception
+        }
     }
 
     public static String reportBuildingGraph(Building b) {
@@ -100,8 +160,9 @@ public class GraphIO {
             Building plan1 = readBuilding("tests/Floorplan 1.csv");
             System.out.println(reportBuildingGraph(plan1));
 
-        } catch (FileNotFoundException e) {
-            System.err.println(e);
+            writeBuilding(plan1, "tests/writeTest.csv");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
