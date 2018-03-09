@@ -3,8 +3,10 @@ package nl.tue.robots.drones.model;
 import nl.tue.robots.drones.common.Node;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Building {
 
@@ -13,6 +15,10 @@ public class Building {
 
     public List<Node> getAllNodes() {
         return new ArrayList<>(nodes.values());
+    }
+
+    public Map<Integer, Node> getAllNodesWithId() {
+        return Collections.unmodifiableMap(nodes);
     }
 
     /**

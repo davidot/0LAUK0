@@ -3,6 +3,7 @@ package nl.tue.robots.drones.gui;
 import nl.tue.robots.drones.algorithm.Algorithm;
 import nl.tue.robots.drones.common.Node;
 import nl.tue.robots.drones.common.Transition;
+import nl.tue.robots.drones.fileIO.GraphIO;
 import nl.tue.robots.drones.model.Building;
 
 import javax.swing.JFrame;
@@ -19,9 +20,11 @@ import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferStrategy;
+import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class GUI extends Canvas implements Runnable {
@@ -50,6 +53,7 @@ public class GUI extends Canvas implements Runnable {
     private static final String TICK_OVER_POST = " ticks is the system overloaded?";
     public static final char LINE_SEPARATOR_CHAR = '\n';
     private static final int NODE_RADIUS = 5;
+    private static final int FLOOR = 100;
 
     //size of screen in tiles
 
@@ -76,7 +80,7 @@ public class GUI extends Canvas implements Runnable {
     private boolean checked = false;
     private Building building;
     private ArrayList<Transition> path;
-    private List<Node> nodes;
+    private Map<Integer, Node> nodes;
     private ArrayList<Transition> transitions;
 
     private GUI() {
@@ -119,7 +123,7 @@ public class GUI extends Canvas implements Runnable {
         GUI.setIgnoreRepaint(true);
 
         //Make the frame
-        final JFrame frame = new JFrame(GUI.TITLE);
+        frame = new JFrame(TITLE);
         frame.setIgnoreRepaint(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
@@ -148,7 +152,6 @@ public class GUI extends Canvas implements Runnable {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         //Hack for a way to display the fps on the frame
-        GUI.frame = frame;
         GUI.start();
 
         return GUI;
@@ -165,13 +168,21 @@ public class GUI extends Canvas implements Runnable {
 
     //private init since it should only be called once
     private void init() {
-        building = new Building();
+        try {
+            building = GraphIO.readBuilding("tests/Floorplan 7.csv");
+        } catch(FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         Node from = building.getNode(0);
-        Node to = building.getNode(123);
+        Node to = building.getNode(0);
+
+        if (from == null || to == null) {
+            System.exit(-1);
+        }
 
         path = new Algorithm().findPath(from, to);
-        nodes = building.getAllNodes();
+        nodes = building.getAllNodesWithId();
         transitions = new ArrayList<>(nodes.size());
         building.getAllNodes().forEach(node -> transitions.addAll(node.getTransitions()));
     }
@@ -254,13 +265,16 @@ public class GUI extends Canvas implements Runnable {
 
         //start drawing here
 
-        g.setColor(Color.BLACK);
-
         g.translate(20, 20);
-        int multiplier = 10;
+        int multiplier = 50;
 
-        for (Node node :nodes) {
-            g.fillOval(node.getX()*multiplier - NODE_RADIUS, node.getY()*multiplier - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+        for (Map.Entry<Integer, Node> entry:nodes.entrySet()) {
+            int num = entry.getKey();
+            Node node = entry.getValue();
+            g.setColor(Color.BLACK);
+            g.fillOval(node.getX()*multiplier - NODE_RADIUS + node.getZ() * FLOOR, node.getY()*multiplier - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+            g.setColor(Color.RED);
+            g.drawString("n:" + num, node.getX()*multiplier+node.getZ() * FLOOR, node.getY()*multiplier - NODE_RADIUS * 2);
         }
 
         g.setStroke(new BasicStroke(3));
@@ -268,8 +282,13 @@ public class GUI extends Canvas implements Runnable {
         for (Transition transition: transitions) {
             Node from = transition.getFrom();
             Node to = transition.getTo();
-            g.drawLine(from.getX() * multiplier, from.getY() * multiplier,
-                    to.getX() * multiplier, to.getY() * multiplier);
+            if (from.getZ() != to.getZ()) {
+                g.setColor(Color.ORANGE);
+            } else {
+                g.setColor(Color.BLACK);
+            }
+            g.drawLine(from.getX() * multiplier+from.getZ() * FLOOR, from.getY() * multiplier,
+                    to.getX() * multiplier+to.getZ() * FLOOR, to.getY() * multiplier);
         }
 
         g.setColor(Color.BLUE);
@@ -277,8 +296,8 @@ public class GUI extends Canvas implements Runnable {
         for (Transition transition: path) {
             Node from = transition.getFrom();
             Node to = transition.getTo();
-            g.drawLine(from.getX() * multiplier, from.getY() * multiplier,
-                    to.getX() * multiplier, to.getY() * multiplier);
+            g.drawLine(from.getX() * multiplier + from.getZ() * FLOOR, from.getY() * multiplier,
+                    to.getX() * multiplier + to.getZ() * FLOOR, to.getY() * multiplier);
         }
 
 
