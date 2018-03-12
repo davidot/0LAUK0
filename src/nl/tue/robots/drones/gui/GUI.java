@@ -6,10 +6,7 @@ import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.fileIO.GraphIO;
 import nl.tue.robots.drones.model.Building;
 
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
@@ -20,6 +17,7 @@ import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferStrategy;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -66,6 +64,7 @@ public class GUI extends Canvas implements Runnable {
      */
     private static int RENDER_HEIGHT = 640;
 
+    private static JFileChooser fileBrowser;
     private static JFrame frame;
     //needed for threads
     private boolean isRunning;
@@ -149,6 +148,8 @@ public class GUI extends Canvas implements Runnable {
             e.printStackTrace();
         }
 
+        fileBrowser = new JFileChooser();
+
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         //Hack for a way to display the fps on the frame
@@ -169,22 +170,34 @@ public class GUI extends Canvas implements Runnable {
     //private init since it should only be called once
     private void init() {
         try {
-            building = GraphIO.readBuilding("tests/Floorplan 7.csv");
+            File f = null;
+            int returnVal = fileBrowser.showOpenDialog(this);
+
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fileBrowser.getSelectedFile();
+                //This is where a real application would open the file.
+                building = GraphIO.readBuilding(file);
+            } else {
+                System.out.println("User canceled opening a file");
+            }
+
         } catch(FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        Node from = building.getNode(0);
-        Node to = building.getNode(0);
+        if (building != null) {
+            Node from = building.getNode(0);
+            Node to = building.getNode(0);
 
-        if (from == null || to == null) {
-            System.exit(-1);
+            if (from == null || to == null) {
+                System.exit(-1);
+            }
+
+            path = new Algorithm().findPath(from, to);
+            nodes = building.getAllNodesWithId();
+            transitions = new ArrayList<>(nodes.size());
+            building.getAllNodes().forEach(node -> transitions.addAll(node.getTransitions()));
         }
-
-        path = new Algorithm().findPath(from, to);
-        nodes = building.getAllNodesWithId();
-        transitions = new ArrayList<>(nodes.size());
-        building.getAllNodes().forEach(node -> transitions.addAll(node.getTransitions()));
     }
 
     @Override
@@ -219,7 +232,7 @@ public class GUI extends Canvas implements Runnable {
             }
 
 
-            if(shouldRender) {
+            if(shouldRender && building != null) {
                 frames++;
                 render();
             }

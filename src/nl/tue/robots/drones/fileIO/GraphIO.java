@@ -13,12 +13,10 @@ public class GraphIO {
 
     /**
      * Reads and parses the file and creates a Building out of it.
-     * @param fileName the name of the file to read.
      * @return The Building created from the contents of the file
      */
-    public static Building readBuilding(String fileName) throws FileNotFoundException {
+    public static Building readBuilding(File buildFile) throws FileNotFoundException {
         Building build = new Building();
-        File buildFile = new File(fileName);
 
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(buildFile), "UTF-8"))){
 
@@ -76,7 +74,7 @@ public class GraphIO {
             if (ex instanceof FileNotFoundException) {
                 throw (FileNotFoundException) ex;
             } else {
-                System.err.println("Could not read file" + fileName);
+                System.err.println("Could not read file" + buildFile.getName());
             }
         }
 
@@ -157,7 +155,7 @@ public class GraphIO {
 
     public static void main(String[] args) {
         try {
-            Building plan1 = readBuilding("tests/Floorplan 1.csv");
+            Building plan1 = readBuilding(new File("tests/Floorplan 1.csv"));
             System.out.println(reportBuildingGraph(plan1));
 
             writeBuilding(plan1, "tests/writeTest.csv");
