@@ -13,7 +13,6 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferStrategy;
@@ -21,7 +20,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 
@@ -75,8 +73,6 @@ public class GUI extends Canvas implements Runnable {
     private Thread mainThread;
 
 
-    //Drone model variables
-    private boolean checked = false;
     private Building building;
     private ArrayList<Transition> path;
     private Map<Integer, Node> nodes;
@@ -105,7 +101,7 @@ public class GUI extends Canvas implements Runnable {
         startDefault();
     }
 
-    public static GUI startDefault() {
+    private static void startDefault() {
 
         boolean fullscreen = false;
 
@@ -127,20 +123,13 @@ public class GUI extends Canvas implements Runnable {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.add(GUI, BorderLayout.CENTER);
-        //frame.setResizable(false);
-        if(fullscreen) {
-            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            frame.setUndecorated(true);
-            setPixelSize(Toolkit.getDefaultToolkit().getScreenSize().width,
-                    Toolkit.getDefaultToolkit().getScreenSize().height);
-        } else {
-            GUI.addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    resizeFrame(e.getComponent().getSize());
-                }
-            });
-        }
+        frame.setResizable(false);
+        GUI.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                resizeFrame(e.getComponent().getSize());
+            }
+        });
         //Make sure the frame is packed
         try {
             SwingUtilities.invokeAndWait(frame::pack);
@@ -148,14 +137,11 @@ public class GUI extends Canvas implements Runnable {
             e.printStackTrace();
         }
 
-        fileBrowser = new JFileChooser();
-
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         //Hack for a way to display the fps on the frame
         GUI.start();
 
-        return GUI;
     }
 
     private static void setPixelSize(int width, int height) {
@@ -170,6 +156,7 @@ public class GUI extends Canvas implements Runnable {
     //private init since it should only be called once
     private void init() {
         try {
+            fileBrowser = new JFileChooser();
             File f = null;
             int returnVal = fileBrowser.showOpenDialog(this);
 
@@ -179,6 +166,7 @@ public class GUI extends Canvas implements Runnable {
                 building = GraphIO.readBuilding(file);
             } else {
                 System.out.println("User canceled opening a file");
+                System.exit(0);
             }
 
         } catch(FileNotFoundException e) {
