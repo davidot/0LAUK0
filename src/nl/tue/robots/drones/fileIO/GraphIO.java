@@ -3,16 +3,22 @@ package nl.tue.robots.drones.fileIO;
 import nl.tue.robots.drones.common.Node;
 import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.model.Building;
+import nl.tue.robots.drones.simulation.RealBuilding;
+import nl.tue.robots.drones.simulation.RealObject;
+import nl.tue.robots.drones.simulation.RealWall;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class GraphIO {
 
     /**
      * Reads and parses the file and creates a Building out of it.
+     * @param buildFile the file to read
      * @return The Building created from the contents of the file
      */
     public static Building readBuilding(File buildFile) throws FileNotFoundException {
@@ -84,14 +90,11 @@ public class GraphIO {
     /**
      * Writes the provided building to a <i>new</i> file with the specified name.
      * @param b The building to write to file
-     * @param fileName The name of the file to be created
+     * @param buildFile The file to save to
      * @throws IOException If something goes wrong during the writing process
      */
-    public static void writeBuilding(Building b, String fileName) throws IOException {
-        File buildFile = new File(fileName);
-        if (!buildFile.createNewFile()) {
-            throw new IllegalArgumentException("File " + fileName + " already exists");
-        }
+    public static void writeBuilding(Building b, File buildFile) throws IOException {
+        buildFile.createNewFile();
 
         try (BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(buildFile, false), "UTF-8"))){
             fileWriter.write("#ID;X;Y;Z");
@@ -153,12 +156,131 @@ public class GraphIO {
         return s;
     }
 
+    /**
+     * Reads the wall map from file and constructs a RealBuilding out of it.
+     * @param wallsFile The file from which to read
+     * @return The constructed RealBuilding or {@code null} if the building could not be constructed.
+     * @throws FileNotFoundException If the given file cannot be opened for reading.
+     * @throws MalformedWallFileException If the given file does not properly specify the building.
+     */
+    public static RealBuilding readWalls(File wallsFile) throws FileNotFoundException, MalformedWallFileException {
+        RealBuilding build = null;
+
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(wallsFile), "UTF-8"))){
+            ArrayList<RealWall> walls = new ArrayList<>();
+            int maxFloor;
+            int maxX;
+            int maxY;
+
+            // start reading
+            String line = fileReader.readLine();
+
+            // first line should specify dimensions
+            if (line.startsWith("D;")) {
+
+                String[] dimensions = line.split(";");
+                if (dimensions.length < 4) {
+                    throw new MalformedWallFileException(1,"Dimension specification incorrect");
+                }
+                maxFloor = Integer.parseInt(dimensions[1]);
+                maxX = Integer.parseInt(dimensions[2]);
+                maxY = Integer.parseInt(dimensions[3]);
+            } else {
+                throw new MalformedWallFileException(1,"Dimensions should be specified on the first line");
+            }
+
+            int i = 2;
+            while (fileReader.ready()) {
+                // start reading walls
+                line = fileReader.readLine();
+
+                if (!line.startsWith("#")){
+                    if (!line.matches("(\\d+;){5}[IOio]?")) {
+                        throw new MalformedWallFileException(i, "Wall specification does not adhere to the format: " +
+                                "floor;x1;y1;x2;y2;I/O. Where I/O is either I for inside wall or O for outside wall");
+                    }
+
+                    // read wall
+                    Scanner scan = new Scanner(line);
+                    scan.useDelimiter(";");
+
+                    int floor = scan.nextInt();
+                    int x1 = scan.nextInt();
+                    int y1 = scan.nextInt();
+                    int x2 = scan.nextInt();
+                    int y2 = scan.nextInt();
+                    boolean outer = false;
+                    if (scan.hasNext()) {
+                        outer = scan.next().toLowerCase().equals("o");
+                    }
+
+                    scan.close(); // we got the values so out close the scanner
+
+                    if (floor > maxFloor || x1 > maxX || x2 > maxX || y1 > maxY || y2 > maxY) {
+                        throw new MalformedWallFileException(i, "Wall falls outside dimensions of building: " +
+                                maxFloor + " floors, 0 <= x <= " + maxX + ", 0 <= y <= " + maxY);
+                    }
+
+                    // construct and add wall object
+                    RealWall wall = new RealWall(floor, x1, y1, x2, y2, outer);
+                    walls.add(wall);
+
+                } // else line is a comment skip it
+                i++;
+            }
+
+            // if we get here the file was fully read and nothing was wrong
+            build = new RealBuilding(maxFloor, maxX, maxY);
+            build.addWalls(walls);
+
+        } catch (IOException ex) {
+            if (ex instanceof FileNotFoundException) {
+                throw (FileNotFoundException) ex;
+            } else {
+                System.err.println("Could not read file" + wallsFile.getName());
+            }
+        }
+
+        return build;
+    }
+
+    public static void writeWalls(RealBuilding b, File wallFile) throws IOException {
+        wallFile.createNewFile();
+
+        try (BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(wallFile, false), "UTF-8"))){
+            fileWriter.write("D;" + b.getFloors() + ";" + b.getWidth() + ";" + b.getDepth());
+            fileWriter.newLine();
+            fileWriter.write("# Format: floor;x1;y1;x2;y2;I(nside)/O(utside)");
+            fileWriter.newLine();
+
+            // get all walls from building
+            List<RealWall> walls = b.getAllWalls();
+            for (RealWall w : walls) {
+                int[] wallCoords = w.getCoords();
+                fileWriter.write(w.getFloor() + ";" + wallCoords[0] + ";" + wallCoords[1] + ";" +
+                        wallCoords[2] + ";" + wallCoords[3] + ";" + (w.isOuterWall() ? "O" : "I"));
+                fileWriter.newLine();
+            }
+
+            fileWriter.flush(); // ensure buffer is fully written to file
+        } catch (IOException e) {
+            throw e; // bounce exception
+        }
+    }
+
     public static void main(String[] args) {
         try {
             Building plan1 = readBuilding(new File("tests/Floorplan 1.csv"));
             System.out.println(reportBuildingGraph(plan1));
 
-            writeBuilding(plan1, "tests/writeTest.csv");
+            writeBuilding(plan1, new File("tests/writeTest.csv"));
+
+            try {
+                RealBuilding b = readWalls(new File("tests/Floorplan 9.walls"));
+                writeWalls(b, new File("tests/wallWriteTest.walls"));
+            } catch (MalformedWallFileException e) {
+                System.err.println("Line " + e.getLine() + ": " + e.getMessage());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

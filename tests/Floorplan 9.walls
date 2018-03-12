@@ -1,3 +1,4 @@
+D;2;40;66
 # Format: floor;x1;y1;x2;y2;I(nside)/O(utside)
 0;0;0;40;0;O
 0;0;0;0;66;O
