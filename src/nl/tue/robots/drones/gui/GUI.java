@@ -6,6 +6,8 @@ import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.fileIO.GraphIO;
 import nl.tue.robots.drones.model.Building;
 
+import nl.tue.robots.drones.simulation.RealDrone;
+
 import javax.swing.*;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -25,6 +27,10 @@ import java.util.Map;
 
 public class GUI extends Canvas implements Runnable {
 
+    //TODO: remove hardcoded drone
+    private RealDrone d;
+    private RealDrone e;
+    
     /**
      * Title of the frame of the main {@link GUI}
      */
@@ -274,6 +280,7 @@ public class GUI extends Canvas implements Runnable {
         int multiplier = 50;
         g.translate(20, 20);
 
+        //draw the nodes
         for (Map.Entry<Integer, Node> entry:nodes.entrySet()) {
             int num = entry.getKey();
             Node node = entry.getValue();
@@ -285,6 +292,7 @@ public class GUI extends Canvas implements Runnable {
 
         g.setStroke(new BasicStroke(3));
 
+        //draw the transitions
         for (Transition transition: transitions) {
             Node from = transition.getFrom();
             Node to = transition.getTo();
@@ -306,7 +314,35 @@ public class GUI extends Canvas implements Runnable {
                     to.getX() * multiplier + to.getZ() * FLOOR, to.getY() * multiplier);
         }
 
-
+        //draw the drones on the screen
+        //hardcoded for now (and in the wrong place too probably)
+        //Makes the drones move left to right; Ignore the spaghetti
+        if (d == null){
+            d = new RealDrone(0, 0, 0);
+            d.goTo(1000, 0, 4);
+        }else if (!d.isHasDestination()){
+            if (d.getDestinationX() < 100){
+                d.goTo(1000, 0, 4);
+            }else{
+                d.goTo(0, 0, 4);
+            }
+        }
+        
+        if (e == null){
+            e = new RealDrone(0, 100, 0, RealDrone.getImageSequence(new String[] {"drone.png"}));
+            e.goTo(1000, 0, 2);
+        }else if (!e.isHasDestination()){
+            if (e.getDestinationX() < 100){
+                e.goTo(1000, 0, 2);
+            }else{
+                e.goTo(0, 0, 2);
+            }
+        }
+    
+        
+        
+        d.drawObject(g);
+        e.drawObject(g);
 
 
         //stop drawing here
