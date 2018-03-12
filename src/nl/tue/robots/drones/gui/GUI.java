@@ -103,8 +103,6 @@ public class GUI extends Canvas implements Runnable {
 
     private static void startDefault() {
 
-        boolean fullscreen = false;
-
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch(Exception e) {
@@ -156,7 +154,7 @@ public class GUI extends Canvas implements Runnable {
     //private init since it should only be called once
     private void init() {
         try {
-            fileBrowser = new JFileChooser();
+            fileBrowser = new JFileChooser(new File("."));
             File f = null;
             int returnVal = fileBrowser.showOpenDialog(this);
 
@@ -266,8 +264,15 @@ public class GUI extends Canvas implements Runnable {
 
         //start drawing here
 
-        g.translate(20, 20);
+
+        g.setColor(Color.BLACK);
+
+        for (int i = width / 4; i < width; i+= width / 4) {
+            g.drawLine(i, 0, i, height);
+        }
+
         int multiplier = 50;
+        g.translate(20, 20);
 
         for (Map.Entry<Integer, Node> entry:nodes.entrySet()) {
             int num = entry.getKey();

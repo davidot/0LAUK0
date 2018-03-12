@@ -1,16 +1,20 @@
 package nl.tue.robots.drones.simulation;
 
-public class RealObject {
+import java.awt.Graphics2D;
 
-    private int x;
-    private int y;
+public abstract class RealObject {
 
     private int floor;
 
-    private int xBound;
-    private int yBound;
+    public RealObject(int floor) {
+        this.floor = floor;
+    }
 
     public int getFloor() {
         return floor;
     }
+
+    public abstract void drawObject(Graphics2D g);
+
+
 }
