@@ -37,11 +37,11 @@ public class RealBuilding {
     }
 
     public int getWidth() {
-        return width;
+        return maxWidth;
     }
 
     public int getDepth() {
-        return depth;
+        return maxDepth;
     }
     public void addObject(RealObject object) {
         if (!getObjectsOnFloor(object.getFloor()).contains(object)) {
