@@ -23,6 +23,26 @@ public class RealBuilding {
         return objects.stream().filter(obj -> obj.getFloor() == floor).collect(Collectors.toList());
     }
 
+    public List<RealWall> getAllWalls() {
+        return objects.stream().filter(obj -> (obj instanceof RealWall)).map(obj -> (RealWall)obj).collect(Collectors.toList());
+    }
+
+    public void addWalls(List<RealWall> walls) {
+        walls.removeAll(objects); // prevent adding duplicate walls
+        objects.addAll(walls);
+    }
+
+    public int getFloors() {
+        return floors;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
     public void addObject(RealObject object) {
         if (!getObjectsOnFloor(object.getFloor()).contains(object)) {
             objects.add(object);
