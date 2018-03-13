@@ -30,7 +30,7 @@ public class GUI extends Canvas implements Runnable {
     //TODO: remove hardcoded drone
     private RealDrone d;
     private RealDrone e;
-    
+
     /**
      * Title of the frame of the main {@link GUI}
      */
@@ -68,7 +68,6 @@ public class GUI extends Canvas implements Runnable {
      */
     private static int RENDER_HEIGHT = 640;
 
-    private static JFileChooser fileBrowser;
     private static JFrame frame;
     //needed for threads
     private boolean isRunning;
@@ -160,8 +159,7 @@ public class GUI extends Canvas implements Runnable {
     //private init since it should only be called once
     private void init() {
         try {
-            fileBrowser = new JFileChooser(new File("."));
-            File f = null;
+            JFileChooser fileBrowser = new JFileChooser(new File("."));
             int returnVal = fileBrowser.showOpenDialog(this);
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -170,6 +168,8 @@ public class GUI extends Canvas implements Runnable {
                 building = GraphIO.readBuilding(file);
             } else {
                 System.out.println("User canceled opening a file");
+                JOptionPane.showConfirmDialog(this, "Did not select anything, shutting down",
+                        "Stopping", JOptionPane.DEFAULT_OPTION);
                 System.exit(0);
             }
 
@@ -319,31 +319,28 @@ public class GUI extends Canvas implements Runnable {
         //Makes the drones move left to right; Ignore the spaghetti
         if (d == null){
             d = new RealDrone(0, 0, 0);
-            d.goTo(1000, 0, 4);
+            d.goTo(1000, 200, 4);
         }else if (!d.isHasDestination()){
             if (d.getDestinationX() < 100){
-                d.goTo(1000, 0, 4);
+                d.goTo(1000, 200, 4);
             }else{
                 d.goTo(0, 0, 4);
             }
         }
-        
+
         if (e == null){
             e = new RealDrone(0, 100, 0, RealDrone.getImageSequence(new String[] {"drone.png"}));
-            e.goTo(1000, 0, 2);
+            e.goTo(1000, 500, 2);
         }else if (!e.isHasDestination()){
             if (e.getDestinationX() < 100){
-                e.goTo(1000, 0, 2);
+                e.goTo(1000, 500, 2);
             }else{
                 e.goTo(0, 0, 2);
             }
         }
-    
-        
-        
+
         d.drawObject(g);
         e.drawObject(g);
-
 
         //stop drawing here
         g.dispose();
