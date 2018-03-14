@@ -60,26 +60,31 @@ public class Algorithm {
 	* @param destinationNode is the node the drone has to go to
 	* @param seenNodes is the set of nodes that have already been visited
 	* @param frontier Ã¬s the set of nodes that still have to be expanded
-	* @return The function returns an ExpandedNode object with the destinationNode in it.
+    * @return The function returns an ExpandedNode object with the destinationNode in it.
 	*
 	*/
 	public ExpandedNode pathSearch(Node destinationNode, Set<ExpandedNode> seenNodes,
                                    ArrayList<ExpandedNode> frontier) {
 		// First check the frontier isn't empty
 		if (frontier.size() > 0){
+
 			// The frontier is not empty: expand the best node
 			ExpandedNode nodeToExpand = frontier.get(0);
 			List<Node> newNodes = Model.getOptions(nodeToExpand);
 			ArrayList<ExpandedNode> newExpandedNodes = new ArrayList<ExpandedNode>();
 
+			// remove all the nodes we have already visited
+            for (ExpandedNode node : seenNodes) {
+			    newNodes.remove(node.getNode());
+            }
+
 			// Check whether one of the nodes is the destination node
 			for (Node node : newNodes) {
-				newExpandedNodes.add(createExpandedNode(node, destinationNode, nodeToExpand));
 				if (node == destinationNode){
-					//
-					return createExpandedNode(node, destinationNode, nodeToExpand);
-				}
-			}
+                    return createExpandedNode(node, destinationNode, nodeToExpand);
+                }
+                newExpandedNodes.add(createExpandedNode(node, destinationNode, nodeToExpand));
+            }
 
 			// Now that the new elements have been found, the node can be removed
 			frontier.remove(0);

@@ -1,6 +1,11 @@
 package nl.tue.robots.drones.simulation;
 
+import nl.tue.robots.drones.gui.GUI;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +48,7 @@ public class RealBuilding {
     public int getDepth() {
         return maxDepth;
     }
+
     public void addObject(RealObject object) {
         if (!getObjectsOnFloor(object.getFloor()).contains(object)) {
             objects.add(object);
@@ -52,21 +58,33 @@ public class RealBuilding {
 
     public void render(Graphics2D g, int floors, int from, int perColumn) {
         if (floors % perColumn != 0) {
-            System.out.println("NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOSDfasdhfkasdhfklasdhfkljasdhf");
             return;
         }
         int rows = floors / perColumn;
 
+        g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(1));
+
+        int w = maxWidth * GUI.MULTIPLIER;
+        int d = maxDepth * GUI.MULTIPLIER;
+
         for(int i = 0; i < rows; i++) {
-            g.drawLine(0, maxDepth * (i + 1), maxWidth * perColumn, maxDepth * (i + 1));
+            g.drawLine(0, d * (i + 1), w * perColumn, d * (i + 1));
         }
 
         for(int i = 0; i < perColumn; i++) {
-            g.drawLine(maxWidth * (i + 1), 0,  maxWidth * (i + 1), maxDepth * rows);
+            g.drawLine(w * (i + 1), 0,  w * (i + 1), d * rows);
         }
 
+        AffineTransform transform = g.getTransform();
+
         for(int floor = from; floor < from + floors; floor++) {
-            //todo draw the full floor
+            g.translate((floor % perColumn) * w, (floor / perColumn) * d);
+            g.scale(GUI.MULTIPLIER, GUI.MULTIPLIER);
+            for (RealObject obj : getObjectsOnFloor(floor)) {
+                obj.drawObject(g);
+            }
+            g.setTransform(transform);
         }
 
     }

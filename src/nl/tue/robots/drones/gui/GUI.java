@@ -4,8 +4,10 @@ import nl.tue.robots.drones.algorithm.Algorithm;
 import nl.tue.robots.drones.common.Node;
 import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.fileIO.GraphIO;
+import nl.tue.robots.drones.fileIO.MalformedWallFileException;
 import nl.tue.robots.drones.model.Building;
 
+import nl.tue.robots.drones.simulation.RealBuilding;
 import nl.tue.robots.drones.simulation.RealDrone;
 
 import javax.swing.*;
@@ -54,8 +56,7 @@ public class GUI extends Canvas implements Runnable {
     private static final String TICK_OVER_PRE = "Skipping ";
     private static final String TICK_OVER_POST = " ticks is the system overloaded?";
     public static final char LINE_SEPARATOR_CHAR = '\n';
-    private static final int NODE_RADIUS = 5;
-    private static final int FLOOR = 100;
+    private static final int NODE_RADIUS = 4;
 
     //size of screen in tiles
 
@@ -79,9 +80,11 @@ public class GUI extends Canvas implements Runnable {
 
 
     private Building building;
+    private RealBuilding realBuilding;
     private ArrayList<Transition> path;
     private Map<Integer, Node> nodes;
     private ArrayList<Transition> transitions;
+    public static final int MULTIPLIER = 6;
 
     private GUI() {
 
@@ -166,6 +169,7 @@ public class GUI extends Canvas implements Runnable {
                 File file = fileBrowser.getSelectedFile();
                 //This is where a real application would open the file.
                 building = GraphIO.readBuilding(file);
+                realBuilding = GraphIO.readWalls(new File(file.getParent(), file.getName().replace(".csv", ".walls")));
             } else {
                 System.out.println("User canceled opening a file");
                 JOptionPane.showConfirmDialog(this, "Did not select anything, shutting down",
@@ -173,23 +177,26 @@ public class GUI extends Canvas implements Runnable {
                 System.exit(0);
             }
 
-        } catch(FileNotFoundException e) {
+        } catch(FileNotFoundException | MalformedWallFileException e) {
             e.printStackTrace();
+            JOptionPane.showConfirmDialog(this, "Error opening files",
+                    "Stopping", JOptionPane.DEFAULT_OPTION);
+            System.exit(0);
         }
 
-        if (building != null) {
-            Node from = building.getNode(0);
-            Node to = building.getNode(0);
+        Node from = building.getNode(0);
+        Node to = building.getNode(10);
 
-            if (from == null || to == null) {
-                System.exit(-1);
-            }
-
-            path = new Algorithm().findPath(from, to);
-            nodes = building.getAllNodesWithId();
-            transitions = new ArrayList<>(nodes.size());
-            building.getAllNodes().forEach(node -> transitions.addAll(node.getTransitions()));
+        if (from == null || to == null) {
+            System.exit(-1);
         }
+
+        long now = System.currentTimeMillis();
+        path = new Algorithm().findPath(from, to);
+        System.out.println("Took: " + (System.currentTimeMillis() - now));
+        nodes = building.getAllNodesWithId();
+        transitions = new ArrayList<>(nodes.size());
+        building.getAllNodes().forEach(node -> transitions.addAll(node.getTransitions()));
     }
 
     @Override
@@ -270,27 +277,26 @@ public class GUI extends Canvas implements Runnable {
 
         //start drawing here
 
+        g.translate(width / 4, 0);
+        realBuilding.render(g, 3, 0, 3);
 
-        g.setColor(Color.BLACK);
 
-        for (int i = width / 4; i < width; i+= width / 4) {
-            g.drawLine(i, 0, i, height);
-        }
-
-        int multiplier = 50;
-        g.translate(20, 20);
+        g.translate(-MULTIPLIER, 0);
 
         //draw the nodes
+        int floor = realBuilding.getWidth() * MULTIPLIER;
         for (Map.Entry<Integer, Node> entry:nodes.entrySet()) {
             int num = entry.getKey();
             Node node = entry.getValue();
             g.setColor(Color.BLACK);
-            g.fillOval(node.getX()*multiplier - NODE_RADIUS + node.getZ() * FLOOR, node.getY()*multiplier - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+            g.fillOval(node.getX()* MULTIPLIER - NODE_RADIUS + node.getZ() * floor, node.getY()*
+                    MULTIPLIER - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
             g.setColor(Color.RED);
-            g.drawString("n:" + num, node.getX()*multiplier+node.getZ() * FLOOR, node.getY()*multiplier - NODE_RADIUS * 2);
+            g.drawString("n:" + num, node.getX()* MULTIPLIER +node.getZ() * floor, node.getY()*
+                    MULTIPLIER - NODE_RADIUS * 2);
         }
 
-        g.setStroke(new BasicStroke(3));
+        g.setStroke(new BasicStroke(2));
 
         //draw the transitions
         for (Transition transition: transitions) {
@@ -301,8 +307,8 @@ public class GUI extends Canvas implements Runnable {
             } else {
                 g.setColor(Color.BLACK);
             }
-            g.drawLine(from.getX() * multiplier+from.getZ() * FLOOR, from.getY() * multiplier,
-                    to.getX() * multiplier+to.getZ() * FLOOR, to.getY() * multiplier);
+            g.drawLine(from.getX() * MULTIPLIER +from.getZ() * floor, from.getY() * MULTIPLIER,
+                    to.getX() * MULTIPLIER +to.getZ() * floor, to.getY() * MULTIPLIER);
         }
 
         g.setColor(Color.BLUE);
@@ -310,11 +316,16 @@ public class GUI extends Canvas implements Runnable {
         for (Transition transition: path) {
             Node from = transition.getFrom();
             Node to = transition.getTo();
-            g.drawLine(from.getX() * multiplier + from.getZ() * FLOOR, from.getY() * multiplier,
-                    to.getX() * multiplier + to.getZ() * FLOOR, to.getY() * multiplier);
+            if (from.getZ() != to.getZ()) {
+                g.setColor(Color.GREEN);
+            } else {
+                g.setColor(Color.BLUE);
+            }
+            g.drawLine(from.getX() * MULTIPLIER + from.getZ() * floor, from.getY() * MULTIPLIER,
+                    to.getX() * MULTIPLIER + to.getZ() * floor, to.getY() * MULTIPLIER);
         }
 
-        //draw the drones on the screen
+        /*//draw the drones on the screen
         //hardcoded for now (and in the wrong place too probably)
         //Makes the drones move left to right; Ignore the spaghetti
         if (d == null){
@@ -340,7 +351,9 @@ public class GUI extends Canvas implements Runnable {
         }
 
         d.drawObject(g);
-        e.drawObject(g);
+        e.drawObject(g);*/
+
+
 
         //stop drawing here
         g.dispose();
@@ -362,17 +375,13 @@ public class GUI extends Canvas implements Runnable {
             return;
         }
         isRunning = false;
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mainThread.join();
-                    System.exit(0);
-                } catch(InterruptedException e) {
-                    e.printStackTrace();
-                }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                mainThread.join();
+                System.exit(0);
+            } catch(InterruptedException e) {
+                e.printStackTrace();
             }
-
         });
     }
 
