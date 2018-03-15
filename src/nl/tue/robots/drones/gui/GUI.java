@@ -385,8 +385,6 @@ public class GUI extends Canvas implements Runnable {
                 d.addDestination(0, 200, 0);
             }
         }
-        System.out.println(d.getSpeedX());
-        System.out.println(d.getSpeedY());
 
         if (e == null){
             e = new RealDrone(0, 0, 0);

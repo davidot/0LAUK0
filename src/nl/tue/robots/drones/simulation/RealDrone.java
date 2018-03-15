@@ -82,7 +82,7 @@ public class RealDrone extends RealObject {
 
             //Open up all the frames and store them
             for (int i = 0; i < imgs.length; i++){
-                BufferedImage img = ImageIO.read(new File("0LAUK0-master/res/" + imgs[i]));
+                BufferedImage img = ImageIO.read(new File("res/" + imgs[i]));
                 imgSequence[i] = img;
             }
 
