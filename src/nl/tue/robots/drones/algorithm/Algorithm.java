@@ -122,7 +122,7 @@ public class Algorithm {
             // Then we have not yet found the root.
             Node currentNode = lastNode.getNode();
             Node parentNode = lastNode.getParent().getNode();
-            Transition currentTransition = Model.getTransition(parentNode, currentNode);
+            Transition currentTransition = Model.getTransition(currentNode, parentNode);
             transitions.add(0, currentTransition);
             //recursive call
             getPath(lastNode.getParent(), transitions);

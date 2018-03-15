@@ -12,6 +12,7 @@ import javax.imageio.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nl.tue.robots.drones.common.Destination;
+import nl.tue.robots.drones.common.Node;
 import nl.tue.robots.drones.gui.GUI;
 
 /**
@@ -105,6 +106,10 @@ public class RealDrone extends RealObject {
     public void setXY(int x, int y){
         this.x = x;
         this.y = y;
+    }
+
+    public void addDestination(Node node) {
+        addDestination(node.getX(), node.getY(), node.getZ());
     }
 
     /**
@@ -250,6 +255,15 @@ public class RealDrone extends RealObject {
         Destination destination = getNextDestination();
         if (destination == null){
             return;
+        }
+
+        if (destination.getZ() != getFloor()) {
+            if (destination.getX() != getX() || destination.getY() != getY()) {
+                System.out.println("Should not happen");
+            }
+            setFloor(destination.getZ());
+            // just in case the coords are not the same
+            setXY(destination.getX(), destination.getY());
         }
 
         int destinationX = destination.getX();

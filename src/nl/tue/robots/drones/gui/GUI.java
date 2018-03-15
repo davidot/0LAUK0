@@ -198,22 +198,6 @@ public class GUI extends Canvas implements Runnable {
             System.exit(0);
         }
 
-        RealDrone d = new RealDrone(0, 4, 4);
-        d.addDestination(11, 4, 0);
-        d.addDestination(11, 16, 0);
-        d.addDestination(11, 25, 0);
-        d.addDestination(11, 45, 0);
-        //start rounds
-
-        for(int i = 0; i < 100; i++) {
-            d.addDestination(38, 45, 0);
-            d.addDestination(38, 25, 0);
-            d.addDestination(11, 25, 0);
-            d.addDestination(11, 45, 0);
-        }
-
-        realBuilding.addObject(d);
-
         Node from = building.getNode(0);
         Node to = building.getNode(144);
 
@@ -224,6 +208,14 @@ public class GUI extends Canvas implements Runnable {
         long now = System.currentTimeMillis();
         path = new Algorithm().findPath(from, to);
         System.out.println("Took: " + (System.currentTimeMillis() - now));
+
+        RealDrone d = new RealDrone(from.getZ(), from.getX(), from.getY());
+        for (Transition x : path) {
+            d.addDestination(x.getTo());
+        }
+
+        realBuilding.addObject(d);
+
         nodes = building.getAllNodesWithId();
         transitions = new ArrayList<>(nodes.size());
         building.getAllNodes().forEach(node -> transitions.addAll(node.getTransitions()));
