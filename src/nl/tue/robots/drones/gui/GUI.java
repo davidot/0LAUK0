@@ -19,6 +19,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.QuadCurve2D;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -313,6 +314,14 @@ public class GUI extends Canvas implements Runnable {
                 g.setColor(Color.RED);
             } else if (from.getZ() != to.getZ()) {
                 g.setColor(Color.ORANGE);
+                int x1 = from.getX() * MULTIPLIER + from.getZ() * floor;
+                int x2 = to.getX() * MULTIPLIER + to.getZ() * floor;
+                int y1 = from.getY() * MULTIPLIER;
+                int y2 = to.getY() * MULTIPLIER;
+                QuadCurve2D curve = new QuadCurve2D.Double(
+                        x1, y1, (x1 + x2) / 2, (y1 + y2) / 2 - 75, x2, y2);
+                g.draw(curve);
+                continue;
             } else {
                 g.setColor(Color.BLACK);
             }
@@ -343,6 +352,14 @@ public class GUI extends Canvas implements Runnable {
             Node to = transition.getTo();
             if (from.getZ() != to.getZ()) {
                 g.setColor(Color.GREEN);
+                int x1 = from.getX() * MULTIPLIER + from.getZ() * floor;
+                int x2 = to.getX() * MULTIPLIER + to.getZ() * floor;
+                int y1 = from.getY() * MULTIPLIER;
+                int y2 = to.getY() * MULTIPLIER;
+                QuadCurve2D curve = new QuadCurve2D.Double(
+                        x1, y1, (x1 + x2) / 2, (y1 + y2) / 2 - 75, x2, y2);
+                g.draw(curve);
+                continue;
             } else {
                 g.setColor(Color.BLUE);
             }
