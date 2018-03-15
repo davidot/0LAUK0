@@ -32,10 +32,6 @@ import nl.tue.robots.drones.simulation.RealObstacle;
 
 public class GUI extends Canvas implements Runnable {
 
-    //TODO: remove hardcoded drone
-    private RealDrone d;
-    private RealDrone e;
-
     /**
      * Title of the frame of the main {@link GUI}
      */
@@ -201,6 +197,22 @@ public class GUI extends Canvas implements Runnable {
                     "Stopping", JOptionPane.DEFAULT_OPTION);
             System.exit(0);
         }
+
+        RealDrone d = new RealDrone(0, 4, 4);
+        d.addDestination(11, 4, 0);
+        d.addDestination(11, 16, 0);
+        d.addDestination(11, 25, 0);
+        d.addDestination(11, 45, 0);
+        //start rounds
+
+        for(int i = 0; i < 100; i++) {
+            d.addDestination(38, 45, 0);
+            d.addDestination(38, 25, 0);
+            d.addDestination(11, 25, 0);
+            d.addDestination(11, 45, 0);
+        }
+
+        realBuilding.addObject(d);
 
         Node from = building.getNode(0);
         Node to = building.getNode(144);
@@ -369,39 +381,6 @@ public class GUI extends Canvas implements Runnable {
             g.drawLine(from.getX() * MULTIPLIER + from.getZ() * floor, from.getY() * MULTIPLIER,
                     to.getX() * MULTIPLIER + to.getZ() * floor, to.getY() * MULTIPLIER);
         }
-
-        //draw the drones on the screen
-        //hardcoded for now (and in the wrong place too probably)
-        //Makes the drones move left to right; Ignore the spaghetti
-        if (d == null){
-            d = new RealDrone(0, 0, 0);
-            d.addDestination(100, 200, 0);
-            d.addDestination(10, 200, 0);
-            d.addDestination(100, 150, 0);
-            d.addDestination(150, 100, 0);
-            d.addDestination(0, 0, 0);
-        }else if (!d.isHasDestination()){
-            d.setSpeed(4, 4);
-            if (d.getX() < 100){
-                d.addDestination(200, 200, 0);
-            }else{
-                d.addDestination(0, 200, 0);
-            }
-        }
-
-        if (e == null){
-            e = new RealDrone(0, 0, 0);
-            e.addDestination(100, 0, 0);
-        }else if (!e.isHasDestination()){
-            if (e.getX() < 100){
-                e.addDestination(200, 0, 0);
-            }else{
-                e.addDestination(0, 0, 0);
-            }
-        }
-
-        d.drawObject(g);
-        e.drawObject(g);
 
         g.translate(MULTIPLIER, MULTIPLIER);
 
