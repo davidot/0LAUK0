@@ -295,7 +295,10 @@ public class GUI extends Canvas implements Runnable {
 
         //start drawing here
 
-        g.translate(width / 4, 20);
+        g.translate(0, 20);
+        realBuilding.renderSideView(g);
+
+        g.translate(width / 4, 0);
         realBuilding.render(g, 3, 0, 3);
 
 
@@ -367,33 +370,38 @@ public class GUI extends Canvas implements Runnable {
                     to.getX() * MULTIPLIER + to.getZ() * floor, to.getY() * MULTIPLIER);
         }
 
-        /*//draw the drones on the screen
+        //draw the drones on the screen
         //hardcoded for now (and in the wrong place too probably)
         //Makes the drones move left to right; Ignore the spaghetti
         if (d == null){
             d = new RealDrone(0, 0, 0);
-            d.goTo(1000, 200, 4);
+            d.addDestination(100, 200, 0);
+            d.addDestination(10, 200, 0);
+            d.addDestination(100, 150, 0);
+            d.addDestination(150, 100, 0);
+            d.addDestination(0, 0, 0);
         }else if (!d.isHasDestination()){
-            if (d.getDestinationX() < 100){
-                d.goTo(1000, 200, 4);
+            d.setSpeed(4, 4);
+            if (d.getX() < 100){
+                d.addDestination(200, 200, 0);
             }else{
-                d.goTo(0, 0, 4);
+                d.addDestination(0, 200, 0);
             }
         }
 
         if (e == null){
-            e = new RealDrone(0, 100, 0, RealDrone.getImageSequence(new String[] {"drone.png"}));
-            e.goTo(1000, 500, 2);
+            e = new RealDrone(0, 0, 0);
+            e.addDestination(100, 0, 0);
         }else if (!e.isHasDestination()){
-            if (e.getDestinationX() < 100){
-                e.goTo(1000, 500, 2);
+            if (e.getX() < 100){
+                e.addDestination(200, 0, 0);
             }else{
-                e.goTo(0, 0, 2);
+                e.addDestination(0, 0, 0);
             }
         }
 
         d.drawObject(g);
-        e.drawObject(g);*/
+        e.drawObject(g);
 
         g.translate(MULTIPLIER, MULTIPLIER);
 

@@ -6,7 +6,17 @@ import java.awt.image.BufferedImage;
 
 import java.awt.image.*;
 import java.io.*;
+import java.util.LinkedList;
 import javax.imageio.*;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import nl.tue.robots.drones.common.Destination;
+
+/**
+ * 
+ * @since 15 MAR 2018
+ */
 
 
 public class RealDrone extends RealObject {
@@ -23,8 +33,7 @@ public class RealDrone extends RealObject {
     //Movement
     private int speedX = 0;
     private int speedY = 0;
-    private int destinationX = 0;
-    private int destinationY = 0;
+    private LinkedList<Destination> destinations;
 
     //Image and rendering
     private BufferedImage[] imageSequence;
@@ -32,7 +41,7 @@ public class RealDrone extends RealObject {
     private int counter = 0;
     private static final int COUNTER_FRAME_SWITCH = 10;
     private static final String[] DEFAULT_IMAGE_SEQUENCE =
-                        {"drone32_frame1.png", "drone32_frame2.png"};
+                        {"drone_frame1.png", "drone_frame2.png"};
 
     //constructor
     public RealDrone(int floor, int x, int y) {
@@ -49,6 +58,8 @@ public class RealDrone extends RealObject {
         }else{
             this.imageSequence = getImageSequence(DEFAULT_IMAGE_SEQUENCE);
         }
+        
+        destinations = new LinkedList<>();
     }
 
     /**
@@ -94,7 +105,80 @@ public class RealDrone extends RealObject {
         this.y = y;
     }
 
-
+    /**
+     * Adds a destination to the list of destinations to fly to, if that
+     * destination is not already the last one in the list
+     * @param x
+     * @param y
+     * @param z 
+     */
+    public void addDestination(int x, int y, int z){
+        Destination lastDest = this.getFinalDestination();
+        Destination newDest = new Destination(x, y, z);
+        if (lastDest == null || !Destination.destinationsEqual(lastDest, newDest)){ 
+            System.out.println("new dest added");
+            
+            if (!isHasDestination()){
+                setSpeed(4, 4);
+            }
+            
+            destinations.add(newDest);
+        }
+    }
+    
+    /**
+     * Removes and returns the next destination from the list
+     * @pre destinations.size() > 0
+     * 
+     * @return the next destination
+     * 
+     * @throws NoSuchElementException if there is no next destination
+     */
+    public Destination removeNextDestination(){
+        if (!isHasDestination()){
+            throw new NoSuchElementException("RealDrone.removeNextDestination.pre violated: No next destination");
+        }
+        System.out.println("dest removed");
+        Destination firstDest = destinations.removeFirst();
+        
+        if (isHasDestination()){
+            setSpeed(4, 4);
+        }
+        return firstDest;
+    }
+    
+    /**
+     * 
+     * @return Whether this drone has any destination
+     */
+    public boolean isHasDestination(){
+        return destinations.size() > 0;
+    }
+    
+    /**
+     * Gets the next destination
+     * @return The next destination, or null if no destinations
+     */
+    public Destination getNextDestination(){
+        if (!isHasDestination()){
+            return null;
+        }
+        return destinations.getFirst();
+    }
+    
+    /**
+     * Gets the final destination
+     * @return The final destination, or null if no destinations
+     */
+    public Destination getFinalDestination(){
+        if (destinations.size() <= 0){
+            return null;
+        }
+        return destinations.getLast();
+    }
+    
+    
+    /*
     public int getDestinationX(){
         return destinationX;
     }
@@ -109,6 +193,7 @@ public class RealDrone extends RealObject {
         this.destinationX = x;
         this.destinationY = y;
     }
+    */
 
 
     public int getSpeedX(){
@@ -132,10 +217,12 @@ public class RealDrone extends RealObject {
      * @param y Y coordinate of the destination
      * @param speed the speed with which the drone moves to the destination
      */
+    /*
     public void goTo(int x, int y, int speed){
         this.setDestination(x, y);
         this.setSpeed(speed, speed);
     }
+    */
 
     @Override
     public void drawObject(Graphics2D g) {
@@ -160,13 +247,6 @@ public class RealDrone extends RealObject {
     }
 
     /**
-     * @return Whether this drone is currently moving to a destination
-     */
-    public boolean isHasDestination(){
-        return speedX > 0 || speedY > 0;
-    }
-
-    /**
      * Moves the drone on the screen based on its speed, destination, and
      * current location
      * @pre true
@@ -177,7 +257,15 @@ public class RealDrone extends RealObject {
         //TODO: Diagonal movement is faster now: with a speed of x you will...
         //..move x horizontaly AND vertically, and not x towards the direction of the goal
         //Solve this with trigonometry
-
+        
+        Destination destination = getNextDestination();
+        if (destination == null){
+            return;
+        }
+        
+        int destinationX = destination.getX();
+        int destinationY = destination.getY();
+        
         //Get the approaching direction (1 when moving along an axis; -1 otherwise)
         int dirX = x > destinationX ? -1 : 1;
         int dirY = y > destinationY ? -1 : 1;
@@ -195,6 +283,10 @@ public class RealDrone extends RealObject {
         if ((dirY == 1 && y >= destinationY) || (dirY == -1 && y <= destinationY)){
             speedY = 0;
             y = destinationY;
+        }
+        
+        if (x == destinationX && y == destinationY){
+            removeNextDestination();
         }
     }
 }
