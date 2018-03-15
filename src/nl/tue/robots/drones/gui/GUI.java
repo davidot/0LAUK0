@@ -25,6 +25,8 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Map;
+import nl.tue.robots.drones.simulation.RealHuman;
+import nl.tue.robots.drones.simulation.RealObstacle;
 
 
 public class GUI extends Canvas implements Runnable {
@@ -170,6 +172,7 @@ public class GUI extends Canvas implements Runnable {
                 //This is where a real application would open the file.
                 building = GraphIO.readBuilding(file);
                 realBuilding = GraphIO.readWalls(new File(file.getParent(), file.getName().replace(".csv", ".walls")));
+                realBuilding.addObject(new RealHuman(5, 5, 0));
             } else {
                 System.out.println("User canceled opening a file");
                 JOptionPane.showConfirmDialog(this, "Did not select anything, shutting down",
