@@ -295,7 +295,10 @@ public class GUI extends Canvas implements Runnable {
 
         //start drawing here
 
-        g.translate(width / 4, 20);
+        g.translate(0, 20);
+        realBuilding.renderSideView(g);
+
+        g.translate(width / 4, 0);
         realBuilding.render(g, 3, 0, 3);
 
 

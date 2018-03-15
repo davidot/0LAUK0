@@ -3,7 +3,7 @@ package nl.tue.robots.drones.common;
 public class Transition {
 
     private static final int OUTSIDE_FACTOR = 20;
-    private static final double OUTSIDE_MULTIPLIER = 100.0;
+    private static final double OUTSIDE_MULTIPLIER = 2.0;
     private final Node from;
     private final Node to;
     private final boolean outside;
@@ -19,7 +19,6 @@ public class Transition {
 
         if (this.outside) {
             this.distance = (int) (OUTSIDE_FACTOR + OUTSIDE_MULTIPLIER * from.distanceTo(to));
-            System.out.println("Added " + (distance - from.distanceTo(to)));
         } else {
             this.distance = from.distanceTo(to);
         }

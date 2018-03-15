@@ -91,6 +91,20 @@ public class RealBuilding {
         }
     }
 
+    public void renderSideView(Graphics2D g) {
+        int total = (getDepth() * MULTI) / (getFloors() + 1);
+
+        g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(2));
+        int quad = getWidth() * MULTI / 8;
+        g.drawLine(quad, 0, quad, getDepth() * MULTI);
+        int qqaud = 7 * quad;
+        g.drawLine(qqaud, 0, qqaud, getDepth() * MULTI);
+        for(int i = 0; i <= getFloors() + 1; i++) {
+            g.drawLine(quad, i * total, qqaud, i * total);
+        }
+    }
+
     public void update() {
 
     }

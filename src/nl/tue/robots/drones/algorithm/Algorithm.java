@@ -5,6 +5,7 @@ import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.model.Model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
@@ -158,22 +159,7 @@ public class Algorithm {
 	*
 	*/
 	public void sortedAdd(ExpandedNode newNode, ArrayList<ExpandedNode> frontier){
-		int newDistance = newNode.getDistanceTravelled() + newNode.getHeuristicDistance();
-		ExpandedNode expandedNode;
-		int arraySize = frontier.size();
-
-		//todo move to just adding and then "normal" sort, we control ExpandedNode from algo anyway
-		for (int i = 0; i < arraySize; i++){
-			expandedNode = frontier.get(i);
-			int distance = expandedNode.getDistanceTravelled() + expandedNode.getHeuristicDistance();
-			if ((newDistance < distance) || (newDistance == distance &&
-                    newNode.getHeuristicDistance() < expandedNode.getHeuristicDistance())){
-				frontier.add(i, newNode);
-				return;
-			}
-		}
-
-		// If it has not been place yet, it has the highest distance yet, so can be added at the end
-		frontier.add(newNode);
+	    frontier.add(newNode);
+        Collections.sort(frontier);
 	}
 }
