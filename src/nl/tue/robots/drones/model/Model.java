@@ -15,7 +15,7 @@ public class Model {
         return (int) Math.sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
     }
 
-    public static List<Node> getOptions(ExpandedNode nodeToExpand) {  
+    public static List<Node> getOptions(ExpandedNode nodeToExpand) {
         Node currentNode = nodeToExpand.getNode();
         return currentNode.getConnectedNodes();
     }
@@ -25,6 +25,6 @@ public class Model {
     }
 
     public static int getTransitionDistance(Node parentNode, Node node) {
-        return node.distanceTo(parentNode);
+        return node.getTransition(parentNode).getDistance();
     }
 }

@@ -2,7 +2,7 @@ package nl.tue.robots.drones.algorithm;
 
 import nl.tue.robots.drones.common.Node;
 
-public class ExpandedNode {
+public class ExpandedNode implements Comparable<ExpandedNode> {
 
     private final Node node;
     private final int distanceTravelled;
@@ -30,5 +30,18 @@ public class ExpandedNode {
 
     public int getHeuristicDistance() {
         return heuristicDistance;
+    }
+
+    private int getTotalDistance() {
+        return distanceTravelled + heuristicDistance;
+    }
+
+    @Override
+    public int compareTo(ExpandedNode o) {
+        if (distanceTravelled != o.distanceTravelled) {
+            return distanceTravelled > o.distanceTravelled ? 1 : -1;
+        } else {
+            return Integer.compare(heuristicDistance, o.heuristicDistance);
+        }
     }
 }

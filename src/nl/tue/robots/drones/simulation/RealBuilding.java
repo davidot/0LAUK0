@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class RealBuilding {
 
+    public static final int MULTI = GUI.MULTIPLIER;
     private final int floors;
     private final int maxWidth;
     private final int maxDepth;
@@ -62,31 +63,32 @@ public class RealBuilding {
         }
         int rows = floors / perColumn;
 
-        g.setColor(Color.BLACK);
-        g.setStroke(new BasicStroke(1));
+        int w = maxWidth * MULTI;
+        int d = maxDepth * MULTI;
 
-        int w = maxWidth * GUI.MULTIPLIER;
-        int d = maxDepth * GUI.MULTIPLIER;
-
-        for(int i = 0; i < rows; i++) {
-            g.drawLine(0, d * (i + 1), w * perColumn, d * (i + 1));
-        }
-
-        for(int i = 0; i < perColumn; i++) {
-            g.drawLine(w * (i + 1), 0,  w * (i + 1), d * rows);
-        }
 
         AffineTransform transform = g.getTransform();
 
         for(int floor = from; floor < from + floors; floor++) {
-            g.translate((floor % perColumn) * w, (floor / perColumn) * d);
-            g.scale(GUI.MULTIPLIER, GUI.MULTIPLIER);
+            g.translate((floor % perColumn) * (w + 3 * MULTI), (floor / perColumn) * d);
+            g.setColor(Color.LIGHT_GRAY);
+            g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
             for (RealObject obj : getObjectsOnFloor(floor)) {
                 obj.drawObject(g);
             }
             g.setTransform(transform);
         }
 
+        g.setColor(Color.BLACK);
+
+        for(int i = 1; i < rows; i++) {
+            g.drawLine(0, d * (i + 1), w * perColumn, d * (i + 1));
+        }
+
+        for(int i = 0; i < perColumn; i++) {
+            int x = ((w + (3 * MULTI)) * (i + 1)) - (int) (MULTI * 1.5);
+            g.drawLine(x, 0, x, d * rows);
+        }
     }
 
     public void update() {
