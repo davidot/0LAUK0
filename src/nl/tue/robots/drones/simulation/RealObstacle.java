@@ -8,6 +8,7 @@ package nl.tue.robots.drones.simulation;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import nl.tue.robots.drones.gui.GUI;
 
 /**
  *
@@ -27,6 +28,6 @@ public class RealObstacle extends RealObject {
     @Override
     public void drawObject(Graphics2D g) {
         g.setColor(Color.RED);
-        g.fillOval(x - size / 2, y - size / 2, size, size);
+        g.fillOval(GUI.MULTIPLIER * x - size / 2, GUI.MULTIPLIER * y - size / 2, size, size);
     }
 }

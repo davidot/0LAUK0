@@ -182,7 +182,7 @@ public class GUI extends Canvas implements Runnable {
                 //This is where a real application would open the file.
                 building = GraphIO.readBuilding(file);
                 realBuilding = GraphIO.readWalls(new File(file.getParent(), file.getName().replace(".csv", ".walls")));
-                realBuilding.addObject(new RealHuman(5, 5, 0));
+                realBuilding.addObject(new RealHuman(10, 55, 0));
                 internalResize(new Dimension(realBuilding.getWidth() * MULTIPLIER * 4 + 9 * MULTIPLIER, realBuilding.getDepth() * MULTIPLIER + 40));
             } else {
                 System.out.println("User canceled opening a file");
