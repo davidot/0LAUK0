@@ -43,6 +43,27 @@ public class Building {
 
         nodes.put(nodeID, n);
     }
-
+    
+    public Node getNearestNode(int x, int y, int z) {
+        Node nearestNode = null;
+        int minimalDx = 5;
+        int minimalDy = 5;
+        
+        for (Node node : nodes.values()) {
+            if (node.getZ() == z) {
+                int dx = (node.getX() - x) * (node.getX() - x);
+                int dy = (node.getY() - y) * (node.getY() - y);
+                
+                if (dx < minimalDx && dy < minimalDy) {
+                    minimalDx = dx;
+                    minimalDy = dy;
+                    
+                    nearestNode = node;
+                }
+            }
+        }
+        
+        return nearestNode;
+    }
 
 }
