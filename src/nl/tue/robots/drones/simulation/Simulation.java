@@ -23,4 +23,14 @@ public class Simulation {
         }
     }
 
+    /**
+     * Converts screen x & y values to building coordinates.
+     * @param x the x value of the point on screen
+     * @param y the y value of the point on screen
+     * @return an array containing the coordinates in the order {x, y, z}
+     */
+    public int[] screenToCoords(int x, int y) {
+        //TODO implement
+        return new int[] {0,0,0};
+    }
 }
