@@ -305,7 +305,9 @@ public class RealDrone extends RealObject {
             }
         }
         
-        if (obstaclesOnPath(x, y, lx, ly, rx, ry, super.getFloor(), range)) {
+        RealBuilding building = getRealBuilding();
+        
+        if (building.obstaclesOnPath(x, y, lx, ly, rx, ry, super.getFloor(), range)) {
             // tell simulation that an obstacle is in the way for this drone
             return;
         }

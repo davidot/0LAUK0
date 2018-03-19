@@ -52,6 +52,7 @@ public class RealBuilding {
 
     public void addObject(RealObject object) {
         if (!getObjectsOnFloor(object.getFloor()).contains(object)) {
+            object.setRealBuilding(this);
             objects.add(object);
         }
     }
@@ -138,9 +139,8 @@ public class RealBuilding {
         }
     }
 
-    public void update() {
+    public void update() {}
 
-   
     public boolean obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor, int range){
         List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream().filter(obj -> obj instanceof RealObstacle).map(obj -> (RealObstacle) obj).collect(Collectors.toList());
         for (RealObstacle obstacle : obstacles){
