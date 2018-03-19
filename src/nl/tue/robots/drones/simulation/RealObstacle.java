@@ -25,6 +25,14 @@ public class RealObstacle extends RealObject {
         this.size = size;
     }
     
+    public int getX(){
+        return this.x;
+    }
+    
+    public int getY(){
+        return this.x;
+    }
+        
     @Override
     public void drawObject(Graphics2D g) {
         g.setColor(Color.RED);
