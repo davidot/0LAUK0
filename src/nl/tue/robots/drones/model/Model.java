@@ -18,15 +18,21 @@ public class Model {
     private final List<Drone> drones;
     private final Building building;
 
+
     public Model(Building building, int numDrones) {
         this.building = building;
-        drones = new ArrayList<Drone>(numDrones);
+        drones = new ArrayList<>(numDrones);
     }
 
+    //used for drawing only
+    private int realWidth = 1;
 
+    public void setRealWidth(int realWidth) {
+        this.realWidth = realWidth;
+    }
 
-    public void drawFloor(Graphics2D g) {
-
+    public void drawFloor(Graphics2D g, int floor) {
+        building.drawFloor(g, floor);
     }
 
 

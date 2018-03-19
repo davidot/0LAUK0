@@ -51,6 +51,7 @@ public class RealBuilding {
     }
 
     public void addObject(RealObject object) {
+        object.setRealBuilding(this);
         if (!getObjectsOnFloor(object.getFloor()).contains(object)) {
             object.setRealBuilding(this);
             objects.add(object);
@@ -89,6 +90,14 @@ public class RealBuilding {
         for(int i = 0; i < perColumn; i++) {
             int x = ((w + (3 * MULTI)) * (i + 1)) - (int) (MULTI * 1.5);
             g.drawLine(x, 0, x, d * rows);
+        }
+    }
+
+    public void drawFloor(Graphics2D g, int floor) {
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
+        for (RealObject obj : getObjectsOnFloor(floor)) {
+            obj.drawObject(g);
         }
     }
 
