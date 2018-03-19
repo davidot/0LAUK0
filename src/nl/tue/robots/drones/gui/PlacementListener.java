@@ -54,12 +54,12 @@ public class PlacementListener extends MouseAdapter {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        super.mouseClicked(e);
-
         int[] coords = sim.screenToCoords(e.getX(), e.getY());
         x = coords[0];
         y = coords[1];
         z = coords[2];
+
+        super.mouseClicked(e);
 
         if (placingWall) {
             if (z == startObject[2]) {
@@ -74,8 +74,6 @@ public class PlacementListener extends MouseAdapter {
                 int obsSize = (diffX > diffY ? diffX / 2 : diffY / 2); // size of obstacle is 0.5 times smallest of differences
                 sim.getBuilding().addObject(new RealObstacle(obsX, obsY, z, obsSize));
             }
-        } else if (e.isPopupTrigger()) {
-
         }
     }
 
