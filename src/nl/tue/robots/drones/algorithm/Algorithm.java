@@ -71,7 +71,8 @@ public class Algorithm {
 
 			// The frontier is not empty: expand the best node
 			ExpandedNode nodeToExpand = frontier.get(0);
-			List<Node> newNodes = Model.getOptions(nodeToExpand);
+            Node currentNode = nodeToExpand.getNode();
+            List<Node> newNodes = currentNode.getConnectedNodes();
 			ArrayList<ExpandedNode> newExpandedNodes = new ArrayList<ExpandedNode>();
 
 			// remove all the nodes we have already visited
@@ -122,7 +123,7 @@ public class Algorithm {
             // Then we have not yet found the root.
             Node currentNode = lastNode.getNode();
             Node parentNode = lastNode.getParent().getNode();
-            Transition currentTransition = Model.getTransition(currentNode, parentNode);
+            Transition currentTransition = parentNode.getTransition(currentNode);
             transitions.add(0, currentTransition);
             //recursive call
             getPath(lastNode.getParent(), transitions);
@@ -143,8 +144,8 @@ public class Algorithm {
 	public ExpandedNode createExpandedNode(Node node, Node destination,
                                            ExpandedNode parentNodeExpanded){
 		Node parentNode = parentNodeExpanded.getNode();
-		int transitionDistance = parentNodeExpanded.getDistanceTravelled() +
-                Model.getTransitionDistance(parentNode, node);
+        int transitionDistance = parentNodeExpanded.getDistanceTravelled() +
+                node.getTransition(parentNode).getDistance();
 		int heuristicDistance = Model.getHeuristic(node, destination);
         return new ExpandedNode(node, transitionDistance, heuristicDistance, parentNodeExpanded);
 	}

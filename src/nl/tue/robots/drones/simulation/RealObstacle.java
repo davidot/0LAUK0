@@ -31,11 +31,18 @@ public class RealObstacle extends RealObject {
     
     public int getY(){
         return this.x;
+        return this.y;
     }
         
     @Override
     public void drawObject(Graphics2D g) {
         g.setColor(Color.RED);
         g.fillOval(GUI.MULTIPLIER * x - size / 2, GUI.MULTIPLIER * y - size / 2, size, size);
+    }
+
+    @Override
+    public void drawSide(Graphics2D g) {
+        g.setColor(Color.RED);
+        g.fillOval(0, 0, RealBuilding.DRAW_SIZE, RealBuilding.DRAW_SIZE);
     }
 }

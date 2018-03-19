@@ -91,6 +91,11 @@ public class RealBuilding {
         }
     }
 
+    private static final int BASE_OFFSET = 5;
+    public static final int DRAW_SIZE = 25;
+    private static final int DISTANCE_BETWEEN = BASE_OFFSET + DRAW_SIZE;
+
+
     public void renderSideView(Graphics2D g) {
         int total = (getDepth() * MULTI) / (getFloors() + 1);
 
@@ -102,6 +107,34 @@ public class RealBuilding {
         g.drawLine(qqaud, 0, qqaud, getDepth() * MULTI);
         for(int i = 0; i <= getFloors() + 1; i++) {
             g.drawLine(quad, i * total, qqaud, i * total);
+
+            if (i > getFloors()) {
+                break;
+            }
+
+            g.translate(quad + BASE_OFFSET, i * total + BASE_OFFSET);
+
+            int floor = getFloors() - i;
+
+            AffineTransform transform = g.getTransform();
+            int y = 0;
+            int x = BASE_OFFSET;
+            for (RealObject obj : getObjectsOnFloor(floor)) {
+                if (obj.drawsSide()) {
+                    obj.drawSide(g);
+                    g.translate(DISTANCE_BETWEEN, 0);
+                    x += DISTANCE_BETWEEN;
+                    if (x > qqaud - DISTANCE_BETWEEN * 2) {
+                        g.setTransform(transform);
+                        y += DISTANCE_BETWEEN;
+                        g.translate(0, y);
+                        x = BASE_OFFSET;
+                    }
+                }
+            }
+
+            g.setTransform(transform);
+            g.translate(-quad - BASE_OFFSET, -i * total - BASE_OFFSET);
         }
     }
 
