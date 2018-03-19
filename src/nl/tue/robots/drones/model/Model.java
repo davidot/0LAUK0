@@ -9,16 +9,10 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
+import nl.tue.robots.drones.algorithm.Algorithm;
+import nl.tue.robots.drones.common.Transition;
 
 public class Model {
-
-    public static int getHeuristic(Node startNode, Node destinationNode) {
-        int xDiff = startNode.getX() - destinationNode.getX();
-        int yDiff = startNode.getY() - destinationNode.getY();
-        int zDiff = startNode.getZ() - destinationNode.getZ();
-        return (int) Math.sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
-    }
-
 
     private Deque<List<Node>> orders;
     private final List<Drone> drones;
@@ -55,6 +49,13 @@ public class Model {
         orders.add(nodes);
         update();
     }
+    
+    public static int getHeuristic(Node startNode, Node destinationNode) {
+        int xDiff = startNode.getX() - destinationNode.getX();
+        int yDiff = startNode.getY() - destinationNode.getY();
+        int zDiff = startNode.getZ() - destinationNode.getZ();
+        return (int) Math.sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
+    }
 
     private void update() {
         if (!orders.isEmpty()) {
@@ -88,8 +89,24 @@ public class Model {
     }
 
     public void droneBlocked(int id, boolean permanent) {
-        //todo
         // System.out.println("Drone:" + id + " blocked permanent?" + permanent);
+        Drone blockedDrone = getDrone(id);
+        Node prevNode = blockedDrone.getCurrentNode();
+        Node nextNode = blockedDrone.getNextNode().get(0);
+        
+        // Find the transitions the drone is currently on and block it
+        Transition currentTrans = blockedDrone.getCurrentTransition();
+        currentTrans.toggleTransition(false, permanent);
+        Transition opposite = currentTrans.getOpposite();
+        opposite.toggleTransition(false, permanent);
+        
+        // Send drone back to its previous node
+        blockedDrone.addEmergencyGoal(prevNode);
+        
+        // !!! Not sure this does what I think it does        
+        // It is supposed to tell the drone to turn around and 
+        // go back to his previous node
+        nextDroneInstruction(blockedDrone); 
     }
 
     public void droneArrived(int id, Node node) {
@@ -98,7 +115,7 @@ public class Model {
         Drone drone = getDrone(id);
         drone.updateCurrent(node);
 
-         nextDroneInstruction(drone);
+        nextDroneInstruction(drone);
         if (!drone.busy()) {
             update();
         }

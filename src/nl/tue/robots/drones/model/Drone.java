@@ -15,7 +15,7 @@ public class Drone {
 
     //current/last node
     private Node currentNode;
-    private Transition currentTransistion;
+    private Transition currentTransition;
 
     private Deque<Node> currentGoals = new ArrayDeque<>();
 
@@ -35,6 +35,19 @@ public class Drone {
 
     public void addGoals(List<Node> nodes) {
         currentGoals.addAll(nodes);
+    }
+    
+    public void addEmergencyGoal(Node node){
+        currentGoals.addFirst(node);
+    }
+    
+    public Transition getCurrentTransition(){
+        return currentTransition;
+    }
+    
+    // TODO: update that currentTransition!
+    public void updateCurrentTransition(Transition trans){
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public List<Node> getNextNode() {

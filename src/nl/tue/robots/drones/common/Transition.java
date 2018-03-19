@@ -10,6 +10,7 @@ public class Transition {
     private final int distance;
 
     private boolean enabled;
+    private boolean permanentlyBlocked;
 
 
     public Transition(Node from, Node to, boolean outside) {
@@ -39,4 +40,23 @@ public class Transition {
     public boolean isOutside() {
         return outside;
     }
+    
+    public Transition getOpposite(){
+        // returns transition in opposite direction
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    public void toggleTransition(boolean state, boolean permanent){
+        enabled = state;
+        if (state){
+            permanentlyBlocked = false;
+        } else {
+            permanentlyBlocked = permanent;
+        }
+    }
+    
+    public boolean getStatus(){
+        return enabled;
+    }
+    
 }
