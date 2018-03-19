@@ -53,4 +53,9 @@ public class Node {
     public List<Transition> getTransitions() {
         return Collections.unmodifiableList(transitions);
     }
+    
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
 }
