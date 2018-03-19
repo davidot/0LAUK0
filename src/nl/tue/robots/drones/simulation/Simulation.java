@@ -33,4 +33,8 @@ public class Simulation {
         //TODO implement
         return new int[] {0,0,0};
     }
+
+    public RealBuilding getBuilding() {
+        return building;
+    }
 }
