@@ -60,6 +60,10 @@ public class Simulation {
         return new int[] {0,0,0};
     }
 
+    public RealBuilding getBuilding() {
+        return building;
+    }
+
     public Dimension getSize() {
         return new Dimension((building.getWidth() * 4 + FLOORS * FLOORS_OFFSET) * MULTIPLIER, building.getDepth() * MULTIPLIER + PADDING * 2);
     }
