@@ -14,6 +14,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -182,6 +183,10 @@ public class GUI extends Canvas implements Runnable {
                     "Stopping", JOptionPane.DEFAULT_OPTION);
             System.exit(0);
         }
+
+        PlacementListener placeListener = new PlacementListener(simulation, this);
+        this.addMouseListener(placeListener);
+//        this.add(placeListener.getContextMenu());
     }
 
     @Override

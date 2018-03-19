@@ -2,7 +2,7 @@ package nl.tue.robots.drones.gui;
 
 import nl.tue.robots.drones.simulation.*;
 
-import java.awt.*;
+import javax.swing.*;
 import java.awt.event.*;
 
 public class PlacementListener extends MouseAdapter {
@@ -13,20 +13,23 @@ public class PlacementListener extends MouseAdapter {
     int[] startObject;
     boolean placingWall;
     boolean placingObstacle;
-    Menu contextMenu;
+    JPopupMenu contextMenu;
 
     final Simulation sim;
+    final GUI gui;
 
-    PlacementListener(Simulation s) {
+    PlacementListener(Simulation s, GUI g) {
         this.placingWall = false;
         this.placingObstacle = false;
         this.sim = s;
+        this.gui = g;
 
         // Context menu for placing things
-        contextMenu = new Menu();
-        MenuItem objectMenuItem = new MenuItem("Place Obstacle");
-        MenuItem humanMenuItem = new MenuItem("Place Worker");
-        MenuItem wallMenuItem = new MenuItem("Draw Wall");
+        contextMenu = new JPopupMenu();
+        JMenuItem objectMenuItem = new JMenuItem("Draw Obstacle");
+        JMenuItem humanMenuItem = new JMenuItem("Place Worker");
+        JMenuItem wallMenuItem = new JMenuItem("Draw Wall");
+        objectMenuItem.setLabel("Draw Obstacle");
         objectMenuItem.setActionCommand("obstacle");
         humanMenuItem.setActionCommand("human");
         wallMenuItem.setActionCommand("wall");
@@ -64,6 +67,7 @@ public class PlacementListener extends MouseAdapter {
         if (placingWall) {
             if (z == startObject[2]) {
                 sim.getBuilding().addObject(new RealWall(z, startObject[0], startObject[1], x, y, false));
+                placingObstacle = false;
             }
         } else if (placingObstacle) {
             if (z == startObject[2]) {
@@ -73,7 +77,11 @@ public class PlacementListener extends MouseAdapter {
                 int obsY = (startObject[1] > y ? y + diffY : startObject[1] + diffY);
                 int obsSize = (diffX > diffY ? diffX / 2 : diffY / 2); // size of obstacle is 0.5 times smallest of differences
                 sim.getBuilding().addObject(new RealObstacle(obsX, obsY, z, obsSize));
+                placingWall = false;
             }
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
+            System.out.println(e);
+            contextMenu.show(gui, e.getX(), e.getY());
         }
     }
 
