@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,8 +19,11 @@ public class RealBuilding {
     private final int maxDepth;
 
     private final ArrayList<RealObject> objects = new ArrayList<>();
+    private final Simulation simulation;
 
-    public RealBuilding(int floors, int maxWidth, int maxDepth) {
+    public RealBuilding(Simulation simulation, int floors,
+                        int maxWidth, int maxDepth) {
+        this.simulation = simulation;
         this.floors = floors;
         this.maxWidth = maxWidth;
         this.maxDepth = maxDepth;
@@ -148,20 +152,26 @@ public class RealBuilding {
         }
     }
 
-    public void update() {}
+    public void update() {
+
+    }
 
     public boolean obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor, int range){
-        List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream().filter(obj -> obj instanceof RealObstacle).map(obj -> (RealObstacle) obj).collect(Collectors.toList());
-        for (RealObstacle obstacle : obstacles){
-            if (floor != obstacle.getFloor()){
-                obstacles.remove(obstacle);
-            } else if (!(((Math.pow(obstacle.getX() - x , 2) + Math.pow(obstacle.getY() - y , 2)) < range * range))){
-                obstacles.remove(obstacle);
-            } else if (!((lx <= obstacle.getX() && ly <= obstacle.getY()) && (obstacle.getX() <= rx && obstacle.getY() <= ry))){
-                obstacles.remove(obstacle);
+        List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream().filter(obj -> obj.getFloor() == floor && obj instanceof RealObstacle).map(obj -> (RealObstacle) obj).collect(Collectors.toList());
+        for(Iterator<RealObstacle> iterator = obstacles.iterator(); iterator.hasNext(); ) {
+            RealObstacle obstacle = iterator.next();
+            if(!(((Math.pow(obstacle.getX() - x, 2) + Math.pow(obstacle.getY() - y, 2)) <
+                    range * range))) {
+                iterator.remove();
+            } else if(!((lx <= obstacle.getX() && ly <= obstacle.getY()) &&
+                    (obstacle.getX() <= rx && obstacle.getY() <= ry))) {
+                iterator.remove();
             }
         }
         return obstacles.isEmpty();
     }
 
+    public RealDrone getDrone(int id) {
+        return objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast).filter(d -> d.getId() == id).findFirst().orElseThrow(() -> new IllegalStateException("WOWOWO"));
+    }
 }

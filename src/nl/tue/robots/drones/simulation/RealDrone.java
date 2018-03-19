@@ -1,19 +1,17 @@
 package nl.tue.robots.drones.simulation;
 
+import nl.tue.robots.drones.common.Node;
+import nl.tue.robots.drones.gui.GUI;
+
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-
-import java.awt.image.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
-import javax.imageio.*;
-
 import java.util.List;
 import java.util.NoSuchElementException;
-import nl.tue.robots.drones.common.Destination;
-import nl.tue.robots.drones.common.Node;
-import nl.tue.robots.drones.gui.GUI;
 
 /**
  *
@@ -36,7 +34,7 @@ public class RealDrone extends RealObject {
     //Movement
     private int speedX = 0;
     private int speedY = 0;
-    private LinkedList<Destination> destinations;
+    private LinkedList<Node> destinations;
 
     //Image and rendering
     private BufferedImage[] imageSequence;
@@ -46,14 +44,18 @@ public class RealDrone extends RealObject {
     private static final String[] DEFAULT_IMAGE_SEQUENCE =
                         {"drone_frame1.png", "drone_frame2.png"};
 
+    private final int id;
+    private Simulation simulation;
+
     //constructor
-    public RealDrone(int floor, int x, int y) {
-        this(floor, x, y, null);
+    public RealDrone(Simulation simulation, int id, int floor, int x, int y) {
+        this(simulation, id, floor, x, y, null);
     }
 
     //constructor with non-default image
-    public RealDrone(int floor, int x, int y, BufferedImage[] imageSequence) {
+    public RealDrone(Simulation simulation, int id, int floor, int x, int y, BufferedImage[] imageSequence) {
         super(floor);
+        this.simulation = simulation;
         this.x = x;
         this.y = y;
         if (imageSequence != null){
@@ -61,7 +63,7 @@ public class RealDrone extends RealObject {
         }else{
             this.imageSequence = getImageSequence(DEFAULT_IMAGE_SEQUENCE);
         }
-
+        this.id = id;
         destinations = new LinkedList<>();
     }
 
@@ -109,7 +111,16 @@ public class RealDrone extends RealObject {
     }
 
     public void addDestination(Node node) {
-        addDestination(node.getX(), node.getY(), node.getZ());
+        // addDestination(node.getX(), node.getY(), node.getZ());
+        Node lastDest = this.getFinalDestination();
+        if (lastDest == null || lastDest==node) {
+
+            if (!isHasDestination()){
+                setSpeed(SPEED, SPEED);
+            }
+
+            destinations.add(node);
+        }
     }
 
     /**
@@ -118,7 +129,7 @@ public class RealDrone extends RealObject {
      * @param x
      * @param y
      * @param z
-     */
+     *//*
     public void addDestination(int x, int y, int z){
         Destination lastDest = this.getFinalDestination();
         Destination newDest = new Destination(x, y, z);
@@ -130,7 +141,7 @@ public class RealDrone extends RealObject {
 
             destinations.add(newDest);
         }
-    }
+    }*/
 
     /**
      * Removes and returns the next destination from the list
@@ -140,11 +151,11 @@ public class RealDrone extends RealObject {
      *
      * @throws NoSuchElementException if there is no next destination
      */
-    public Destination removeNextDestination(){
+    public Node removeNextDestination(){
         if (!isHasDestination()){
             throw new NoSuchElementException("RealDrone.removeNextDestination.pre violated: No next destination");
         }
-        Destination firstDest = destinations.removeFirst();
+        Node firstDest = destinations.removeFirst();
 
         if (isHasDestination()){
             setSpeed(SPEED, SPEED);
@@ -164,7 +175,7 @@ public class RealDrone extends RealObject {
      * Gets the next destination
      * @return The next destination, or null if no destinations
      */
-    public Destination getNextDestination(){
+    public Node getNextDestination(){
         if (!isHasDestination()){
             return null;
         }
@@ -175,7 +186,7 @@ public class RealDrone extends RealObject {
      * Gets the final destination
      * @return The final destination, or null if no destinations
      */
-    public Destination getFinalDestination(){
+    public Node getFinalDestination(){
         if (destinations.size() <= 0){
             return null;
         }
@@ -263,7 +274,7 @@ public class RealDrone extends RealObject {
         //..move x horizontaly AND vertically, and not x towards the direction of the goal
         //Solve this with trigonometry
 
-        Destination destination = getNextDestination();
+        Node destination = getNextDestination();
         if (destination == null){
             return;
         }
@@ -279,8 +290,8 @@ public class RealDrone extends RealObject {
 
         int destinationX = destination.getX();
         int destinationY = destination.getY();
-        
-        
+
+
         // Check for nearby obstacles
         int range = 3;
         int lx = getX();
@@ -304,15 +315,12 @@ public class RealDrone extends RealObject {
                 ry += range;
             }
         }
-        
-        RealBuilding building = getRealBuilding();
-        
-        if (building.obstaclesOnPath(x, y, lx, ly, rx, ry, super.getFloor(), range)) {
+
+        if (getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, super.getFloor(), range)) {
             // tell simulation that an obstacle is in the way for this drone
-            return;
+            simulation.sendObstacle(id, false);
+            // return;
         }
-        
-        
 
         //Get the approaching direction (1 when moving along an axis; -1 otherwise)
         int dirX = x > destinationX ? -1 : 1;
@@ -334,7 +342,17 @@ public class RealDrone extends RealObject {
         }
 
         if (x == destinationX && y == destinationY){
-            removeNextDestination();
+            simulation.sendArrived(id, removeNextDestination());
+        }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void addDestinations(List<Node> next) {
+        for(Node n : next) {
+            addDestination(n);
         }
     }
 }

@@ -1,9 +1,17 @@
 package nl.tue.robots.drones.gui;
 
-import nl.tue.robots.drones.simulation.*;
+import nl.tue.robots.drones.simulation.RealHuman;
+import nl.tue.robots.drones.simulation.RealObstacle;
+import nl.tue.robots.drones.simulation.RealWall;
+import nl.tue.robots.drones.simulation.Simulation;
 
-import javax.swing.*;
-import java.awt.event.*;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Arrays;
 
 public class PlacementListener extends MouseAdapter {
 
@@ -38,7 +46,7 @@ public class PlacementListener extends MouseAdapter {
             public void actionPerformed(ActionEvent e) {
                 if (e.getActionCommand().equals("object")) {
                     startObject = new int[] {x,y,z};
-                     placingObstacle = true;
+                    placingObstacle = true;
                 } else if (e.getActionCommand().equals("human")) {
                     sim.getBuilding().addObject(new RealHuman(x,y,z));
                 } else if (e.getActionCommand().equals("wall")) {
@@ -61,6 +69,8 @@ public class PlacementListener extends MouseAdapter {
         x = coords[0];
         y = coords[1];
         z = coords[2];
+
+        System.out.println("Made " + Arrays.toString(coords) + " from " + e.getX() + ", " + e.getY());
 
         super.mouseClicked(e);
 

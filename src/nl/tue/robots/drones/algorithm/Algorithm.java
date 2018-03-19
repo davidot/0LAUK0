@@ -6,8 +6,8 @@ import nl.tue.robots.drones.model.Model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Algorithm {
@@ -17,7 +17,7 @@ public class Algorithm {
 	// the distance from it to the root,
 	// the expected distance from it to the destination
 	// a parentExpandedNode
-	private ExpandedNode emptyNode = new ExpandedNode(null, 0, 0, null);
+	private static ExpandedNode emptyNode = new ExpandedNode(null, 0, 0, null);
 
    /**
 	* Function findPath
@@ -29,7 +29,7 @@ public class Algorithm {
 	*		  If there is not an available path, the function throws an exception.
 	*
 	*/
-	public ArrayList<Transition> findPath(Node startNode, Node destinationNode) {
+	public static ArrayList<Transition> findPath(Node startNode, Node destinationNode) {
 
 		// Setup the expanded node list
 		ExpandedNode rootNode = new ExpandedNode(startNode, 0,
@@ -64,7 +64,7 @@ public class Algorithm {
     * @return The function returns an ExpandedNode object with the destinationNode in it.
 	*
 	*/
-	public ExpandedNode pathSearch(Node destinationNode, Set<ExpandedNode> seenNodes,
+	public static ExpandedNode pathSearch(Node destinationNode, Set<ExpandedNode> seenNodes,
                                    ArrayList<ExpandedNode> frontier) {
 		// First check the frontier isn't empty
 		if (frontier.size() > 0){
@@ -118,7 +118,7 @@ public class Algorithm {
 	* @return The function returns an ArrayList of Transitions which the drones has to take to reach
 	*		  its goal.
 	*/
-	public void getPath(ExpandedNode lastNode, ArrayList<Transition> transitions){
+	public static void getPath(ExpandedNode lastNode, ArrayList<Transition> transitions){
         if (lastNode.getParent().getNode() != null) {
             // Then we have not yet found the root.
             Node currentNode = lastNode.getNode();
@@ -141,7 +141,7 @@ public class Algorithm {
 	* @return an ExpandedNode based around {@code node}
 	*
 	*/
-	public ExpandedNode createExpandedNode(Node node, Node destination,
+	public static ExpandedNode createExpandedNode(Node node, Node destination,
                                            ExpandedNode parentNodeExpanded){
 		Node parentNode = parentNodeExpanded.getNode();
         int transitionDistance = parentNodeExpanded.getDistanceTravelled() +
@@ -159,7 +159,7 @@ public class Algorithm {
 	* @return frontier with all nodes in newNode integrated
 	*
 	*/
-	public void sortedAdd(ExpandedNode newNode, ArrayList<ExpandedNode> frontier){
+	public static void sortedAdd(ExpandedNode newNode, ArrayList<ExpandedNode> frontier){
 	    frontier.add(newNode);
         Collections.sort(frontier);
 	}

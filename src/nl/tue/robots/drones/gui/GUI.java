@@ -14,7 +14,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -168,8 +167,8 @@ public class GUI extends Canvas implements Runnable {
 
             // if (returnVal == JFileChooser.APPROVE_OPTION) {
             //     File file = fileBrowser.getSelectedFile();
-                simulation = new Simulation(new File("tests/Floorplan 9.csv"));
-                internalResize(simulation.getSize());
+            simulation = new Simulation(new File("tests/Floorplan 9.csv"));
+            internalResize(simulation.getSize());
             // } else {
             //     System.out.println("User canceled opening a file");
             //     JOptionPane.showConfirmDialog(this, "Did not select anything, shutting down",
