@@ -51,7 +51,9 @@ public class RealBuilding {
     }
 
     public void addObject(RealObject object) {
+        object.setRealBuilding(this);
         if (!getObjectsOnFloor(object.getFloor()).contains(object)) {
+            object.setRealBuilding(this);
             objects.add(object);
         }
     }
@@ -88,6 +90,14 @@ public class RealBuilding {
         for(int i = 0; i < perColumn; i++) {
             int x = ((w + (3 * MULTI)) * (i + 1)) - (int) (MULTI * 1.5);
             g.drawLine(x, 0, x, d * rows);
+        }
+    }
+
+    public void drawFloor(Graphics2D g, int floor) {
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
+        for (RealObject obj : getObjectsOnFloor(floor)) {
+            obj.drawObject(g);
         }
     }
 
@@ -138,9 +148,20 @@ public class RealBuilding {
         }
     }
 
-    public void update() {
+    public void update() {}
 
+    public boolean obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor, int range){
+        List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream().filter(obj -> obj instanceof RealObstacle).map(obj -> (RealObstacle) obj).collect(Collectors.toList());
+        for (RealObstacle obstacle : obstacles){
+            if (floor != obstacle.getFloor()){
+                obstacles.remove(obstacle);
+            } else if (!(((Math.pow(obstacle.getX() - x , 2) + Math.pow(obstacle.getY() - y , 2)) < range * range))){
+                obstacles.remove(obstacle);
+            } else if (!((lx <= obstacle.getX() && ly <= obstacle.getY()) && (obstacle.getX() <= rx && obstacle.getY() <= ry))){
+                obstacles.remove(obstacle);
+            }
+        }
+        return obstacles.isEmpty();
     }
-
 
 }

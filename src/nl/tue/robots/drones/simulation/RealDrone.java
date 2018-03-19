@@ -279,6 +279,40 @@ public class RealDrone extends RealObject {
 
         int destinationX = destination.getX();
         int destinationY = destination.getY();
+        
+        
+        // Check for nearby obstacles
+        int range = 3;
+        int lx = getX();
+        int ly = getY();
+        int rx = destinationX;
+        int ry = destinationY;
+        if (destinationX == getX()) {
+            if (destinationY > getY()){
+                lx += range;
+                rx -= range;
+            } else {
+                lx -= range;
+                rx += range;
+            }
+        } else {
+            if (destinationX > getX()){
+                ly += range;
+                ry -= range;
+            } else {
+                ly -= range;
+                ry += range;
+            }
+        }
+        
+        RealBuilding building = getRealBuilding();
+        
+        if (building.obstaclesOnPath(x, y, lx, ly, rx, ry, super.getFloor(), range)) {
+            // tell simulation that an obstacle is in the way for this drone
+            return;
+        }
+        
+        
 
         //Get the approaching direction (1 when moving along an axis; -1 otherwise)
         int dirX = x > destinationX ? -1 : 1;

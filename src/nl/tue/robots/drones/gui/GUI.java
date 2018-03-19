@@ -1,33 +1,23 @@
 package nl.tue.robots.drones.gui;
 
-import nl.tue.robots.drones.algorithm.Algorithm;
-import nl.tue.robots.drones.common.Node;
-import nl.tue.robots.drones.common.Transition;
-import nl.tue.robots.drones.fileIO.GraphIO;
 import nl.tue.robots.drones.fileIO.MalformedWallFileException;
-import nl.tue.robots.drones.model.Building;
+import nl.tue.robots.drones.simulation.Simulation;
 
-import nl.tue.robots.drones.simulation.RealBuilding;
-import nl.tue.robots.drones.simulation.RealDrone;
-
-import javax.swing.*;
-import java.awt.BasicStroke;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.geom.QuadCurve2D;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Map;
-import nl.tue.robots.drones.simulation.RealHuman;
-import nl.tue.robots.drones.simulation.RealObstacle;
 
 
 public class GUI extends Canvas implements Runnable {
@@ -55,7 +45,7 @@ public class GUI extends Canvas implements Runnable {
     private static final String TICK_OVER_PRE = "Skipping ";
     private static final String TICK_OVER_POST = " ticks is the system overloaded?";
     public static final char LINE_SEPARATOR_CHAR = '\n';
-    private static final int NODE_RADIUS = 4;
+    public static final int NODE_RADIUS = 4;
 
     //size of screen in tiles
 
@@ -78,12 +68,9 @@ public class GUI extends Canvas implements Runnable {
     private Thread mainThread;
 
 
-    private Building building;
-    private RealBuilding realBuilding;
-    private ArrayList<Transition> path;
-    private Map<Integer, Node> nodes;
-    private ArrayList<Transition> transitions;
     public static final int MULTIPLIER = 10;
+
+    private Simulation simulation;
 
     private GUI() {
 
@@ -169,29 +156,25 @@ public class GUI extends Canvas implements Runnable {
             e.printStackTrace();
         }
         frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
     }
 
     //private init since it should only be called once
     private void init() {
         try {
-            JFileChooser fileBrowser = new JFileChooser(new File("."));
-            int returnVal = fileBrowser.showOpenDialog(this);
+            // JFileChooser fileBrowser = new JFileChooser(new File("."));
+            // int returnVal = fileBrowser.showOpenDialog(this);
 
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = fileBrowser.getSelectedFile();
-                //This is where a real application would open the file.
-                building = GraphIO.readBuilding(file);
-                realBuilding = GraphIO.readWalls(new File(file.getParent(), file.getName().replace(".csv", ".walls")));
-                for(int i = 0; i < 10; i++) {
-                    realBuilding.addObject(new RealHuman(10, 11 * i, 0));
-                }
-                internalResize(new Dimension(realBuilding.getWidth() * MULTIPLIER * 4 + 9 * MULTIPLIER, realBuilding.getDepth() * MULTIPLIER + 40));
-            } else {
-                System.out.println("User canceled opening a file");
-                JOptionPane.showConfirmDialog(this, "Did not select anything, shutting down",
-                        "Stopping", JOptionPane.DEFAULT_OPTION);
-                System.exit(0);
-            }
+            // if (returnVal == JFileChooser.APPROVE_OPTION) {
+            //     File file = fileBrowser.getSelectedFile();
+                simulation = new Simulation(new File("tests/Floorplan 9.csv"));
+                internalResize(simulation.getSize());
+            // } else {
+            //     System.out.println("User canceled opening a file");
+            //     JOptionPane.showConfirmDialog(this, "Did not select anything, shutting down",
+            //             "Stopping", JOptionPane.DEFAULT_OPTION);
+            //     System.exit(0);
+            // }
 
         } catch(FileNotFoundException | MalformedWallFileException e) {
             e.printStackTrace();
@@ -199,28 +182,6 @@ public class GUI extends Canvas implements Runnable {
                     "Stopping", JOptionPane.DEFAULT_OPTION);
             System.exit(0);
         }
-
-        Node from = building.getNode(0);
-        Node to = building.getNode(144);
-
-        if (from == null || to == null) {
-            System.exit(-1);
-        }
-
-        long now = System.currentTimeMillis();
-        path = new Algorithm().findPath(from, to);
-        System.out.println("Took: " + (System.currentTimeMillis() - now));
-
-        RealDrone d = new RealDrone(from.getZ(), from.getX(), from.getY());
-        for (Transition x : path) {
-            d.addDestination(x.getTo());
-        }
-
-        realBuilding.addObject(d);
-
-        nodes = building.getAllNodesWithId();
-        transitions = new ArrayList<>(nodes.size());
-        building.getAllNodes().forEach(node -> transitions.addAll(node.getTransitions()));
     }
 
     @Override
@@ -255,7 +216,7 @@ public class GUI extends Canvas implements Runnable {
             }
 
 
-            if(shouldRender && building != null) {
+            if(shouldRender) {
                 frames++;
                 render();
             }
@@ -301,82 +262,7 @@ public class GUI extends Canvas implements Runnable {
 
         //start drawing here
 
-        g.translate(0, 20);
-        realBuilding.renderSideView(g);
-
-        g.translate(width / 4, 0);
-        realBuilding.render(g, 3, 0, 3);
-
-
-        g.translate(-MULTIPLIER, -MULTIPLIER);
-
-        //draw the nodes
-        //todo hardcoded shit
-        int floor = (realBuilding.getWidth() + 3) * MULTIPLIER;
-        g.setStroke(new BasicStroke(2));
-
-        //draw the transitions
-        for (Transition transition: transitions) {
-            Node from = transition.getFrom();
-            Node to = transition.getTo();
-            if (transition.isOutside()) {
-                g.setColor(Color.RED);
-            } else if (from.getZ() != to.getZ()) {
-                g.setColor(Color.ORANGE);
-                int x1 = from.getX() * MULTIPLIER + from.getZ() * floor;
-                int x2 = to.getX() * MULTIPLIER + to.getZ() * floor;
-                int y1 = from.getY() * MULTIPLIER;
-                int y2 = to.getY() * MULTIPLIER;
-                QuadCurve2D curve = new QuadCurve2D.Double(
-                        x1, y1, (x1 + x2) / 2, (y1 + y2) / 2 - 75, x2, y2);
-                g.draw(curve);
-                continue;
-            } else {
-                g.setColor(Color.BLACK);
-            }
-            g.drawLine(from.getX() * MULTIPLIER +from.getZ() * floor, from.getY() * MULTIPLIER,
-                    to.getX() * MULTIPLIER +to.getZ() * floor, to.getY() * MULTIPLIER);
-        }
-
-        g.setStroke(new BasicStroke(1));
-
-        //nodes
-        for (Map.Entry<Integer, Node> entry:nodes.entrySet()) {
-            int num = entry.getKey();
-            Node node = entry.getValue();
-            g.setColor(Color.BLACK);
-            g.fillOval(node.getX()* MULTIPLIER - NODE_RADIUS + node.getZ() * floor, node.getY()*
-                    MULTIPLIER - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
-            g.setColor(Color.RED);
-            g.drawString("n:" + num, node.getX()* MULTIPLIER +node.getZ() * floor, node.getY()*
-                    MULTIPLIER - NODE_RADIUS * 2);
-        }
-
-
-        g.setColor(Color.BLUE);
-        g.setStroke(new BasicStroke(2));
-        //path
-        for (Transition transition: path) {
-            Node from = transition.getFrom();
-            Node to = transition.getTo();
-            if (from.getZ() != to.getZ()) {
-                g.setColor(Color.GREEN);
-                int x1 = from.getX() * MULTIPLIER + from.getZ() * floor;
-                int x2 = to.getX() * MULTIPLIER + to.getZ() * floor;
-                int y1 = from.getY() * MULTIPLIER;
-                int y2 = to.getY() * MULTIPLIER;
-                QuadCurve2D curve = new QuadCurve2D.Double(
-                        x1, y1, (x1 + x2) / 2, (y1 + y2) / 2 - 75, x2, y2);
-                g.draw(curve);
-                continue;
-            } else {
-                g.setColor(Color.BLUE);
-            }
-            g.drawLine(from.getX() * MULTIPLIER + from.getZ() * floor, from.getY() * MULTIPLIER,
-                    to.getX() * MULTIPLIER + to.getZ() * floor, to.getY() * MULTIPLIER);
-        }
-
-        g.translate(MULTIPLIER, MULTIPLIER);
+        simulation.draw(g, width, height);
 
         //stop drawing here
         g.dispose();
