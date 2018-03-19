@@ -34,7 +34,7 @@ public class RealHuman extends RealObstacle {
         }
     }
 
-        @Override
+    @Override
     public void drawObject(Graphics2D g) {
         angle += 1;
 
