@@ -240,6 +240,13 @@ public class RealDrone extends RealObject {
         update();
     }
 
+    @Override
+    public void drawSide(Graphics2D g) {
+        g.drawImage(imageSequence[frame], 0, 0, RealBuilding.DRAW_SIZE, RealBuilding.DRAW_SIZE, null);
+    }
+
+    private boolean bool = true;
+
     /**
      * Moves the drone on the screen based on its speed, destination, and
      * current location
@@ -248,6 +255,10 @@ public class RealDrone extends RealObject {
      *       \old(distance(x, y, destinationX, destinationY))
      */
     public void update(){
+        bool = !bool;
+        if (bool) {
+            return;
+        }
         //TODO: Diagonal movement is faster now: with a speed of x you will...
         //..move x horizontaly AND vertically, and not x towards the direction of the goal
         //Solve this with trigonometry

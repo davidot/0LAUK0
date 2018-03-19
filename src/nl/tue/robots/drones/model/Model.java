@@ -1,9 +1,9 @@
 package nl.tue.robots.drones.model;
 
-import nl.tue.robots.drones.algorithm.ExpandedNode;
 import nl.tue.robots.drones.common.Node;
-import nl.tue.robots.drones.common.Transition;
 
+import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Model {
@@ -15,16 +15,20 @@ public class Model {
         return (int) Math.sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
     }
 
-    public static List<Node> getOptions(ExpandedNode nodeToExpand) {
-        Node currentNode = nodeToExpand.getNode();
-        return currentNode.getConnectedNodes();
+    private final List<Drone> drones;
+    private final Building building;
+
+    public Model(Building building, int numDrones) {
+        this.building = building;
+        drones = new ArrayList<Drone>(numDrones);
     }
 
-    public static Transition getTransition(Node parentNode, Node currentNode) {
-        return currentNode.getTransition(parentNode);
+
+
+    public void drawFloor(Graphics2D g) {
+
     }
 
-    public static int getTransitionDistance(Node parentNode, Node node) {
-        return node.getTransition(parentNode).getDistance();
-    }
+
+
 }

@@ -35,6 +35,16 @@ public class RealWall extends RealObject {
 
     }
 
+    @Override
+    public void drawSide(Graphics2D g) {
+        //don't
+    }
+
+    @Override
+    public boolean drawsSide() {
+        return false;
+    }
+
     /**
      * @return an int array containing the coordinates of the wall in the order [x1,y1,x2,y2]
      */

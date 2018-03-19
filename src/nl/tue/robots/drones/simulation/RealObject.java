@@ -10,9 +10,18 @@ import java.awt.Graphics2D;
 public abstract class RealObject {
 
     private int floor;
+    private RealBuilding realBuilding;
 
     public RealObject(int floor) {
         this.floor = floor;
+    }
+
+    public final void setRealBuilding(RealBuilding building) {
+        this.realBuilding = building;
+    }
+
+    public final RealBuilding getRealBuilding() {
+        return realBuilding;
     }
 
     public int getFloor() {
@@ -25,5 +34,9 @@ public abstract class RealObject {
 
     public abstract void drawObject(Graphics2D g);
 
+    public abstract void drawSide(Graphics2D g);
 
+    public boolean drawsSide() {
+        return true;
+    }
 }
