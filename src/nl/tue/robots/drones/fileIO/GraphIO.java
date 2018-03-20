@@ -70,16 +70,7 @@ public class GraphIO {
                     boolean outside = values.length > 2 && values[2].equals("O");
 
                     // get mentioned nodes
-                    Node a = build.getNode(nodeIDs[0]);
-                    Node b = build.getNode(nodeIDs[1]);
-
-                    // create transitions both ways
-                    Transition transAB = new Transition(a, b, outside);
-                    Transition transBA = new Transition(b, a, outside);
-
-                    // add transitions to nodes
-                    a.addTransistion(transAB);
-                    b.addTransistion(transBA);
+                    build.addTransistion(nodeIDs[0], nodeIDs[1], outside);
 
                 } // else line is a comment skip it
             }

@@ -1,6 +1,7 @@
 package nl.tue.robots.drones.simulation;
 
 import nl.tue.robots.drones.common.Node;
+import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.fileIO.GraphIO;
 import nl.tue.robots.drones.fileIO.MalformedWallFileException;
 import nl.tue.robots.drones.gui.GUI;
@@ -95,10 +96,13 @@ public class Simulation {
     public void droneInstruction(int id, List<Node> next) {
         RealDrone d = building.getDrone(id);
         d.addDestinations(next);
-        System.out.println("Sending instruction to drone");
     }
 
     public void sendArrived(int id, Node node) {
         model.droneArrived(id, node);
+    }
+
+    public boolean sendToTransition(int id, Transition transition) {
+        return model.droneTransistion(id, transition);
     }
 }

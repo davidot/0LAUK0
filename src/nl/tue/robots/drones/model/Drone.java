@@ -36,18 +36,18 @@ public class Drone {
     public void addGoals(List<Node> nodes) {
         currentGoals.addAll(nodes);
     }
-    
+
     public void addEmergencyGoal(Node node){
         currentGoals.addFirst(node);
     }
-    
+
     public Transition getCurrentTransition(){
         return currentTransition;
     }
-    
+
     // TODO: update that currentTransition!
     public void updateCurrentTransition(Transition trans){
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.currentTransition = trans;
     }
 
     public List<Node> getNextNode() {

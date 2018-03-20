@@ -1,6 +1,7 @@
 package nl.tue.robots.drones.model;
 
 import nl.tue.robots.drones.common.Node;
+import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.simulation.Simulation;
 
 import java.awt.Graphics2D;
@@ -9,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
-import nl.tue.robots.drones.algorithm.Algorithm;
-import nl.tue.robots.drones.common.Transition;
 
 public class Model {
 
@@ -49,7 +48,7 @@ public class Model {
         orders.add(nodes);
         update();
     }
-    
+
     public static int getHeuristic(Node startNode, Node destinationNode) {
         int xDiff = startNode.getX() - destinationNode.getX();
         int yDiff = startNode.getY() - destinationNode.getY();
@@ -92,21 +91,22 @@ public class Model {
         // System.out.println("Drone:" + id + " blocked permanent?" + permanent);
         Drone blockedDrone = getDrone(id);
         Node prevNode = blockedDrone.getCurrentNode();
-        Node nextNode = blockedDrone.getNextNode().get(0);
-        
+
         // Find the transitions the drone is currently on and block it
         Transition currentTrans = blockedDrone.getCurrentTransition();
-        currentTrans.toggleTransition(false, permanent);
-        Transition opposite = currentTrans.getOpposite();
-        opposite.toggleTransition(false, permanent);
-        
+        if (currentTrans != null) {
+            currentTrans.toggleTransition(false, permanent);
+            Transition opposite = currentTrans.getOpposite();
+            opposite.toggleTransition(false, permanent);
+        }
+
         // Send drone back to its previous node
         blockedDrone.addEmergencyGoal(prevNode);
-        
-        // !!! Not sure this does what I think it does        
-        // It is supposed to tell the drone to turn around and 
+
+        // !!! Not sure this does what I think it does
+        // It is supposed to tell the drone to turn around and
         // go back to his previous node
-        nextDroneInstruction(blockedDrone); 
+        nextDroneInstruction(blockedDrone);
     }
 
     public void droneArrived(int id, Node node) {
@@ -131,5 +131,10 @@ public class Model {
             throw new IllegalStateException("NOPE WRONG NODE YOU W+FCJ    " + id);
         }
         return node;
+    }
+
+    public boolean droneTransistion(int id, Transition transition) {
+        getDrone(id).updateCurrentTransition(transition);
+        return false;
     }
 }

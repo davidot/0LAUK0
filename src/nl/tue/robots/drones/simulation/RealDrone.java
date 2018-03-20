@@ -1,6 +1,7 @@
 package nl.tue.robots.drones.simulation;
 
 import nl.tue.robots.drones.common.Node;
+import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.gui.GUI;
 
 import javax.imageio.ImageIO;
@@ -46,6 +47,7 @@ public class RealDrone extends RealObject {
 
     private final int id;
     private Simulation simulation;
+    private Node arrived;
 
     //constructor
     public RealDrone(Simulation simulation, int id, int floor, int x, int y) {
@@ -156,6 +158,8 @@ public class RealDrone extends RealObject {
             throw new NoSuchElementException("RealDrone.removeNextDestination.pre violated: No next destination");
         }
         Node firstDest = destinations.removeFirst();
+
+        arrived = firstDest;
 
         if (isHasDestination()){
             setSpeed(SPEED, SPEED);
@@ -279,6 +283,17 @@ public class RealDrone extends RealObject {
             return;
         }
 
+        if (arrived != null) {
+            Transition transition = arrived.getTransition(destination);
+            if (transition != null) {
+                if (simulation.sendToTransition(id, transition)) {
+                    transition = null;
+                } else {
+                    System.out.println("Cant move yet transistion blocked");
+                }
+            }
+        }
+
         if (destination.getZ() != getFloor()) {
             if (destination.getX() != getX() || destination.getY() != getY()) {
                 System.out.println("Should not happen");
@@ -316,9 +331,9 @@ public class RealDrone extends RealObject {
             }
         }
 
-        if (getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, super.getFloor(), range)) {
+        if (getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, getFloor(), range)) {
             // tell simulation that an obstacle is in the way for this drone
-            simulation.sendObstacle(id, false);
+            // simulation.sendObstacle(id, false);
             // return;
         }
 

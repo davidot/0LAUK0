@@ -8,10 +8,17 @@ public class Transition {
     private final Node to;
     private final boolean outside;
     private final int distance;
+    private Transition otherDirection;
 
     private boolean enabled;
     private boolean permanentlyBlocked;
 
+
+    public Transition(Node from, Node to, boolean outside, Transition otherDirection) {
+        this(from, to, outside);
+        this.otherDirection = otherDirection;
+        otherDirection.otherDirection = this;
+    }
 
     public Transition(Node from, Node to, boolean outside) {
         this.from = from;
@@ -40,12 +47,11 @@ public class Transition {
     public boolean isOutside() {
         return outside;
     }
-    
+
     public Transition getOpposite(){
-        // returns transition in opposite direction
-        throw new UnsupportedOperationException("Not supported yet.");
+        return otherDirection;
     }
-    
+
     public void toggleTransition(boolean state, boolean permanent){
         enabled = state;
         if (state){
@@ -54,9 +60,9 @@ public class Transition {
             permanentlyBlocked = permanent;
         }
     }
-    
+
     public boolean getStatus(){
         return enabled;
     }
-    
+
 }

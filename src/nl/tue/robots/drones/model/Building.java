@@ -111,6 +111,19 @@ public class Building {
 
     }
 
+    public void addTransistion(int from, int to, boolean outside) {
+        Node a = getNode(from);
+        Node b = getNode(to);
+
+        // create transitions both ways
+        Transition transAB = new Transition(a, b, outside);
+        Transition transBA = new Transition(b, a, outside, transAB);
+
+        // add transitions to nodes
+        a.addTransistion(transAB);
+        b.addTransistion(transBA);
+    }
+
     /*
      else if (from.getZ() != to.getZ()) {
                 g.setColor(Color.ORANGE);
