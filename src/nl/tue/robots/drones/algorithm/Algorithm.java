@@ -32,7 +32,7 @@ public class Algorithm {
     public static ArrayList<Transition> findPath(Node startNode, Node destinationNode) {
         // Setup the expanded node list
         ExpandedNode rootNode = new ExpandedNode(startNode, 0,
-        Model.getHeuristic(startNode, destinationNode), emptyNode);
+                Model.getHeuristic(startNode, destinationNode), emptyNode);
         Set<ExpandedNode> seenNodes = new HashSet<ExpandedNode>();
         seenNodes.add(rootNode);
 
@@ -46,10 +46,8 @@ public class Algorithm {
         // Check whether foundDestination is the actual destination
         if (foundDestination.getNode() == destinationNode){
             getPath(foundDestination, transitionList);
-        } else {
-            // something went horribly wrong. Fix it!
-            System.out.println("This should not happen");
         }
+        // else something went horribly wrong. Fix it! (Could not find path)
         return transitionList;
     }
 

@@ -44,8 +44,6 @@ public class GUI extends Canvas implements Runnable {
     //Strings
     private static final String TICK_OVER_PRE = "Skipping ";
     private static final String TICK_OVER_POST = " ticks is the system overloaded?";
-    public static final char LINE_SEPARATOR_CHAR = '\n';
-    public static final int NODE_RADIUS = 4;
 
     //size of screen in tiles
 
@@ -278,25 +276,7 @@ public class GUI extends Canvas implements Runnable {
             return;
         }
         isRunning = true;
-        System.out.println("Starting main thread");
         mainThread = new Thread(this, "Drone model");
         mainThread.start();
     }
-
-    public void stop() {
-        if(!isRunning) {
-            return;
-        }
-        isRunning = false;
-        SwingUtilities.invokeLater(() -> {
-            try {
-                mainThread.join();
-                System.exit(0);
-            } catch(InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-
 }

@@ -19,12 +19,12 @@ public class Node {
         this.z = z;
     }
 
-    public void addTransistion(Transition transition) {
+    public void addTransition(Transition transition) {
         transitions.add(transition);
     }
 
     public List<Node> getConnectedNodes() {
-        return transitions.stream().map(Transition::getTo).collect(Collectors.toList());
+        return transitions.stream().filter(Transition::getStatus).map(Transition::getTo).collect(Collectors.toList());
     }
 
     public int getX(){
@@ -53,7 +53,7 @@ public class Node {
     public List<Transition> getTransitions() {
         return Collections.unmodifiableList(transitions);
     }
-    
+
     @Override
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";

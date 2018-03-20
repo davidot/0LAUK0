@@ -10,7 +10,7 @@ public class Transition {
     private final int distance;
     private Transition otherDirection;
 
-    private boolean enabled;
+    private boolean enabled = true;
     private boolean permanentlyBlocked;
 
 

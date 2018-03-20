@@ -7,6 +7,7 @@ import nl.tue.robots.drones.simulation.Simulation;
 import java.awt.Graphics2D;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,8 +38,14 @@ public class Model {
 
     public void drawFloor(Graphics2D g, int floor) {
         building.drawFloor(g, floor);
+
+        drones.forEach(d -> d.render(g, floor));
+
     }
 
+    public Node toNode(int x, int y, int z) {
+        return building.getNearestNode(x, y, z);
+    }
 
     public void addOrder(List<Node> nodes) {
         if (nodes.size() < 1) {
@@ -59,7 +66,7 @@ public class Model {
     private void update() {
         if (!orders.isEmpty()) {
             Node start = orders.peekFirst().get(0);
-            List<Drone> list = drones.stream().filter(Drone::busy).collect(Collectors.toList());
+            List<Drone> list = drones.stream().filter(Drone::notBusy).collect(Collectors.toList());
             if (!list.isEmpty()) {
                 //drone available
                 int minD = Integer.MAX_VALUE;
@@ -110,13 +117,12 @@ public class Model {
     }
 
     public void droneArrived(int id, Node node) {
-        //todo
-        System.out.println("Drone: " + id + "arrived at" + node);
+        // System.out.println("Drone: " + id + "arrived at" + node);
         Drone drone = getDrone(id);
         drone.updateCurrent(node);
 
         nextDroneInstruction(drone);
-        if (!drone.busy()) {
+        if (drone.notBusy()) {
             update();
         }
     }
@@ -133,8 +139,24 @@ public class Model {
         return node;
     }
 
-    public boolean droneTransistion(int id, Transition transition) {
+    public boolean droneTransition(int id, Transition transition) {
+        if (transitionLocked(transition)) {
+            return false;
+        }
         getDrone(id).updateCurrentTransition(transition);
-        return false;
+        return true;
+    }
+
+    private boolean transitionLocked(Transition transition) {
+        final Transition opposite = transition.getOpposite();
+        return drones.stream().map(Drone::getCurrentTransition).anyMatch(t -> t == transition || t == opposite);
+    }
+
+    public boolean hasNode(int id) {
+        return building.getNode(id) != null;
+    }
+
+    public void addOrderTo(Node node) {
+        addOrder(Arrays.asList(getStartingNode(), node, getStartingNode()));
     }
 }

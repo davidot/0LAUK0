@@ -7,7 +7,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -120,6 +119,7 @@ public class RealBuilding {
         int qqaud = 7 * quad;
         g.drawLine(qqaud, 0, qqaud, getDepth() * MULTI);
         for(int i = 0; i <= getFloors() + 1; i++) {
+            g.setColor(Color.BLACK);
             g.drawLine(quad, i * total, qqaud, i * total);
 
             if (i > getFloors()) {
@@ -158,17 +158,14 @@ public class RealBuilding {
 
     public boolean obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor, int range){
         List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream().filter(obj -> obj.getFloor() == floor && obj instanceof RealObstacle).map(obj -> (RealObstacle) obj).collect(Collectors.toList());
-        for(Iterator<RealObstacle> iterator = obstacles.iterator(); iterator.hasNext(); ) {
-            RealObstacle obstacle = iterator.next();
-            if(!(((Math.pow(obstacle.getX() - x, 2) + Math.pow(obstacle.getY() - y, 2)) <
-                    range * range))) {
-                iterator.remove();
-            } else if(!((lx <= obstacle.getX() && ly <= obstacle.getY()) &&
-                    (obstacle.getX() <= rx && obstacle.getY() <= ry))) {
-                iterator.remove();
+        for(RealObstacle obstacle : obstacles) {
+            if((((Math.pow(obstacle.getX() - x, 2) + Math.pow(obstacle.getY() - y, 2)) < range * range))
+                    || (lx <= obstacle.getX() && ly <= obstacle.getY()) &&
+                    (obstacle.getX() <= rx && obstacle.getY() <= ry)) {
+                return true;
             }
         }
-        return obstacles.isEmpty();
+        return false;
     }
 
     public RealDrone getDrone(int id) {

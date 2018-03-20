@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Simulation {
 
-    private static final int NUM_DRONES = 3;
+    private static final int NUM_DRONES = 10;
     private RealBuilding building;
     private Model model;
     private static final int MULTIPLIER = GUI.MULTIPLIER;
@@ -24,6 +24,8 @@ public class Simulation {
     private static final int FLOORS = 3;
     private static final int FLOORS_OFFSET = 3;
     private static final int PADDING = 20;
+
+    private static int counter = 0;
 
     private int from = 0;
 
@@ -39,14 +41,23 @@ public class Simulation {
             building.addObject(new RealDrone(this, i, start.getZ(), start.getX(), start.getY()));
         }
 
-        for(int i = 0; i < 10; i++) {
-            building.addObject(new RealHuman(10, 11 * i, 0));
+        for(int i = 0; i < 2; i++) {
+            building.addObject(new RealHuman(10, 11 * i + 40, 0));
         }
 
         model.addOrder(Arrays.asList(start, model.getNode(144), start, model.getNode(232), start));
         model.addOrder(Arrays.asList(start, model.getNode(232), start));
         model.addOrder(Arrays.asList(start, model.getNode(8), start));
         model.addOrder(Arrays.asList(start, model.getNode(134), start));
+        // for(int i = 0; i < 50; i++) {
+        //     int id;
+        //     do {
+        //         id = (int) (Math.random() * 300);
+        //     } while (!model.hasNode(id));
+        //     Node node = model.getNode(id);
+        //     model.addOrder(Arrays.asList(start, node, start));
+        // }
+
     }
 
     public void draw(Graphics2D g, int width, int height) {
@@ -63,6 +74,8 @@ public class Simulation {
             g.translate(MULTIPLIER, MULTIPLIER);
             g.translate(floorWidth, 0);
         }
+
+        counter++;
     }
 
     /**
@@ -103,6 +116,24 @@ public class Simulation {
     }
 
     public boolean sendToTransition(int id, Transition transition) {
-        return model.droneTransistion(id, transition);
+        return model.droneTransition(id, transition);
+    }
+
+    public static int getCounter() {
+        return counter;
+    }
+
+    public static int getHalfSecond() {
+        return (counter % 60) / 30;
+    }
+
+    public void addOrder(int x, int y, int z) {
+        Node node = model.toNode(x, y, z);
+        if (node != null) {
+            System.out.println("Sending to " + node);
+            model.addOrderTo(node);
+        } else {
+            System.out.println("No node close enough");
+        }
     }
 }

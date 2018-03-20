@@ -59,8 +59,10 @@ public class Building {
 
     public Node getNearestNode(int x, int y, int z) {
         Node nearestNode = null;
-        int minimalDx = 5;
-        int minimalDy = 5;
+        int minimalDx = 10;
+        int minimalDy = 10;
+
+        int d = 10000;
 
         for (Node node : nodes.values()) {
             if (node.getZ() == z) {
@@ -68,10 +70,10 @@ public class Building {
                 int dy = (node.getY() - y) * (node.getY() - y);
 
                 if (dx < minimalDx && dy < minimalDy) {
-                    minimalDx = dx;
-                    minimalDy = dy;
-
-                    nearestNode = node;
+                    if (dx + dy < d) {
+                        d = dx + dy;
+                        nearestNode = node;
+                    }
                 }
             }
         }
@@ -120,8 +122,8 @@ public class Building {
         Transition transBA = new Transition(b, a, outside, transAB);
 
         // add transitions to nodes
-        a.addTransistion(transAB);
-        b.addTransistion(transBA);
+        a.addTransition(transAB);
+        b.addTransition(transBA);
     }
 
     /*

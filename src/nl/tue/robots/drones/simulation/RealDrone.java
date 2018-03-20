@@ -2,6 +2,7 @@ package nl.tue.robots.drones.simulation;
 
 import nl.tue.robots.drones.common.Node;
 import nl.tue.robots.drones.common.Transition;
+import nl.tue.robots.drones.fileIO.Images;
 import nl.tue.robots.drones.gui.GUI;
 
 import javax.imageio.ImageIO;
@@ -23,10 +24,9 @@ import java.util.NoSuchElementException;
 public class RealDrone extends RealObject {
 
     private static final int SPEED = 1;
-    private static int colorId = 0;
+
     private static final Color[] colors = {Color.BLACK, Color.RED, Color.GREEN, Color.BLUE,
-            Color.DARK_GRAY, Color.GRAY, Color.PINK, Color.YELLOW, Color.MAGENTA, Color.CYAN,
-            new Color(63, 68, 143)};
+            Color.YELLOW, Color.PINK, Color.MAGENTA, Color.CYAN, Color.ORANGE, new Color(150, 200, 55),};
 
     //where the drones are on the screen
     private int x;
@@ -39,15 +39,48 @@ public class RealDrone extends RealObject {
 
     //Image and rendering
     private BufferedImage[] imageSequence;
-    private int frame = 0;
-    private int counter = 0;
-    private static final int COUNTER_FRAME_SWITCH = 10;
     private static final String[] DEFAULT_IMAGE_SEQUENCE =
                         {"drone_frame1.png", "drone_frame2.png"};
+
+    private static final BufferedImage[] frames = new BufferedImage[DEFAULT_IMAGE_SEQUENCE.length];
+
+    private static final int width;
+    private static final int height;
+
+    public static int getImgWidth() {
+        return width;
+    }
+
+    public static int getImgHeight() {
+        return height;
+    }
+
+    static {
+        int nWidth = 50;
+        int nHeight = 50;
+        try {
+
+            //Open up all the frames and store them
+            for (int i = 0; i < frames.length; i++){
+                frames[i] = ImageIO.read(new File("res/" + DEFAULT_IMAGE_SEQUENCE[i]));
+                if (i == 0) {
+                    nWidth = frames[i].getWidth();
+                    nHeight = frames[i].getHeight();
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        width = nWidth;
+        height = nHeight;
+    }
 
     private final int id;
     private Simulation simulation;
     private Node arrived;
+    private Transition currentTransition;
 
     //constructor
     public RealDrone(Simulation simulation, int id, int floor, int x, int y) {
@@ -63,7 +96,7 @@ public class RealDrone extends RealObject {
         if (imageSequence != null){
             this.imageSequence = imageSequence;
         }else{
-            this.imageSequence = getImageSequence(DEFAULT_IMAGE_SEQUENCE);
+            this.imageSequence = getImageSequence(id, -1);
         }
         this.id = id;
         destinations = new LinkedList<>();
@@ -71,30 +104,17 @@ public class RealDrone extends RealObject {
 
     /**
      *
-     * @param imgs An array of strings of the filenames containing each frame of
-     *             the animation. Must be ordered by ascending frame
+     * @param id the id of the color
      * @pre {@code imgs != null && imgs.length > 0}
      * @post (\forall i; imgs.has(i); imgSequence[i] = FileWithString(i))
      *
      * @return An array consisting of the images.
      */
-    public static BufferedImage[] getImageSequence(String[] imgs){
-        BufferedImage[] imgSequence = new BufferedImage[imgs.length];
-        try {
-            /*
-            //Prints all files and folders in the current directory
-            File file = new File(".");
-            for(String fileNames : file.list()) System.out.println(fileNames);
-            */
-
-            //Open up all the frames and store them
-            for (int i = 0; i < imgs.length; i++){
-                BufferedImage img = ImageIO.read(new File("res/" + imgs[i]));
-                imgSequence[i] = img;
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static BufferedImage[] getImageSequence(int id, int alpha){
+        BufferedImage[] imgSequence = new BufferedImage[frames.length];
+        Color color = colors[id];
+        for (int i = 0; i < frames.length; i++){
+            imgSequence[i] = Images.convertImageColor(frames[i], color, alpha);
         }
         return imgSequence;
     }
@@ -124,26 +144,6 @@ public class RealDrone extends RealObject {
             destinations.add(node);
         }
     }
-
-    /**
-     * Adds a destination to the list of destinations to fly to, if that
-     * destination is not already the last one in the list
-     * @param x
-     * @param y
-     * @param z
-     *//*
-    public void addDestination(int x, int y, int z){
-        Destination lastDest = this.getFinalDestination();
-        Destination newDest = new Destination(x, y, z);
-        if (lastDest == null || !Destination.destinationsEqual(lastDest, newDest)){
-
-            if (!isHasDestination()){
-                setSpeed(SPEED, SPEED);
-            }
-
-            destinations.add(newDest);
-        }
-    }*/
 
     /**
      * Removes and returns the next destination from the list
@@ -234,22 +234,11 @@ public class RealDrone extends RealObject {
     @Override
     public void drawObject(Graphics2D g) {
 
-        //handles the subimages of the drone image
-        counter++;
-        if (counter >= COUNTER_FRAME_SWITCH){
-            //timeout reached; reset counter and increment frame
-            counter = 0;
-            frame += 1;
-            if (frame >= imageSequence.length){
-                //reached past the final frame; reset the frame counter
-                frame = 0;
-            }
-        }
         //Draw the image centered around its XY-coordinates, rather than them
         //being at the topleft of the image
-        int x = (this.x - 1) * GUI.MULTIPLIER - imageSequence[frame].getWidth() / 2;
-        int y = (this.y - 1) * GUI.MULTIPLIER - imageSequence[frame].getHeight() / 2;
-        g.drawImage(imageSequence[frame], x, y, null);
+        int x = (this.x - 1) * GUI.MULTIPLIER - width / 2;
+        int y = (this.y - 1) * GUI.MULTIPLIER - height / 2;
+        g.drawImage(imageSequence[Simulation.getHalfSecond()], x, y, null);
 
         //TODO: This should be moved somewhere else
         update();
@@ -257,10 +246,10 @@ public class RealDrone extends RealObject {
 
     @Override
     public void drawSide(Graphics2D g) {
-        g.drawImage(imageSequence[frame], 0, 0, RealBuilding.DRAW_SIZE, RealBuilding.DRAW_SIZE, null);
+        g.drawImage(imageSequence[Simulation.getHalfSecond()], 0, 0, RealBuilding.DRAW_SIZE, RealBuilding.DRAW_SIZE, null);
     }
 
-    private boolean bool = true;
+    private int c = 0;
 
     /**
      * Moves the drone on the screen based on its speed, destination, and
@@ -270,8 +259,10 @@ public class RealDrone extends RealObject {
      *       \old(distance(x, y, destinationX, destinationY))
      */
     public void update(){
-        bool = !bool;
-        if (bool) {
+        if (c <= 0) {
+            c = 1;
+        } else {
+            c--;
             return;
         }
         //TODO: Diagonal movement is faster now: with a speed of x you will...
@@ -284,12 +275,14 @@ public class RealDrone extends RealObject {
         }
 
         if (arrived != null) {
-            Transition transition = arrived.getTransition(destination);
-            if (transition != null) {
-                if (simulation.sendToTransition(id, transition)) {
-                    transition = null;
+            currentTransition = arrived.getTransition(destination);
+            if (currentTransition != null) {
+                if (simulation.sendToTransition(id, currentTransition)) {
+                    arrived = null;
                 } else {
-                    System.out.println("Cant move yet transistion blocked");
+                    // System.out.println("Cant move yet transistion blocked");
+                    //don't move
+                    return;
                 }
             }
         }
@@ -333,8 +326,8 @@ public class RealDrone extends RealObject {
 
         if (getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, getFloor(), range)) {
             // tell simulation that an obstacle is in the way for this drone
-            // simulation.sendObstacle(id, false);
-            // return;
+            simulation.sendObstacle(id, false);
+            return;
         }
 
         //Get the approaching direction (1 when moving along an axis; -1 otherwise)
