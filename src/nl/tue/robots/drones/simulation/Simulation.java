@@ -90,10 +90,10 @@ public class Simulation {
      */
     public int[] screenToCoords(int x, int y) {
         int floor = x / ((building.getWidth() + FLOORS_OFFSET) * MULTIPLIER) - 1;
-        if(floor < 0 || floor >= FLOORS) {
+        if (floor < 0 || floor >= FLOORS) {
             return new int[]{-1, -1, -1};
         }
-        int xF = (x % ((building.getWidth() + FLOORS_OFFSET) * MULTIPLIER)) / MULTIPLIER;
+        int xF = ((x + (MULTIPLIER / 2)) / MULTIPLIER) % (building.getWidth() + FLOORS_OFFSET);
         int yF = (y - PADDING) / MULTIPLIER;
         return new int[]{xF, yF, floor};
     }
