@@ -49,15 +49,15 @@ public class PlacementListener extends MouseAdapter {
         ActionListener menuListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(e.getActionCommand().equals(OBSTACLE_ACTION)) {
+                if (e.getActionCommand().equals(OBSTACLE_ACTION)) {
                     startObject = new int[]{x, y, z};
                     placingObstacle = true;
-                } else if(e.getActionCommand().equals(HUMAN_ACTION)) {
+                } else if (e.getActionCommand().equals(HUMAN_ACTION)) {
                     sim.getBuilding().addObject(new RealHuman(x, y, z));
-                } else if(e.getActionCommand().equals(WALL_ACTION)) {
+                } else if (e.getActionCommand().equals(WALL_ACTION)) {
                     startObject = new int[]{x, y, z};
                     placingWall = true;
-                } else if(e.getActionCommand().equals(DRONE_ACTION)) {
+                } else if (e.getActionCommand().equals(DRONE_ACTION)) {
                     sim.addOrder(x, y, z);
                 }
             }
@@ -84,16 +84,13 @@ public class PlacementListener extends MouseAdapter {
 
         // super.mouseClicked(e);
 
-        if(placingWall) {
-            if(z == startObject[2]) {
-                RealWall object = new RealWall(z, startObject[0], startObject[1], x, y, false);
-                object.setDetected(false);
-                sim.getBuilding().addObject(
-                        object);
+        if (placingWall) {
+            if (z == startObject[2]) {
+                sim.addNewWallObject(new RealWall(z, startObject[0], startObject[1], x, y, false));
                 placingWall = false;
             }
-        } else if(placingObstacle) {
-            if(z == startObject[2]) {
+        } else if (placingObstacle) {
+            if (z == startObject[2]) {
                 int diffX = Math.abs(x - startObject[0]);
                 int diffY = Math.abs(y - startObject[1]);
                 int obsX = (startObject[0] > x ? x + diffX : startObject[0] + diffX);
@@ -104,7 +101,7 @@ public class PlacementListener extends MouseAdapter {
                 sim.getBuilding().addObject(new RealObstacle(obsX, obsY, z, obsSize));
                 placingObstacle = false;
             }
-        } else if(e.getButton() == MouseEvent.BUTTON3) {
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
             System.out.println(e);
             contextMenu.show(gui, e.getX(), e.getY());
         }
@@ -113,7 +110,7 @@ public class PlacementListener extends MouseAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
         super.mousePressed(e);
-        if(e.isPopupTrigger()) {
+        if (e.isPopupTrigger()) {
             contextMenu.show(gui, e.getX(), e.getY());
         }
     }
@@ -121,7 +118,7 @@ public class PlacementListener extends MouseAdapter {
     @Override
     public void mouseReleased(MouseEvent e) {
         super.mouseReleased(e);
-        if(e.isPopupTrigger()) {
+        if (e.isPopupTrigger()) {
             contextMenu.show(gui, e.getX(), e.getY());
         }
     }

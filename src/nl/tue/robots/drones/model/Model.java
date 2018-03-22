@@ -27,7 +27,7 @@ public class Model {
         drones = new ArrayList<>(numDrones);
         orders = new ArrayDeque<>();
         Node start = building.getNode(0);
-        for(int i = 0; i < numDrones; i++) {
+        for (int i = 0; i < numDrones; i++) {
             drones.add(new Drone(i, start));
         }
     }
@@ -48,7 +48,7 @@ public class Model {
     }
 
     public void addOrder(List<Node> nodes) {
-        if(nodes.size() < 1) {
+        if (nodes.size() < 1) {
             System.out.println("Empty order");
             return;
         }
@@ -64,21 +64,21 @@ public class Model {
     }
 
     private void update() {
-        if(!orders.isEmpty()) {
+        if (!orders.isEmpty()) {
             Node start = orders.peekFirst().get(0);
             List<Drone> list = drones.stream().filter(Drone::notBusy).collect(Collectors.toList());
-            if(!list.isEmpty()) {
+            if (!list.isEmpty()) {
                 //drone available
                 int minD = Integer.MAX_VALUE;
                 Drone best = null;
-                for(Drone d : list) {
+                for (Drone d : list) {
                     int heuristic = getHeuristic(start, d.getCurrentNode());
-                    if(heuristic < minD) {
+                    if (heuristic < minD) {
                         minD = heuristic;
                         best = d;
                     }
                 }
-                if(best != null) {
+                if (best != null) {
                     System.out.println("Sending order to " + best.getId());
                     best.addGoals(orders.removeFirst());
                     nextDroneInstruction(best);
@@ -89,21 +89,24 @@ public class Model {
 
     private void nextDroneInstruction(Drone drone) {
         List<Node> next = drone.getNextNode();
-        if(next != null) {
+        if (next != null) {
             simulation.droneInstruction(drone.getId(), next);
         }
     }
 
     public void droneBlocked(int blockedId, boolean permanent) {
-        // System.out.println("Drone:" + id + " blocked permanent?" + permanent);
+        System.out.println("Drone:" + blockedId + " blocked permanent?" + permanent);
         Drone blockedDrone = getDrone(blockedId);
 
         // Find the transitions the drone is currently on and block it
         Transition currentTrans = blockedDrone.getCurrentTransition();
-        if(currentTrans != null) {
+        if (currentTrans != null) {
+            System.out.println("Toggeling thing");
             currentTrans.toggleTransition(false, permanent);
             Transition opposite = currentTrans.getOpposite();
             opposite.toggleTransition(false, permanent);
+        } else {
+            System.out.println("HMMM not sure");
         }
 
         // Send drone back to its previous node
@@ -111,9 +114,9 @@ public class Model {
         simulation.droneInstruction(blockedId, Arrays.asList(blockedDrone.getCurrentNode()));
         nextDroneInstruction(blockedDrone);
 
-        for(int id = 0; id < drones.size(); id++) {
-            if(id != blockedId) {
-                if(simulation.travelsThrough(id, currentTrans)) {
+        for (int id = 0; id < drones.size(); id++) {
+            if (id != blockedId) {
+                if (simulation.travelsThrough(id, currentTrans)) {
                     System.out.println("Clearing instructions of " + id);
                     simulation.clearInstruction(id, true);
                     Drone drone = getDrone(id);
@@ -132,7 +135,7 @@ public class Model {
         drone.updateCurrent(node);
 
         nextDroneInstruction(drone);
-        if(drone.notBusy()) {
+        if (drone.notBusy()) {
             update();
         }
     }
@@ -144,14 +147,14 @@ public class Model {
 
     public Node getNode(int id) {
         Node node = building.getNode(id);
-        if(node == null) {
-            throw new IllegalStateException("NOPE WRONG NODE YOU W+FCJ    " + id);
+        if (node == null) {
+            throw new IllegalStateException("NOPE WRONG NODE " + id);
         }
         return node;
     }
 
     public boolean droneTransition(int id, Transition transition) {
-        if(transitionLocked(transition)) {
+        if (transitionLocked(transition)) {
             return false;
         }
         getDrone(id).updateCurrentTransition(transition);
@@ -170,5 +173,9 @@ public class Model {
 
     public void addOrderTo(Node node) {
         addOrder(Arrays.asList(getStartingNode(), node, getStartingNode()));
+    }
+
+    public Building getBuilding() {
+        return building;
     }
 }
