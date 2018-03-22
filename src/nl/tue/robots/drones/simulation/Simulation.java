@@ -115,6 +115,11 @@ public class Simulation {
         RealDrone d = building.getDrone(id);
         d.addDestinations(next);
     }
+    
+    public void droneSetAlarm(int id, boolean enable){
+        RealDrone d = building.getDrone(id);
+        d.setAlarm(enable);
+    }
 
     public Node clearInstruction(int id, boolean everything) {
         RealDrone d = building.getDrone(id);

@@ -91,6 +91,10 @@ public class Model {
         List<Node> next = drone.getNextNode();
         if(next != null) {
             simulation.droneInstruction(drone.getId(), next);
+        }else if (!drone.notBusy()){
+            //If a path could not be found but there was a task allocated,
+            //enable the alarm
+            simulation.droneSetAlarm(drone.getId(), true);
         }
     }
 
