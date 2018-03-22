@@ -69,6 +69,7 @@ public class GUI extends Canvas implements Runnable {
     public static final int MULTIPLIER = 10;
 
     private Simulation simulation;
+    private boolean reload = false;
 
     private GUI() {
 
@@ -183,7 +184,7 @@ public class GUI extends Canvas implements Runnable {
 
         PlacementListener placeListener = new PlacementListener(simulation, this);
         this.addMouseListener(placeListener);
-        this.addKeyListener(new KeyboardListener(simulation));
+        this.addKeyListener(new KeyboardListener(simulation, this));
 //        this.add(placeListener.getContextMenu());
     }
 
@@ -244,6 +245,14 @@ public class GUI extends Canvas implements Runnable {
 
     //private to make sure the amount of ticks stays on target
     private void tick() {
+        if (reload) {
+            try {
+                simulation = new Simulation(new File("tests/Floorplan 9.csv"));
+            } catch (FileNotFoundException | MalformedWallFileException e) {
+                e.printStackTrace();
+            }
+            reload = false;
+        }
         simulation.update();
     }
 
@@ -280,5 +289,9 @@ public class GUI extends Canvas implements Runnable {
         isRunning = true;
         mainThread = new Thread(this, "Drone model");
         mainThread.start();
+    }
+
+    public void reload() {
+        reload = true;
     }
 }
