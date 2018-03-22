@@ -6,7 +6,9 @@ import nl.tue.robots.drones.fileIO.Images;
 import nl.tue.robots.drones.gui.GUI;
 
 import javax.imageio.ImageIO;
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,7 +30,7 @@ public class RealDrone extends RealObject {
             Color.YELLOW, Color.PINK, Color.MAGENTA, Color.CYAN, Color.ORANGE,
             new Color(150, 200, 55),};
     private static final int FLOOR_STEPS = 30;
-    public static final int DRONE_DRAW_SIZE = 2;
+    public static final int DRONE_DRAW_SIZE = 1;
     public static final int DOUBLE_DRAW_SIZE = 2 * DRONE_DRAW_SIZE;
 
     //where the drones are on the screen
@@ -245,29 +247,38 @@ public class RealDrone extends RealObject {
 
         //Draw the image centered around its XY-coordinates, rather than them
         //being at the topleft of the image
-        int x = (this.x - 1) * GUI.MULTIPLIER - width / DOUBLE_DRAW_SIZE;
-        int y = (this.y - 1) * GUI.MULTIPLIER - height / DOUBLE_DRAW_SIZE;
-        /*Composite composite = g.getComposite();
-        AffineTransform transform = g.getTransform();
-        AffineTransform tx = new AffineTransform(transform);
+        Composite composite = g.getComposite();
         AlphaComposite ac = null;
-        if (floorStep > FLOOR_STEPS / 2) {
+        int sWidth = width;
+        int sHeight = height;
+        if (floorStep > 0) {
+            int toZ = getNextDestination().getZ();
+            boolean onLast = getFloor() == lastFloor;
+            double scale;
+            int step = floorStep / (FLOOR_STEPS / 8);
+
+            float alpha = step * 25.0f / 256.0f;
             ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                    (floorStep / (FLOOR_STEPS / 8)) * 25.0f / 256.0f);
-            tx.scale((double)floorStep / FLOOR_STEPS, (double)floorStep / FLOOR_STEPS);
-        } else if (floorStep > 0) {
-            ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                    (floorStep / (FLOOR_STEPS / 8)) * 30.0f / 256.0f);
-            tx.scale(1 + (double)floorStep / (4.0f * FLOOR_STEPS), 1 + (double)floorStep / (4.0f * FLOOR_STEPS));
+                    onLast ? 1 - alpha : alpha);
+            if(toZ >= lastFloor) {
+                //going up
+                scale = onLast ? 1.0 : 0.5 + step * 0.05;
+            } else {
+                //going down
+                scale = onLast ? 1.0 : 1.4 - step * 0.05;
+            }
+            sWidth = (int) (sWidth * scale);
+            sHeight = (int) (sHeight * scale);
         }
+
+        int x = (this.x - 1) * GUI.MULTIPLIER - sWidth / DOUBLE_DRAW_SIZE;
+        int y = (this.y - 1) * GUI.MULTIPLIER - sHeight / DOUBLE_DRAW_SIZE;
         if (ac != null) {
             g.setComposite(ac);
-            g.setTransform(tx);
-        }*/
-        g.drawImage(imageSequence[Simulation.getHalfSecond()], x, y, width / DRONE_DRAW_SIZE,
-                height / DRONE_DRAW_SIZE, null);
-        /*g.setComposite(composite);
-        g.setTransform(transform);*/
+        }
+        g.drawImage(imageSequence[Simulation.getHalfSecond()], x, y, sWidth / DRONE_DRAW_SIZE,
+                sHeight / DRONE_DRAW_SIZE, null);
+        g.setComposite(composite);
         update();
     }
 

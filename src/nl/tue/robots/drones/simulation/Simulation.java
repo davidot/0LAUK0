@@ -71,7 +71,9 @@ public class Simulation {
         for(int floor = from; floor < from + FLOORS; floor++) {
             building.drawFloor(g, floor);
             g.translate(-MULTIPLIER, -MULTIPLIER);
-            model.drawFloor(g, floor);
+            if (drawModel) {
+                model.drawFloor(g, floor);
+            }
             g.translate(MULTIPLIER, MULTIPLIER);
             g.translate(floorWidth, 0);
         }
@@ -152,5 +154,9 @@ public class Simulation {
 
     public void setDrawModel(boolean drawModel) {
         this.drawModel = drawModel;
+    }
+
+    public boolean getDrawModel() {
+        return drawModel;
     }
 }
