@@ -24,7 +24,7 @@ public class RealHuman extends RealObstacle {
         super(x, y, floor, 2, 2);
         try {
             humanIcon = ImageIO.read(new File("res/construction-worker.png"));
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

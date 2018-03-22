@@ -35,14 +35,14 @@ public class GraphIO {
         try(BufferedReader fileReader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(buildFile), "UTF-8"))) {
 
-            while(fileReader.ready()) {
+            while (fileReader.ready()) {
                 // start reading nodes
                 String line = fileReader.readLine();
 
-                if(line.startsWith("___")) {
+                if (line.startsWith("___")) {
                     // done with nodes, break to start with edges
                     break;
-                } else if(!line.startsWith("#")) {
+                } else if (!line.startsWith("#")) {
                     // read node
                     Scanner scan = new Scanner(line);
                     scan.useDelimiter(";");
@@ -59,11 +59,11 @@ public class GraphIO {
 
             }
 
-            while(fileReader.ready()) {
+            while (fileReader.ready()) {
                 // start reading edges
                 String line = fileReader.readLine();
 
-                if(!line.startsWith("#")) {
+                if (!line.startsWith("#")) {
                     // read edge
 
                     // get string to node IDs
@@ -72,13 +72,13 @@ public class GraphIO {
                     boolean outside = values.length > 2 && values[2].equals("O");
 
                     // get mentioned nodes
-                    build.addTransistion(nodeIDs[0], nodeIDs[1], outside);
+                    build.addTransition(nodeIDs[0], nodeIDs[1], outside);
 
                 } // else line is a comment skip it
             }
 
-        } catch(IOException ex) {
-            if(ex instanceof FileNotFoundException) {
+        } catch (IOException ex) {
+            if (ex instanceof FileNotFoundException) {
                 throw (FileNotFoundException) ex;
             } else {
                 System.err.println("Could not read file" + buildFile.getName());
@@ -108,7 +108,7 @@ public class GraphIO {
 
             // Loop over all nodes to write them
             int buildSize = b.getAllNodes().size();
-            for(int i = 0; i < buildSize; i++) {
+            for (int i = 0; i < buildSize; i++) {
                 Node n = b.getNode(i);
 
                 nodeToIDMap.put(n, i); // do bookkeeping
@@ -123,15 +123,15 @@ public class GraphIO {
             fileWriter.newLine();
 
             // loop over nodes to write their edges
-            for(int i = 0; i < buildSize; i++) {
+            for (int i = 0; i < buildSize; i++) {
                 Node n = b.getNode(i);
                 int nodeID = nodeToIDMap.get(n);
 
                 // write edges connected from this node
-                for(Transition t : n.getTransitions()) {
+                for (Transition t : n.getTransitions()) {
                     int toID = nodeToIDMap.get(t.getTo());
 
-                    if(toID < i) {
+                    if (toID < i) {
                         // this edge was written when visiting the other node, no need to write it again
                         continue; // so continue with next loop iteration
                     }
@@ -143,7 +143,7 @@ public class GraphIO {
             }
 
             fileWriter.flush(); // ensure buffer is fully written to file
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw e; // bounce exception
         }
     }
@@ -151,9 +151,9 @@ public class GraphIO {
     public static String reportBuildingGraph(Building b) {
         String s = "";
 
-        for(Node n : b.getAllNodes()) {
+        for (Node n : b.getAllNodes()) {
             s += "(" + n.getX() + "," + n.getY() + "," + n.getZ() + ") : \n";
-            for(Transition t : n.getTransitions()) {
+            for (Transition t : n.getTransitions()) {
                 s += "\t[(" + t.getTo().getX() + "," + t.getTo().getY() + "," + t.getTo().getZ() +
                         ") : " + t.getDistance() + "]\n";
             }
@@ -184,10 +184,10 @@ public class GraphIO {
             String line = fileReader.readLine();
 
             // first line should specify dimensions
-            if(line.startsWith("D;")) {
+            if (line.startsWith("D;")) {
 
                 String[] dimensions = line.split(";");
-                if(dimensions.length < 4) {
+                if (dimensions.length < 4) {
                     throw new MalformedWallFileException(1, "Dimension specification incorrect");
                 }
                 maxFloor = Integer.parseInt(dimensions[1]);
@@ -199,12 +199,12 @@ public class GraphIO {
             }
 
             int i = 2;
-            while(fileReader.ready()) {
+            while (fileReader.ready()) {
                 // start reading walls
                 line = fileReader.readLine();
 
-                if(!line.startsWith("#")) {
-                    if(!line.matches("(\\d+;){5}[IOio]?")) {
+                if (!line.startsWith("#")) {
+                    if (!line.matches("(\\d+;){5}[IOio]?")) {
                         throw new MalformedWallFileException(i,
                                 "Wall specification does not adhere to the format: " +
                                         "floor;x1;y1;x2;y2;I/O. Where I/O is either I for inside wall or O for outside wall");
@@ -220,13 +220,13 @@ public class GraphIO {
                     int x2 = scan.nextInt();
                     int y2 = scan.nextInt();
                     boolean outer = false;
-                    if(scan.hasNext()) {
+                    if (scan.hasNext()) {
                         outer = scan.next().toLowerCase().equals("o");
                     }
 
                     scan.close(); // we got the values so out close the scanner
 
-                    if(floor > maxFloor || x1 > maxX || x2 > maxX || y1 > maxY || y2 > maxY) {
+                    if (floor > maxFloor || x1 > maxX || x2 > maxX || y1 > maxY || y2 > maxY) {
                         throw new MalformedWallFileException(i,
                                 "Wall falls outside dimensions of building: " +
                                         maxFloor + " floors, 0 <= x <= " + maxX + ", 0 <= y <= " +
@@ -246,8 +246,8 @@ public class GraphIO {
             build.addWalls(walls);
 
             return build;
-        } catch(IOException ex) {
-            if(ex instanceof FileNotFoundException) {
+        } catch (IOException ex) {
+            if (ex instanceof FileNotFoundException) {
                 throw (FileNotFoundException) ex;
             } else {
                 System.err.println("Could not read file" + wallsFile.getName());
@@ -269,7 +269,7 @@ public class GraphIO {
 
             // get all walls from building
             List<RealWall> walls = b.getAllWalls();
-            for(RealWall w : walls) {
+            for (RealWall w : walls) {
                 int[] wallCoords = w.getCoords();
                 fileWriter.write(w.getFloor() + ";" + wallCoords[0] + ";" + wallCoords[1] + ";" +
                         wallCoords[2] + ";" + wallCoords[3] + ";" + (w.isOuterWall() ? "O" : "I"));
@@ -277,7 +277,7 @@ public class GraphIO {
             }
 
             fileWriter.flush(); // ensure buffer is fully written to file
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw e; // bounce exception
         }
     }

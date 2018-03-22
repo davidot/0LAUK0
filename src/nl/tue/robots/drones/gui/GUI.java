@@ -97,7 +97,7 @@ public class GUI extends Canvas implements Runnable {
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -123,7 +123,7 @@ public class GUI extends Canvas implements Runnable {
         //Make sure the frame is packed
         try {
             SwingUtilities.invokeAndWait(frame::pack);
-        } catch(InvocationTargetException | InterruptedException e) {
+        } catch (InvocationTargetException | InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -150,7 +150,7 @@ public class GUI extends Canvas implements Runnable {
         setPreferredSize(d);
         try {
             SwingUtilities.invokeAndWait(frame::pack);
-        } catch(InvocationTargetException | InterruptedException e) {
+        } catch (InvocationTargetException | InterruptedException e) {
             e.printStackTrace();
         }
         frame.setResizable(false);
@@ -174,7 +174,7 @@ public class GUI extends Canvas implements Runnable {
             //     System.exit(0);
             // }
 
-        } catch(FileNotFoundException | MalformedWallFileException e) {
+        } catch (FileNotFoundException | MalformedWallFileException e) {
             e.printStackTrace();
             JOptionPane.showConfirmDialog(this, "Error opening files",
                     "Stopping", JOptionPane.DEFAULT_OPTION);
@@ -189,7 +189,7 @@ public class GUI extends Canvas implements Runnable {
 
     @Override
     public void run() {
-        if(running) {
+        if (running) {
             return;
         }
         init();
@@ -200,18 +200,18 @@ public class GUI extends Canvas implements Runnable {
         int ticks = 0;
         long lastTimer = System.currentTimeMillis();
 
-        while(isRunning) {
+        while (isRunning) {
             boolean shouldRender = false;
             long now = System.nanoTime();
             unprocessed += (now - lastTime) / NS_TICKS;
             lastTime = now;
-            if(unprocessed > TARGET_TICKS * 5) {
+            if (unprocessed > TARGET_TICKS * 5) {
                 double ticksLeft = TARGET_TICKS * 5;
                 System.out
                         .println(TICK_OVER_PRE + (int) (unprocessed - ticksLeft) + TICK_OVER_POST);
                 unprocessed = ticksLeft;
             }
-            while(unprocessed >= 1) {
+            while (unprocessed >= 1) {
                 tick();
                 ticks++;
                 unprocessed--;
@@ -219,20 +219,20 @@ public class GUI extends Canvas implements Runnable {
             }
 
 
-            if(shouldRender) {
+            if (shouldRender) {
                 frames++;
                 render();
             }
 
             try {
                 Thread.sleep(SLEEPTIME);
-            } catch(InterruptedException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            if(System.currentTimeMillis() - lastTimer > 1000) {
+            if (System.currentTimeMillis() - lastTimer > 1000) {
                 lastTimer += 1000;
-                if(frame != null) {
+                if (frame != null) {
                     frame.setTitle(TITLE + " | " + frames + " fps | " + ticks + " ticks");
                 }
                 frames = 0;
@@ -248,7 +248,7 @@ public class GUI extends Canvas implements Runnable {
 
     private void render() {
         BufferStrategy buffer = getBufferStrategy();
-        if(buffer == null) {
+        if (buffer == null) {
             this.createBufferStrategy(2);
             requestFocus();
             return;
@@ -273,7 +273,7 @@ public class GUI extends Canvas implements Runnable {
     }
 
     public void start() {
-        if(isRunning) {
+        if (isRunning) {
             return;
         }
         isRunning = true;

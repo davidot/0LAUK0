@@ -1,5 +1,7 @@
 package nl.tue.robots.drones.common;
 
+import java.awt.geom.Line2D;
+
 public class Transition {
 
     private static final int OUTSIDE_FACTOR = 20;
@@ -25,7 +27,7 @@ public class Transition {
         this.to = to;
         this.outside = outside;
 
-        if(this.outside) {
+        if (this.outside) {
             this.distance = (int) (OUTSIDE_FACTOR + OUTSIDE_MULTIPLIER * from.distanceTo(to));
         } else {
             this.distance = from.distanceTo(to);
@@ -54,10 +56,12 @@ public class Transition {
 
     public void toggleTransition(boolean state, boolean permanent) {
         enabled = state;
-        if(state) {
+        if (state) {
             permanentlyBlocked = false;
         } else {
+            System.out.println("STATE: " + state + " perm?" + permanent);
             permanentlyBlocked = permanent;
+            System.out.println("WOW PERM" + isPermanent());
         }
     }
 
@@ -65,4 +69,11 @@ public class Transition {
         return enabled;
     }
 
+    public Line2D toLine() {
+        return new Line2D.Double(from.getX(), from.getY(), to.getX(), to.getY());
+    }
+
+    public boolean isPermanent() {
+        return permanentlyBlocked && (!enabled);
+    }
 }
