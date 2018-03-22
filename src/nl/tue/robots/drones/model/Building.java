@@ -23,6 +23,7 @@ public class Building {
     //id to node
     private HashMap<Integer, Node> nodes = new HashMap<>();
     private Map<Integer, Set<Node>> floorList = new HashMap<>();
+    private List<Transition> transition = new ArrayList<>();
 
     public List<Node> getAllNodes() {
         return new ArrayList<>(nodes.values());
@@ -50,7 +51,7 @@ public class Building {
      * @return
      */
     public void addNode(Node n, int nodeID) {
-        if(nodes.get(nodeID) != null) {
+        if (nodes.get(nodeID) != null) {
             throw new IllegalArgumentException("A node with this ID already exists");
         }
 
@@ -63,8 +64,8 @@ public class Building {
         Node nearestNode = null;
         int r = 100; // radius
 
-        for(Node node : nodes.values()) {
-            if(node.getZ() == z) {
+        for (Node node : nodes.values()) {
+            if (node.getZ() == z) {
                 int dx = (node.getX() - x) * (node.getX() - x);
                 int dy = (node.getY() - y) * (node.getY() - y);
 
@@ -80,8 +81,7 @@ public class Building {
 
     private List<Transition> getTransitionsOnFloor(int floor) {
         return nodes.values().stream().filter(node -> node.getZ() == floor)
-                .flatMap(node -> node.getTransitions().stream()).collect(
-                        Collectors.toList());
+                .flatMap(node -> node.getTransitions().stream()).collect(Collectors.toList());
     }
 
     public void drawFloor(Graphics2D g, int floor) {
@@ -92,7 +92,9 @@ public class Building {
             if (from.getZ() != floor) {
                 continue;
             }
-            if (t.isOutside()) {
+            if (t.isPermanent()) {
+                g.setColor(Color.BLUE);
+            } else if (t.isOutside()) {
                 g.setColor(Color.RED);
             } else {
                 g.setColor(Color.BLACK);
@@ -125,7 +127,7 @@ public class Building {
 
     }
 
-    public void addTransistion(int from, int to, boolean outside) {
+    public void addTransition(int from, int to, boolean outside) {
         Node a = getNode(from);
         Node b = getNode(to);
 
@@ -136,6 +138,11 @@ public class Building {
         // add transitions to nodes
         a.addTransition(transAB);
         b.addTransition(transBA);
+        transition.add(transAB);
+    }
+
+    public List<Transition> getAllTransitions() {
+        return transition;
     }
 
     /*

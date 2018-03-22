@@ -39,7 +39,7 @@ public class ExpandedNode implements Comparable<ExpandedNode> {
 
     @Override
     public int compareTo(ExpandedNode o) {
-        if(distanceTravelled != o.distanceTravelled) {
+        if (distanceTravelled != o.distanceTravelled) {
             return distanceTravelled > o.distanceTravelled ? 1 : -1;
         } else {
             return Integer.compare(heuristicDistance, o.heuristicDistance);
