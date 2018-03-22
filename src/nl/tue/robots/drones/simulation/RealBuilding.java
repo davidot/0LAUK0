@@ -192,4 +192,33 @@ public class RealBuilding {
     public void update() {
         objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast).forEach(RealDrone::update);
     }
+
+
+
+    private static final int REMOVAL_RANGE = 3;
+
+    public void removeObstacle(int x, int y, int floor) {
+        // Get all obstacles on this floor
+        List<RealObstacle> localObstacles = getObjectsOnFloor(floor).stream().
+                filter(obj -> (obj instanceof RealObstacle)).map(obj -> (RealObstacle) obj).collect(Collectors.toList());
+
+        // with increasing range find which obstacle to remove
+        RealObstacle removable = null;
+        for (int i = 0; i < REMOVAL_RANGE && removable == null; i++) {
+            // get all objects in range
+            List<RealObstacle> candidates = localObstacles.stream().filter(obj -> (
+                    ((obj.getX() - obj.sizeX / 2 <= x && obj.getX() + obj.sizeX / 2 >= x) &&
+                        (obj.getY() - obj.sizeY / 2 <= y && obj.getY() + obj.sizeY >= y)))).collect(Collectors.toList());
+
+            // pick the first as option
+            if (candidates.size() > 0) {
+                removable = candidates.get(0);
+            }
+        }
+
+        if (removable != null) {
+            // we found a object to remove
+            objects.remove(removable);
+        }
+    }
 }

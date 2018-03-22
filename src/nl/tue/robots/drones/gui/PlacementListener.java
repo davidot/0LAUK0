@@ -19,6 +19,8 @@ public class PlacementListener extends MouseAdapter {
     private static final String WALL_ACTION = "wall";
     private static final String HUMAN_ACTION = "human";
     private static final String OBSTACLE_ACTION = "obstacle";
+    private static final String REMOVE_ACTION = "remove";
+
     int x;
     int y;
     int z;
@@ -42,10 +44,14 @@ public class PlacementListener extends MouseAdapter {
         JMenuItem humanMenuItem = new JMenuItem("Place Worker");
         JMenuItem wallMenuItem = new JMenuItem("Draw Wall");
         JMenuItem droneMenuItem = new JMenuItem("Send drone");
+        JMenuItem removeMenuItem = new JMenuItem("Remove Obstacle/Human");
+
         objectMenuItem.setActionCommand(OBSTACLE_ACTION);
         humanMenuItem.setActionCommand(HUMAN_ACTION);
         wallMenuItem.setActionCommand(WALL_ACTION);
         droneMenuItem.setActionCommand(DRONE_ACTION);
+        removeMenuItem.setActionCommand(REMOVE_ACTION);
+
         ActionListener menuListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -59,6 +65,8 @@ public class PlacementListener extends MouseAdapter {
                     placingWall = true;
                 } else if (e.getActionCommand().equals(DRONE_ACTION)) {
                     sim.addOrder(x, y, z);
+                } else if (e.getActionCommand().equals(REMOVE_ACTION)) {
+                    sim.getBuilding().removeObstacle(x,y,z);
                 }
             }
         };
@@ -66,10 +74,13 @@ public class PlacementListener extends MouseAdapter {
         humanMenuItem.addActionListener(menuListener);
         wallMenuItem.addActionListener(menuListener);
         droneMenuItem.addActionListener(menuListener);
+        removeMenuItem.addActionListener(menuListener);
+
         contextMenu.add(objectMenuItem);
         contextMenu.add(humanMenuItem);
         contextMenu.add(wallMenuItem);
         contextMenu.add(droneMenuItem);
+        contextMenu.add(removeMenuItem);
     }
 
     @Override
