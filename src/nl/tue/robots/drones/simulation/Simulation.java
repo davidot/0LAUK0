@@ -28,6 +28,7 @@ public class Simulation {
     private static int counter = 0;
 
     private int from = 0;
+    private boolean drawModel = true;
 
     public Simulation(File file) throws FileNotFoundException, MalformedWallFileException {
         //This is where a real application would open the file.
@@ -67,7 +68,7 @@ public class Simulation {
         int floorWidth = (building.getWidth() + FLOORS_OFFSET) * MULTIPLIER;
         g.translate(floorWidth, 0);
 
-        for (int floor = from; floor < from + FLOORS; floor++) {
+        for(int floor = from; floor < from + FLOORS; floor++) {
             building.drawFloor(g, floor);
             g.translate(-MULTIPLIER, -MULTIPLIER);
             model.drawFloor(g, floor);
@@ -80,18 +81,19 @@ public class Simulation {
 
     /**
      * Converts screen x & y values to building coordinates.
+     *
      * @param x the x value of the point on screen
      * @param y the y value of the point on screen
      * @return an array containing the coordinates in the order {x, y, z}
      */
     public int[] screenToCoords(int x, int y) {
         int floor = x / ((building.getWidth() + FLOORS_OFFSET) * MULTIPLIER) - 1;
-        if (floor < 0 || floor >= FLOORS) {
+        if(floor < 0 || floor >= FLOORS) {
             return new int[]{-1, -1, -1};
         }
         int xF = (x % ((building.getWidth() + FLOORS_OFFSET) * MULTIPLIER)) / MULTIPLIER;
         int yF = (y - PADDING) / MULTIPLIER;
-        return new int[] {xF, yF, floor};
+        return new int[]{xF, yF, floor};
     }
 
     public RealBuilding getBuilding() {
@@ -99,7 +101,8 @@ public class Simulation {
     }
 
     public Dimension getSize() {
-        return new Dimension((building.getWidth() * 4 + (FLOORS + 1) * FLOORS_OFFSET) * MULTIPLIER, building.getDepth() * MULTIPLIER + PADDING * 2);
+        return new Dimension((building.getWidth() * 4 + (FLOORS + 1) * FLOORS_OFFSET) * MULTIPLIER,
+                building.getDepth() * MULTIPLIER + PADDING * 2);
     }
 
     public void sendObstacle(int id, boolean permanent) {
@@ -139,11 +142,15 @@ public class Simulation {
 
     public void addOrder(int x, int y, int z) {
         Node node = model.toNode(x, y, z);
-        if (node != null) {
+        if(node != null) {
             System.out.println("Sending to " + node);
             model.addOrderTo(node);
         } else {
             System.out.println("No node close enough");
         }
+    }
+
+    public void setDrawModel(boolean drawModel) {
+        this.drawModel = drawModel;
     }
 }

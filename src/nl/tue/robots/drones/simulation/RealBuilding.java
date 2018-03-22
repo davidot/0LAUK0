@@ -33,7 +33,8 @@ public class RealBuilding {
     }
 
     public List<RealWall> getAllWalls() {
-        return objects.stream().filter(obj -> (obj instanceof RealWall)).map(obj -> (RealWall)obj).collect(Collectors.toList());
+        return objects.stream().filter(obj -> (obj instanceof RealWall)).map(obj -> (RealWall) obj)
+                .collect(Collectors.toList());
     }
 
     public void addWalls(List<RealWall> walls) {
@@ -55,7 +56,7 @@ public class RealBuilding {
 
     public void addObject(RealObject object) {
         object.setRealBuilding(this);
-        if (!getObjectsOnFloor(object.getFloor()).contains(object)) {
+        if(!getObjectsOnFloor(object.getFloor()).contains(object)) {
             object.setRealBuilding(this);
             objects.add(object);
         }
@@ -63,7 +64,7 @@ public class RealBuilding {
 
 
     public void render(Graphics2D g, int floors, int from, int perColumn) {
-        if (floors % perColumn != 0) {
+        if(floors % perColumn != 0) {
             return;
         }
         int rows = floors / perColumn;
@@ -78,7 +79,7 @@ public class RealBuilding {
             g.translate((floor % perColumn) * (w + 3 * MULTI), (floor / perColumn) * d);
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
-            for (RealObject obj : getObjectsOnFloor(floor)) {
+            for(RealObject obj : getObjectsOnFloor(floor)) {
                 obj.drawObject(g);
             }
             g.setTransform(transform);
@@ -99,7 +100,7 @@ public class RealBuilding {
     public void drawFloor(Graphics2D g, int floor) {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
-        for (RealObject obj : getObjectsOnFloor(floor)) {
+        for(RealObject obj : getObjectsOnFloor(floor)) {
             obj.drawObject(g);
         }
     }
@@ -122,7 +123,7 @@ public class RealBuilding {
             g.setColor(Color.BLACK);
             g.drawLine(quad, i * total, qqaud, i * total);
 
-            if (i > getFloors()) {
+            if(i > getFloors()) {
                 break;
             }
 
@@ -133,12 +134,12 @@ public class RealBuilding {
             AffineTransform transform = g.getTransform();
             int y = 0;
             int x = BASE_OFFSET;
-            for (RealObject obj : getObjectsOnFloor(floor)) {
-                if (obj.drawsSide()) {
+            for(RealObject obj : getObjectsOnFloor(floor)) {
+                if(obj.drawsSide()) {
                     obj.drawSide(g);
                     g.translate(DISTANCE_BETWEEN, 0);
                     x += DISTANCE_BETWEEN;
-                    if (x > qqaud - DISTANCE_BETWEEN * 2) {
+                    if(x > qqaud - DISTANCE_BETWEEN * 2) {
                         g.setTransform(transform);
                         y += DISTANCE_BETWEEN;
                         g.translate(0, y);
@@ -156,10 +157,14 @@ public class RealBuilding {
 
     }
 
-    public RealObject obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor, int range){
-        List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream().filter(obj -> obj.getFloor() == floor && obj instanceof RealObstacle).map(obj -> (RealObstacle) obj).collect(Collectors.toList());
+    public RealObject obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor,
+                                      int range) {
+        List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream()
+                .filter(obj -> obj.getFloor() == floor && obj instanceof RealObstacle)
+                .map(obj -> (RealObstacle) obj).collect(Collectors.toList());
         for(RealObstacle obstacle : obstacles) {
-            if((((Math.pow(obstacle.getX() - x, 2) + Math.pow(obstacle.getY() - y, 2)) < range * range))
+            if((((Math.pow(obstacle.getX() - x, 2) + Math.pow(obstacle.getY() - y, 2)) <
+                    range * range))
                     || (lx <= obstacle.getX() && ly <= obstacle.getY()) &&
                     (obstacle.getX() <= rx && obstacle.getY() <= ry)) {
                 return obstacle;
@@ -170,6 +175,8 @@ public class RealBuilding {
     }
 
     public RealDrone getDrone(int id) {
-        return objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast).filter(d -> d.getId() == id).findFirst().orElseThrow(() -> new IllegalStateException("WOWOWO"));
+        return objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast)
+                .filter(d -> d.getId() == id).findFirst()
+                .orElseThrow(() -> new IllegalStateException("WOWOWO"));
     }
 }

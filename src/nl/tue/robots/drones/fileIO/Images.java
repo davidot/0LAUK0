@@ -9,15 +9,15 @@ public class Images {
 
     public static BufferedImage convertImageColor(BufferedImage image, Color to, int alpha) {
         BufferedImage img = deepCopy(image);
-        for (int x = 0; x < img.getWidth(); x++) {
+        for(int x = 0; x < img.getWidth(); x++) {
             for(int y = 0; y < img.getHeight(); y++) {
                 Color col = new Color(img.getRGB(x, y), true);
                 int nAlpha = col.getAlpha();
-                if (nAlpha < 50) {
+                if(nAlpha < 50) {
                     //skip transparent pixels
                     continue;
                 }
-                if (alpha >= 0) {
+                if(alpha >= 0) {
                     nAlpha = alpha;
                 }
                 Color colTo = new Color(to.getRed(), to.getGreen(), to.getBlue(), nAlpha);

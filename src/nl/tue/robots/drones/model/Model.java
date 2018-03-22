@@ -48,7 +48,7 @@ public class Model {
     }
 
     public void addOrder(List<Node> nodes) {
-        if (nodes.size() < 1) {
+        if(nodes.size() < 1) {
             System.out.println("Empty order");
             return;
         }
@@ -64,21 +64,21 @@ public class Model {
     }
 
     private void update() {
-        if (!orders.isEmpty()) {
+        if(!orders.isEmpty()) {
             Node start = orders.peekFirst().get(0);
             List<Drone> list = drones.stream().filter(Drone::notBusy).collect(Collectors.toList());
-            if (!list.isEmpty()) {
+            if(!list.isEmpty()) {
                 //drone available
                 int minD = Integer.MAX_VALUE;
                 Drone best = null;
-                for(Drone d: list) {
+                for(Drone d : list) {
                     int heuristic = getHeuristic(start, d.getCurrentNode());
-                    if (heuristic < minD) {
+                    if(heuristic < minD) {
                         minD = heuristic;
                         best = d;
                     }
                 }
-                if (best != null) {
+                if(best != null) {
                     System.out.println("Sending order to " + best.getId());
                     best.addGoals(orders.removeFirst());
                     nextDroneInstruction(best);
@@ -89,7 +89,7 @@ public class Model {
 
     private void nextDroneInstruction(Drone drone) {
         List<Node> next = drone.getNextNode();
-        if (next != null) {
+        if(next != null) {
             simulation.droneInstruction(drone.getId(), next);
         }
     }
@@ -100,7 +100,7 @@ public class Model {
 
         // Find the transitions the drone is currently on and block it
         Transition currentTrans = blockedDrone.getCurrentTransition();
-        if (currentTrans != null) {
+        if(currentTrans != null) {
             currentTrans.toggleTransition(false, permanent);
             Transition opposite = currentTrans.getOpposite();
             opposite.toggleTransition(false, permanent);
@@ -112,12 +112,13 @@ public class Model {
         nextDroneInstruction(blockedDrone);
 
         for(int id = 0; id < drones.size(); id++) {
-            if (id != blockedId) {
-                if (simulation.travelsThrough(id, currentTrans)) {
+            if(id != blockedId) {
+                if(simulation.travelsThrough(id, currentTrans)) {
                     System.out.println("Clearing instructions of " + id);
                     simulation.clearInstruction(id, true);
                     Drone drone = getDrone(id);
-                    simulation.droneInstruction(drone.getId(), Arrays.asList(drone.getCurrentNode()));
+                    simulation
+                            .droneInstruction(drone.getId(), Arrays.asList(drone.getCurrentNode()));
                     // drone.updateCurrent(from);
                     nextDroneInstruction(drone);
                 }
@@ -131,25 +132,26 @@ public class Model {
         drone.updateCurrent(node);
 
         nextDroneInstruction(drone);
-        if (drone.notBusy()) {
+        if(drone.notBusy()) {
             update();
         }
     }
 
     private Drone getDrone(int id) {
-        return drones.stream().filter(drone -> drone.getId() == id).findFirst().orElseThrow(() -> new IllegalStateException("Rut roh"));
+        return drones.stream().filter(drone -> drone.getId() == id).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Rut roh"));
     }
 
     public Node getNode(int id) {
         Node node = building.getNode(id);
-        if (node == null) {
+        if(node == null) {
             throw new IllegalStateException("NOPE WRONG NODE YOU W+FCJ    " + id);
         }
         return node;
     }
 
     public boolean droneTransition(int id, Transition transition) {
-        if (transitionLocked(transition)) {
+        if(transitionLocked(transition)) {
             return false;
         }
         getDrone(id).updateCurrentTransition(transition);
@@ -158,7 +160,8 @@ public class Model {
 
     private boolean transitionLocked(Transition transition) {
         final Transition opposite = transition.getOpposite();
-        return drones.stream().map(Drone::getCurrentTransition).anyMatch(t -> t == transition || t == opposite);
+        return drones.stream().map(Drone::getCurrentTransition)
+                .anyMatch(t -> t == transition || t == opposite);
     }
 
     public boolean hasNode(int id) {

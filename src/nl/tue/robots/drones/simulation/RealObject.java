@@ -3,7 +3,6 @@ package nl.tue.robots.drones.simulation;
 import java.awt.Graphics2D;
 
 /**
- *
  * @since 15 MAR 2018
  */
 

@@ -34,6 +34,7 @@ public class Building {
 
     /**
      * Retrieves the Node with the specified ID.
+     *
      * @param nodeID The node which to retrieve
      * @return The found node or {@code null} if none exists
      */
@@ -43,12 +44,13 @@ public class Building {
 
     /**
      * Adds the new node with the specified ID to the building if no node with this ID exists yet.
-     * @param n The ode to add
+     *
+     * @param n      The ode to add
      * @param nodeID The ID of the new node
      * @return
      */
     public void addNode(Node n, int nodeID) {
-        if (nodes.get(nodeID) != null) {
+        if(nodes.get(nodeID) != null) {
             throw new IllegalArgumentException("A node with this ID already exists");
         }
 
@@ -64,13 +66,13 @@ public class Building {
 
         int d = 10000;
 
-        for (Node node : nodes.values()) {
-            if (node.getZ() == z) {
+        for(Node node : nodes.values()) {
+            if(node.getZ() == z) {
                 int dx = (node.getX() - x) * (node.getX() - x);
                 int dy = (node.getY() - y) * (node.getY() - y);
 
-                if (dx < minimalDx && dy < minimalDy) {
-                    if (dx + dy < d) {
+                if(dx < minimalDx && dy < minimalDy) {
+                    if(dx + dy < d) {
                         d = dx + dy;
                         nearestNode = node;
                     }
@@ -82,19 +84,20 @@ public class Building {
     }
 
     private List<Transition> getTransitionsOnFloor(int floor) {
-        return nodes.values().stream().filter(node -> node.getZ() == floor).flatMap(node -> node.getTransitions().stream()).collect(
-                Collectors.toList());
+        return nodes.values().stream().filter(node -> node.getZ() == floor)
+                .flatMap(node -> node.getTransitions().stream()).collect(
+                        Collectors.toList());
     }
 
     public void drawFloor(Graphics2D g, int floor) {
         g.setStroke(new BasicStroke(2));
-        for (Transition t : getTransitionsOnFloor(floor)) {
+        for(Transition t : getTransitionsOnFloor(floor)) {
             Node from = t.getFrom();
             Node to = t.getTo();
-            if (from.getZ() != floor) {
+            if(from.getZ() != floor) {
                 continue;
             }
-            if (t.isOutside()) {
+            if(t.isOutside()) {
                 g.setColor(Color.RED);
             } else {
                 g.setColor(Color.BLACK);
@@ -107,7 +110,7 @@ public class Building {
 
         for(Node node : floorList.get(floor)) {
             g.setColor(Color.BLACK);
-            g.fillOval(node.getX()* MULTIPLIER - NODE_R, node.getY()* MULTIPLIER - NODE_R,
+            g.fillOval(node.getX() * MULTIPLIER - NODE_R, node.getY() * MULTIPLIER - NODE_R,
                     NODE_R * 2, NODE_R * 2);
         }
 

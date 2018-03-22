@@ -14,7 +14,7 @@ public class RealWall extends RealObject {
     private final int x2;
     private final int y2;
     private final boolean outer;
-    private final boolean detected;
+    private boolean detected;
 
     public RealWall(int floor, int x1, int y1, int x2, int y2, boolean outerWall) {
         super(floor);
@@ -48,11 +48,19 @@ public class RealWall extends RealObject {
     /**
      * @return an int array containing the coordinates of the wall in the order [x1,y1,x2,y2]
      */
-    public int[] getCoords(){
-        return new int[]{x1,y1,x2,y2};
+    public int[] getCoords() {
+        return new int[]{x1, y1, x2, y2};
     }
 
     public boolean isOuterWall() {
         return outer;
+    }
+
+    public void setDetected(boolean detected) {
+        this.detected = detected;
+    }
+
+    public boolean isDetected() {
+        return detected;
     }
 }

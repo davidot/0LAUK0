@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 /**
- *
  * @author sowdiyeah
  */
 public class RealObstacle extends RealObject {
@@ -20,11 +19,11 @@ public class RealObstacle extends RealObject {
         this.size = size;
     }
 
-    public int getX(){
+    public int getX() {
         return this.x;
     }
 
-    public int getY(){
+    public int getY() {
         return this.y;
     }
 

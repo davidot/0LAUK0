@@ -25,7 +25,7 @@ public class Transition {
         this.to = to;
         this.outside = outside;
 
-        if (this.outside) {
+        if(this.outside) {
             this.distance = (int) (OUTSIDE_FACTOR + OUTSIDE_MULTIPLIER * from.distanceTo(to));
         } else {
             this.distance = from.distanceTo(to);
@@ -48,20 +48,20 @@ public class Transition {
         return outside;
     }
 
-    public Transition getOpposite(){
+    public Transition getOpposite() {
         return otherDirection;
     }
 
-    public void toggleTransition(boolean state, boolean permanent){
+    public void toggleTransition(boolean state, boolean permanent) {
         enabled = state;
-        if (state){
+        if(state) {
             permanentlyBlocked = false;
         } else {
             permanentlyBlocked = permanent;
         }
     }
 
-    public boolean getStatus(){
+    public boolean getStatus() {
         return enabled;
     }
 

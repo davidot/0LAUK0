@@ -24,18 +24,19 @@ public class Node {
     }
 
     public List<Node> getConnectedNodes() {
-        return transitions.stream().filter(Transition::getStatus).map(Transition::getTo).collect(Collectors.toList());
+        return transitions.stream().filter(Transition::getStatus).map(Transition::getTo)
+                .collect(Collectors.toList());
     }
 
-    public int getX(){
+    public int getX() {
         return this.x;
     }
 
-    public int getY(){
+    public int getY() {
         return this.y;
     }
 
-    public int getZ(){
+    public int getZ() {
         return this.z;
     }
 
@@ -47,7 +48,7 @@ public class Node {
         int dx = x - to.x;
         int dy = y - to.y;
         int dz = z - to.z;
-        return (int) Math.sqrt(dx*dx + dy*dy + dz*dz);
+        return (int) Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 
     public List<Transition> getTransitions() {

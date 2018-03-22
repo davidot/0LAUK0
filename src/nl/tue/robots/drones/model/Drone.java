@@ -44,32 +44,32 @@ public class Drone {
         currentGoals.addAll(nodes);
     }
 
-    public void addEmergencyGoal(Node node){
+    public void addEmergencyGoal(Node node) {
         currentGoals.addFirst(node);
     }
 
-    public Transition getCurrentTransition(){
+    public Transition getCurrentTransition() {
         return currentTransition;
     }
 
     // TODO: update that currentTransition!
-    public void updateCurrentTransition(Transition trans){
+    public void updateCurrentTransition(Transition trans) {
         this.currentTransition = trans;
     }
 
     public List<Node> getNextNode() {
-        if (currentGoals.isEmpty()) {
+        if(currentGoals.isEmpty()) {
             return null;
         }
-        if (currentNode == currentGoals.peekFirst()) {
+        if(currentNode == currentGoals.peekFirst()) {
             currentGoals.removeFirst();
-            if (currentGoals.isEmpty()) {
+            if(currentGoals.isEmpty()) {
                 return null;
             }
         }
         List<Node> list = Algorithm.findPath(currentNode, currentGoals.peekFirst()).stream()
                 .map(Transition::getTo).collect(Collectors.toList());
-        if (list.isEmpty()) {
+        if(list.isEmpty()) {
             return null;
         }
         return list;
@@ -85,13 +85,15 @@ public class Drone {
     }
 
     public void render(Graphics2D g, int floor) {
-        if (!notBusy() && currentNode != null && currentNode.getZ() == floor) {
+        if(!notBusy() && currentNode != null && currentNode.getZ() == floor) {
             int num = Simulation.getHalfSecond();
             int x = currentNode.getX() * GUI.MULTIPLIER;
             int y = currentNode.getY() * GUI.MULTIPLIER;
-            int w = RealDrone.getImgWidth() / 2;
-            int h = RealDrone.getImgHeight() / 2;
-            g.drawImage(images[num], x - w, y - h, null);
+            int w = RealDrone.getImgWidth() / RealDrone.DOUBLE_DRAW_SIZE;
+            int h = RealDrone.getImgHeight() / RealDrone.DOUBLE_DRAW_SIZE;
+            g.drawImage(images[num], x - w, y - h,
+                    RealDrone.getImgWidth() / RealDrone.DRONE_DRAW_SIZE,
+                    RealDrone.getImgHeight() / RealDrone.DRONE_DRAW_SIZE, null);
         }
     }
 

@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- *
  * @author sowdiyeah
  */
 public class RealHuman extends RealObstacle {
@@ -25,14 +24,16 @@ public class RealHuman extends RealObstacle {
         super(x, y, floor, 2);
         try {
             humanIcon = ImageIO.read(new File("res/construction-worker.png"));
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void drawObject(Graphics2D g) {
-        g.drawImage(humanIcon.getScaledInstance(size * GUI.MULTIPLIER, size * GUI.MULTIPLIER, BufferedImage.SCALE_SMOOTH), (int)(GUI.MULTIPLIER * (x - 1)), (int)(GUI.MULTIPLIER * (y - 1)), null);
+        g.drawImage(humanIcon.getScaledInstance(size * GUI.MULTIPLIER, size * GUI.MULTIPLIER,
+                BufferedImage.SCALE_SMOOTH), (int) (GUI.MULTIPLIER * (x - 1)),
+                (int) (GUI.MULTIPLIER * (y - 1)), null);
     }
 
     @Override
