@@ -5,6 +5,7 @@ import nl.tue.robots.drones.gui.GUI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
 
 public class RealWall extends RealObject {
 
@@ -60,7 +61,11 @@ public class RealWall extends RealObject {
         this.detected = detected;
     }
 
-    public boolean isDetected() {
-        return detected;
+    public boolean isNotDetected() {
+        return !detected;
+    }
+
+    public Line2D toLine() {
+        return new Line2D.Double(x1, y1, x2, y2);
     }
 }

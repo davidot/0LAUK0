@@ -6,6 +6,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -170,7 +171,19 @@ public class RealBuilding {
                 return obstacle;
             }
         }
-        //todo add wall check
+        Line2D droneLine = new Line2D.Double(lx, ly, rx, ry);
+        List<RealWall> walls =
+                getAllWalls().stream().filter(w -> w.isNotDetected() && w.getFloor() == floor).collect(Collectors.toList());
+        for(RealWall wall: walls) {
+            Line2D wallLine = wall.toLine();
+            if (wallLine.intersectsLine(droneLine)) {
+                System.out.println("Found intersecting line");
+                System.out.println(wallLine.ptLineDist(x, y) < range);
+                wall.setDetected(true);
+                return wall;
+            }
+        }
+
         return null;
     }
 
