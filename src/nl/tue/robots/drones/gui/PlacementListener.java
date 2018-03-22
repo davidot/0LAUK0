@@ -42,7 +42,6 @@ public class PlacementListener extends MouseAdapter {
         JMenuItem humanMenuItem = new JMenuItem("Place Worker");
         JMenuItem wallMenuItem = new JMenuItem("Draw Wall");
         JMenuItem droneMenuItem = new JMenuItem("Send drone");
-        objectMenuItem.setLabel("Draw Obstacle");
         objectMenuItem.setActionCommand(OBSTACLE_ACTION);
         humanMenuItem.setActionCommand(HUMAN_ACTION);
         wallMenuItem.setActionCommand(WALL_ACTION);

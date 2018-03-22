@@ -156,16 +156,17 @@ public class RealBuilding {
 
     }
 
-    public boolean obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor, int range){
+    public RealObject obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor, int range){
         List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream().filter(obj -> obj.getFloor() == floor && obj instanceof RealObstacle).map(obj -> (RealObstacle) obj).collect(Collectors.toList());
         for(RealObstacle obstacle : obstacles) {
             if((((Math.pow(obstacle.getX() - x, 2) + Math.pow(obstacle.getY() - y, 2)) < range * range))
                     || (lx <= obstacle.getX() && ly <= obstacle.getY()) &&
                     (obstacle.getX() <= rx && obstacle.getY() <= ry)) {
-                return true;
+                return obstacle;
             }
         }
-        return false;
+        //todo add wall check
+        return null;
     }
 
     public RealDrone getDrone(int id) {

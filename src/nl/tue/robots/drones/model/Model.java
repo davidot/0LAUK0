@@ -94,10 +94,9 @@ public class Model {
         }
     }
 
-    public void droneBlocked(int id, boolean permanent) {
+    public void droneBlocked(int blockedId, boolean permanent) {
         // System.out.println("Drone:" + id + " blocked permanent?" + permanent);
-        Drone blockedDrone = getDrone(id);
-        Node prevNode = blockedDrone.getCurrentNode();
+        Drone blockedDrone = getDrone(blockedId);
 
         // Find the transitions the drone is currently on and block it
         Transition currentTrans = blockedDrone.getCurrentTransition();
@@ -108,12 +107,22 @@ public class Model {
         }
 
         // Send drone back to its previous node
-        blockedDrone.addEmergencyGoal(prevNode);
-
-        // !!! Not sure this does what I think it does
-        // It is supposed to tell the drone to turn around and
-        // go back to his previous node
+        simulation.clearInstruction(blockedId, true);
+        simulation.droneInstruction(blockedId, Arrays.asList(blockedDrone.getCurrentNode()));
         nextDroneInstruction(blockedDrone);
+
+        for(int id = 0; id < drones.size(); id++) {
+            if (id != blockedId) {
+                if (simulation.travelsThrough(id, currentTrans)) {
+                    System.out.println("Clearing instructions of " + id);
+                    simulation.clearInstruction(id, true);
+                    Drone drone = getDrone(id);
+                    simulation.droneInstruction(drone.getId(), Arrays.asList(drone.getCurrentNode()));
+                    // drone.updateCurrent(from);
+                    nextDroneInstruction(drone);
+                }
+            }
+        }
     }
 
     public void droneArrived(int id, Node node) {

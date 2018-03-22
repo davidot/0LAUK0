@@ -27,6 +27,7 @@ public class RealDrone extends RealObject {
 
     private static final Color[] colors = {Color.BLACK, Color.RED, Color.GREEN, Color.BLUE,
             Color.YELLOW, Color.PINK, Color.MAGENTA, Color.CYAN, Color.ORANGE, new Color(150, 200, 55),};
+    private static final int FLOOR_STEPS = 30;
 
     //where the drones are on the screen
     private int x;
@@ -46,6 +47,9 @@ public class RealDrone extends RealObject {
 
     private static final int width;
     private static final int height;
+    private RealObject lastObstacle;
+    private int lastFloor;
+    private int floorStep;
 
     public static int getImgWidth() {
         return width;
@@ -90,6 +94,7 @@ public class RealDrone extends RealObject {
     //constructor with non-default image
     public RealDrone(Simulation simulation, int id, int floor, int x, int y, BufferedImage[] imageSequence) {
         super(floor);
+        lastFloor = floor;
         this.simulation = simulation;
         this.x = x;
         this.y = y;
@@ -238,9 +243,26 @@ public class RealDrone extends RealObject {
         //being at the topleft of the image
         int x = (this.x - 1) * GUI.MULTIPLIER - width / 2;
         int y = (this.y - 1) * GUI.MULTIPLIER - height / 2;
+        /*Composite composite = g.getComposite();
+        AffineTransform transform = g.getTransform();
+        AffineTransform tx = new AffineTransform(transform);
+        AlphaComposite ac = null;
+        if (floorStep > FLOOR_STEPS / 2) {
+            ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                    (floorStep / (FLOOR_STEPS / 8)) * 25.0f / 256.0f);
+            tx.scale((double)floorStep / FLOOR_STEPS, (double)floorStep / FLOOR_STEPS);
+        } else if (floorStep > 0) {
+            ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                    (floorStep / (FLOOR_STEPS / 8)) * 30.0f / 256.0f);
+            tx.scale(1 + (double)floorStep / (4.0f * FLOOR_STEPS), 1 + (double)floorStep / (4.0f * FLOOR_STEPS));
+        }
+        if (ac != null) {
+            g.setComposite(ac);
+            g.setTransform(tx);
+        }*/
         g.drawImage(imageSequence[Simulation.getHalfSecond()], x, y, null);
-
-        //TODO: This should be moved somewhere else
+        /*g.setComposite(composite);
+        g.setTransform(transform);*/
         update();
     }
 
@@ -287,14 +309,24 @@ public class RealDrone extends RealObject {
             }
         }
 
-        if (destination.getZ() != getFloor()) {
+        if (destination.getZ() != getFloor() || lastFloor != destination.getZ()) {
+
             if (destination.getX() != getX() || destination.getY() != getY()) {
                 System.out.println("Should not happen");
             }
-            setFloor(destination.getZ());
-            // just in case the coords are not the same
-            setXY(destination.getX(), destination.getY());
+            floorStep += 1;
+            if (floorStep > FLOOR_STEPS / 2) {
+                setFloor(destination.getZ());
+                // just in case the coords are not the same
+                setXY(destination.getX(), destination.getY());
+            }
+            if (floorStep >= FLOOR_STEPS) {
+                floorStep = 0;
+                lastFloor = destination.getZ();
+            }
+            return;
         }
+
 
         int destinationX = destination.getX();
         int destinationY = destination.getY();
@@ -324,9 +356,11 @@ public class RealDrone extends RealObject {
             }
         }
 
-        if (getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, getFloor(), range)) {
+        RealObject obstacle = getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, getFloor(), range);
+        if (obstacle != null && obstacle != lastObstacle) {
             // tell simulation that an obstacle is in the way for this drone
-            simulation.sendObstacle(id, false);
+            lastObstacle = obstacle;
+            simulation.sendObstacle(id, !(obstacle instanceof RealObstacle));
             return;
         }
 
@@ -362,5 +396,27 @@ public class RealDrone extends RealObject {
         for(Node n : next) {
             addDestination(n);
         }
+    }
+
+    public Node clear(boolean everything) {
+        Node first = null;
+        if(!everything) {
+            first = getNextDestination();
+        }
+        destinations.clear();
+        arrived = null;
+        if (first != null) {
+            addDestination(first);
+        }
+        return first;
+    }
+
+    public boolean passes(Node... nodes) {
+        for(Node n: nodes) {
+            if (destinations.contains(n)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

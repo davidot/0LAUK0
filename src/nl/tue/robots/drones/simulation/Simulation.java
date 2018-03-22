@@ -111,6 +111,16 @@ public class Simulation {
         d.addDestinations(next);
     }
 
+    public Node clearInstruction(int id, boolean everything) {
+        RealDrone d = building.getDrone(id);
+        return d.clear(everything);
+    }
+
+    public boolean travelsThrough(int id, Transition t) {
+        RealDrone d = building.getDrone(id);
+        return d.passes(t.getFrom(), t.getTo());
+    }
+
     public void sendArrived(int id, Node node) {
         model.droneArrived(id, node);
     }
