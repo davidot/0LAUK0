@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class PlacementListener extends MouseAdapter {
+public class MouseClickListener extends MouseAdapter {
 
     private static final String DRONE_ACTION = "drone";
     private static final String WALL_ACTION = "wall";
@@ -30,7 +30,7 @@ public class PlacementListener extends MouseAdapter {
 
     final GUI gui;
 
-    PlacementListener(GUI g) {
+    MouseClickListener(GUI g) {
         this.placingWall = false;
         this.placingObstacle = false;
         this.gui = g;
