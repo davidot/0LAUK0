@@ -80,9 +80,9 @@ public class RealDrone extends RealObject {
         try {
 
             //Open up all the frames and store them
-            for(int i = 0; i < frames.length; i++) {
+            for (int i = 0; i < frames.length; i++) {
                 frames[i] = ImageIO.read(new File("res/" + DEFAULT_IMAGE_SEQUENCE[i]));
-                if(i == 0) {
+                if (i == 0) {
                     nWidth = frames[i].getWidth();
                     nHeight = frames[i].getHeight();
                 }
@@ -93,7 +93,7 @@ public class RealDrone extends RealObject {
                 alertSequence[i] = ImageIO.read(new File("res/" + DEFAULT_ALERT_SEQUENCE[i]));
             }
 
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
 
         }
@@ -119,7 +119,7 @@ public class RealDrone extends RealObject {
         this.simulation = simulation;
         this.x = x;
         this.y = y;
-        if(imageSequence != null) {
+        if (imageSequence != null) {
             this.imageSequence = imageSequence;
         } else {
             this.imageSequence = getImageSequence(id, -1);
@@ -138,8 +138,8 @@ public class RealDrone extends RealObject {
      */
     public static BufferedImage[] getImageSequence(int id, int alpha) {
         BufferedImage[] imgSequence = new BufferedImage[frames.length];
-        Color color = colors[id];
-        for(int i = 0; i < frames.length; i++) {
+        Color color = colors[id % colors.length];
+        for (int i = 0; i < frames.length; i++) {
             imgSequence[i] = Images.convertImageColor(frames[i], color, alpha);
         }
         return imgSequence;
@@ -171,9 +171,9 @@ public class RealDrone extends RealObject {
     public void addDestination(Node node) {
         // addDestination(node.getX(), node.getY(), node.getZ());
         Node lastDest = this.getFinalDestination();
-        if(lastDest == null || lastDest == node) {
+        if (lastDest == null || lastDest == node) {
 
-            if(!isHasDestination()) {
+            if (!isHasDestination()) {
                 setSpeed(SPEED, SPEED);
             }
 
@@ -190,7 +190,7 @@ public class RealDrone extends RealObject {
      * @pre destinations.size() > 0
      */
     public Node removeNextDestination() {
-        if(!isHasDestination()) {
+        if (!isHasDestination()) {
             throw new NoSuchElementException(
                     "RealDrone.removeNextDestination.pre violated: No next destination");
         }
@@ -198,7 +198,7 @@ public class RealDrone extends RealObject {
 
         arrived = firstDest;
 
-        if(isHasDestination()) {
+        if (isHasDestination()) {
             setSpeed(SPEED, SPEED);
         }
         return firstDest;
@@ -217,7 +217,7 @@ public class RealDrone extends RealObject {
      * @return The next destination, or null if no destinations
      */
     public Node getNextDestination() {
-        if(!isHasDestination()) {
+        if (!isHasDestination()) {
             return null;
         }
         return destinations.getFirst();
@@ -229,7 +229,7 @@ public class RealDrone extends RealObject {
      * @return The final destination, or null if no destinations
      */
     public Node getFinalDestination() {
-        if(destinations.size() <= 0) {
+        if (destinations.size() <= 0) {
             return null;
         }
         return destinations.getLast();
@@ -259,7 +259,7 @@ public class RealDrone extends RealObject {
         AlphaComposite ac = null;
         int sWidth = width;
         int sHeight = height;
-        if (floorStep > 0) {
+        if (floorStep > 0 && getNextDestination() != null) {
             int toZ = getNextDestination().getZ();
             boolean onLast = getFloor() == lastFloor;
             double scale;
@@ -268,7 +268,7 @@ public class RealDrone extends RealObject {
             float alpha = step * 25.0f / 256.0f;
             ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
                     onLast ? 1 - alpha : alpha);
-            if(toZ >= lastFloor) {
+            if (toZ >= lastFloor) {
                 //going up
                 scale = onLast ? 1.0 : 0.5 + step * 0.05;
             } else {
@@ -313,7 +313,7 @@ public class RealDrone extends RealObject {
      * \old(distance(x, y, destinationX, destinationY))
      */
     public void update() {
-        if(c <= 0) {
+        if (c <= 0) {
             c = 1;
         } else {
             c--;
@@ -324,14 +324,14 @@ public class RealDrone extends RealObject {
         //Solve this with trigonometry
 
         Node destination = getNextDestination();
-        if(destination == null) {
+        if (destination == null) {
             return;
         }
 
-        if(arrived != null) {
+        if (arrived != null) {
             currentTransition = arrived.getTransition(destination);
-            if(currentTransition != null) {
-                if(simulation.sendToTransition(id, currentTransition)) {
+            if (currentTransition != null) {
+                if (simulation.sendToTransition(id, currentTransition)) {
                     arrived = null;
                 } else {
                     // System.out.println("Cant move yet transistion blocked");
@@ -341,18 +341,18 @@ public class RealDrone extends RealObject {
             }
         }
 
-        if(destination.getZ() != getFloor() || lastFloor != destination.getZ()) {
+        if (destination.getZ() != getFloor() || lastFloor != destination.getZ()) {
 
-            if(destination.getX() != getX() || destination.getY() != getY()) {
+            if (destination.getX() != getX() || destination.getY() != getY()) {
                 System.out.println("Should not happen");
             }
             floorStep += 1;
-            if(floorStep > FLOOR_STEPS / 2) {
+            if (floorStep > FLOOR_STEPS / 2) {
                 setFloor(destination.getZ());
                 // just in case the coords are not the same
                 setXY(destination.getX(), destination.getY());
             }
-            if(floorStep >= FLOOR_STEPS) {
+            if (floorStep >= FLOOR_STEPS) {
                 floorStep = 0;
                 lastFloor = destination.getZ();
             }
@@ -370,8 +370,8 @@ public class RealDrone extends RealObject {
         int ly = getY();
         int rx = destinationX;
         int ry = destinationY;
-        if(destinationX == getX()) {
-            if(destinationY > getY()) {
+        if (destinationX == getX()) {
+            if (destinationY > getY()) {
                 lx += range;
                 rx -= range;
             } else {
@@ -379,7 +379,7 @@ public class RealDrone extends RealObject {
                 rx += range;
             }
         } else {
-            if(destinationX > getX()) {
+            if (destinationX > getX()) {
                 ly += range;
                 ry -= range;
             } else {
@@ -389,13 +389,19 @@ public class RealDrone extends RealObject {
         }
 
         RealObject obstacle =
-                getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, getFloor(), range);
-        if(obstacle != null && obstacle != lastObstacle) {
+                getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, getFloor(), range,
+                        currentTransition);
+        if (obstacle != null && obstacle != lastObstacle) {
             // tell simulation that an obstacle is in the way for this drone
             lastObstacle = obstacle;
-            simulation.sendObstacle(id, !(obstacle instanceof RealObstacle));
+            boolean permanent = obstacle instanceof RealWall;
+            System.out.println("FOuND " + permanent + "permanent");
+            simulation.sendObstacle(id, permanent);
             return;
         }
+
+        //clear seeing the last obstacle
+        lastObstacle = null;
 
         //Get the approaching direction (1 when moving along an axis; -1 otherwise)
         int dirX = x > destinationX ? -1 : 1;
@@ -406,17 +412,17 @@ public class RealDrone extends RealObject {
         y += dirY * speedY;
 
         //if we moved over the goal, move onto the goal instead
-        if((dirX == 1 && x >= destinationX) || (dirX == -1 && x <= destinationX)) {
+        if ((dirX == 1 && x >= destinationX) || (dirX == -1 && x <= destinationX)) {
             speedX = 0;
             x = destinationX;
         }
 
-        if((dirY == 1 && y >= destinationY) || (dirY == -1 && y <= destinationY)) {
+        if ((dirY == 1 && y >= destinationY) || (dirY == -1 && y <= destinationY)) {
             speedY = 0;
             y = destinationY;
         }
 
-        if(x == destinationX && y == destinationY) {
+        if (x == destinationX && y == destinationY) {
             simulation.sendArrived(id, removeNextDestination());
         }
     }
@@ -426,27 +432,27 @@ public class RealDrone extends RealObject {
     }
 
     public void addDestinations(List<Node> next) {
-        for(Node n : next) {
+        for (Node n : next) {
             addDestination(n);
         }
     }
 
     public Node clear(boolean everything) {
         Node first = null;
-        if(!everything) {
+        if (!everything) {
             first = getNextDestination();
         }
         destinations.clear();
         arrived = null;
-        if(first != null) {
+        if (first != null) {
             addDestination(first);
         }
         return first;
     }
 
     public boolean passes(Node... nodes) {
-        for(Node n : nodes) {
-            if(destinations.contains(n)) {
+        for (Node n : nodes) {
+            if (destinations.contains(n)) {
                 return true;
             }
         }

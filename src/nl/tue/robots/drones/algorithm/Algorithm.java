@@ -43,7 +43,7 @@ public class Algorithm {
         ArrayList<Transition> transitionList = new ArrayList<Transition>();
 
         // Check whether foundDestination is the actual destination
-        if(foundDestination.getNode() == destinationNode) {
+        if (foundDestination.getNode() == destinationNode) {
             getPath(foundDestination, transitionList);
         }
         // else something went horribly wrong. Fix it! (Could not find path)
@@ -61,7 +61,7 @@ public class Algorithm {
     public static ExpandedNode pathSearch(Node destinationNode, Set<ExpandedNode> seenNodes,
                                           ArrayList<ExpandedNode> frontier) {
         // First check the frontier isn't empty
-        if(frontier.size() > 0) {
+        if (frontier.size() > 0) {
 
             // The frontier is not empty: expand the best node
             ExpandedNode nodeToExpand = frontier.get(0);
@@ -70,13 +70,13 @@ public class Algorithm {
             ArrayList<ExpandedNode> newExpandedNodes = new ArrayList<ExpandedNode>();
 
             // remove all the nodes we have already visited
-            for(ExpandedNode node : seenNodes) {
+            for (ExpandedNode node : seenNodes) {
                 newNodes.remove(node.getNode());
             }
 
             // Check whether one of the nodes is the destination node
-            for(Node node : newNodes) {
-                if(node == destinationNode) {
+            for (Node node : newNodes) {
+                if (node == destinationNode) {
                     return createExpandedNode(node, destinationNode, nodeToExpand);
                 }
                 newExpandedNodes.add(createExpandedNode(node, destinationNode, nodeToExpand));
@@ -86,10 +86,10 @@ public class Algorithm {
             frontier.remove(0);
 
             // Now that the first node is removed, the new ones can be added.
-            for(ExpandedNode node : newExpandedNodes) {
+            for (ExpandedNode node : newExpandedNodes) {
                 // TODO: If the given node only has one available transition and is not
                 // the destination, it does not have to be added to the frontier!
-                if(seenNodes.add(node)) {
+                if (seenNodes.add(node)) {
                     sortedAdd(node, frontier);
                 }
             }
@@ -113,7 +113,7 @@ public class Algorithm {
      * its goal.
      */
     public static void getPath(ExpandedNode lastNode, ArrayList<Transition> transitions) {
-        if(lastNode.getParent().getNode() != null) {
+        if (lastNode.getParent().getNode() != null) {
             // Then we have not yet found the root.
             Node currentNode = lastNode.getNode();
             Node parentNode = lastNode.getParent().getNode();

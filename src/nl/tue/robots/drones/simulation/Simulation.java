@@ -38,11 +38,11 @@ public class Simulation {
 
         Node start = model.getStartingNode();
 
-        for(int i = 0; i < NUM_DRONES; i++) {
+        for (int i = 0; i < NUM_DRONES; i++) {
             building.addObject(new RealDrone(this, i, start.getZ(), start.getX(), start.getY()));
         }
 
-        for(int i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) {
             building.addObject(new RealHuman(10, 11 * i + 40, 0));
         }
 
@@ -50,14 +50,14 @@ public class Simulation {
         model.addOrder(Arrays.asList(start, model.getNode(232), start));
         model.addOrder(Arrays.asList(start, model.getNode(8), start));
         model.addOrder(Arrays.asList(start, model.getNode(134), start));
-        // for(int i = 0; i < 50; i++) {
-        //     int id;
-        //     do {
-        //         id = (int) (Math.random() * 300);
-        //     } while (!model.hasNode(id));
-        //     Node node = model.getNode(id);
-        //     model.addOrder(Arrays.asList(start, node, start));
-        // }
+        /*for(int i = 0; i < 100; i++) {
+            int id;
+            do {
+                id = (int) (Math.random() * 300);
+            } while (!model.hasNode(id));
+            Node node = model.getNode(id);
+            model.addOrder(Arrays.asList(start, node, start));
+        }*/
 
     }
 
@@ -68,7 +68,7 @@ public class Simulation {
         int floorWidth = (building.getWidth() + FLOORS_OFFSET) * MULTIPLIER;
         g.translate(floorWidth, 0);
 
-        for(int floor = from; floor < from + FLOORS; floor++) {
+        for (int floor = from; floor < from + FLOORS; floor++) {
             building.drawFloor(g, floor);
             g.translate(-MULTIPLIER, -MULTIPLIER);
             if (drawModel) {
@@ -90,10 +90,10 @@ public class Simulation {
      */
     public int[] screenToCoords(int x, int y) {
         int floor = x / ((building.getWidth() + FLOORS_OFFSET) * MULTIPLIER) - 1;
-        if(floor < 0 || floor >= FLOORS) {
+        if (floor < 0 || floor >= FLOORS) {
             return new int[]{-1, -1, -1};
         }
-        int xF = (x % ((building.getWidth() + FLOORS_OFFSET) * MULTIPLIER)) / MULTIPLIER;
+        int xF = ((x + (MULTIPLIER / 2)) / MULTIPLIER) % (building.getWidth() + FLOORS_OFFSET);
         int yF = (y - PADDING) / MULTIPLIER;
         return new int[]{xF, yF, floor};
     }
@@ -108,6 +108,9 @@ public class Simulation {
     }
 
     public void sendObstacle(int id, boolean permanent) {
+        if (permanent) {
+            System.out.println("SENDING PERM TO MODEL");
+        }
         model.droneBlocked(id, permanent);
     }
 
@@ -149,7 +152,7 @@ public class Simulation {
 
     public void addOrder(int x, int y, int z) {
         Node node = model.toNode(x, y, z);
-        if(node != null) {
+        if (node != null) {
             System.out.println("Sending to " + node);
             model.addOrderTo(node);
         } else {
@@ -163,5 +166,14 @@ public class Simulation {
 
     public boolean getDrawModel() {
         return drawModel;
+    }
+
+    public void addNewWallObject(RealWall object) {
+        model.getBuilding().getAllTransitions().stream()
+                .filter(t -> t.getFrom().getZ() == object.getFloor() &&
+                        object.toLine().intersectsLine(t.toLine())).forEach(
+                object::addUndetected);
+        System.out.println("INTERSECT" + object.undetected.size());
+        building.addObject(object);
     }
 }

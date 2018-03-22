@@ -21,17 +21,17 @@ public class RealHuman extends RealObstacle {
     private BufferedImage humanIcon;
 
     public RealHuman(int x, int y, int floor) {
-        super(x, y, floor, 2);
+        super(x, y, floor, 2, 2);
         try {
             humanIcon = ImageIO.read(new File("res/construction-worker.png"));
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void drawObject(Graphics2D g) {
-        g.drawImage(humanIcon.getScaledInstance(size * GUI.MULTIPLIER, size * GUI.MULTIPLIER,
+        g.drawImage(humanIcon.getScaledInstance(sizeX * GUI.MULTIPLIER, sizeY * GUI.MULTIPLIER,
                 BufferedImage.SCALE_SMOOTH), (int) (GUI.MULTIPLIER * (x - 1)),
                 (int) (GUI.MULTIPLIER * (y - 1)), null);
     }
