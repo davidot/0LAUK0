@@ -129,12 +129,12 @@ public class Building {
 
             if (node.getUp()) {
                 g.fillPolygon(
-                    new int[] {x - 10, x + 10, x}, 
+                    new int[] {x - 10, x + 10, x},
                     new int[] {y - 5, y - 5, y - 17}, 3);
-            } 
+            }
             if (node.getDown()) {
                 g.fillPolygon(
-                    new int[] {x - 10, x + 10, x}, 
+                    new int[] {x - 10, x + 10, x},
                     new int[] {y + 5, y + 5, y + 17}, 3);
             }
 
@@ -162,17 +162,17 @@ public class Building {
         return transitions;
     }
 
-    public boolean update() {
-        boolean result = false;
+    public List<Transition> update() {
+        List<Transition> changedTransitions = new ArrayList<>(0);
         for (Transition t: transitions) {
             if (!t.getStatus() && !t.isPermanent() && t.shouldRender()) {
                 t.update();
                 if (t.getStatus()) {
-                    result = true;
+                    changedTransitions.add(t);
                 }
             }
         }
-        return result;
+        return changedTransitions;
     }
 
     /*

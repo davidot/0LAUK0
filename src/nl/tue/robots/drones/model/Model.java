@@ -118,9 +118,13 @@ public class Model {
         simulation.droneInstruction(blockedId, Arrays.asList(blockedDrone.getCurrentNode()));
         nextDroneInstruction(blockedDrone);
 
+        updateRelatedPaths(blockedId, currentTrans);
+    }
+
+    private void updateRelatedPaths(int ignoreId, Transition transition) {
         for (int id = 0; id < drones.size(); id++) {
-            if (id != blockedId) {
-                if (simulation.travelsThrough(id, currentTrans)) {
+            if (id != ignoreId) {
+                if (simulation.travelsThrough(id, transition)) {
                     System.out.println("Clearing instructions of " + id);
                     simulation.clearInstruction(id, true);
                     Drone drone = getDrone(id);
@@ -171,10 +175,6 @@ public class Model {
                 .anyMatch(t -> t == transition || t == opposite);
     }
 
-    public boolean hasNode(int id) {
-        return building.getNode(id) != null;
-    }
-
     public void addOrderTo(Node node) {
         addOrder(Arrays.asList(getStartingNode(), node, getStartingNode()));
     }
@@ -184,13 +184,10 @@ public class Model {
     }
 
     public void update() {
-        if (building.update()) {
+        for (Transition t :building.update()) {
             System.out.println("Found change in transition timing");
-            for (Drone drone : drones) {
-                simulation.clearInstruction(drone.getId(), true);
-                simulation.droneInstruction(drone.getId(), Arrays.asList(drone.getCurrentNode()));
-            }
-
+            //ignore nothing
+            updateRelatedPaths(-1, t);
         }
     }
 }
