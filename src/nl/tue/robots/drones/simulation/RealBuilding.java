@@ -1,12 +1,12 @@
 package nl.tue.robots.drones.simulation;
 
+import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.gui.GUI;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,7 +57,7 @@ public class RealBuilding {
 
     public void addObject(RealObject object) {
         object.setRealBuilding(this);
-        if(!getObjectsOnFloor(object.getFloor()).contains(object)) {
+        if (!getObjectsOnFloor(object.getFloor()).contains(object)) {
             object.setRealBuilding(this);
             objects.add(object);
         }
@@ -65,7 +65,7 @@ public class RealBuilding {
 
 
     public void render(Graphics2D g, int floors, int from, int perColumn) {
-        if(floors % perColumn != 0) {
+        if (floors % perColumn != 0) {
             return;
         }
         int rows = floors / perColumn;
@@ -76,11 +76,11 @@ public class RealBuilding {
 
         AffineTransform transform = g.getTransform();
 
-        for(int floor = from; floor < from + floors; floor++) {
+        for (int floor = from; floor < from + floors; floor++) {
             g.translate((floor % perColumn) * (w + 3 * MULTI), (floor / perColumn) * d);
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
-            for(RealObject obj : getObjectsOnFloor(floor)) {
+            for (RealObject obj : getObjectsOnFloor(floor)) {
                 obj.drawObject(g);
             }
             g.setTransform(transform);
@@ -88,11 +88,11 @@ public class RealBuilding {
 
         g.setColor(Color.BLACK);
 
-        for(int i = 1; i < rows; i++) {
+        for (int i = 1; i < rows; i++) {
             g.drawLine(0, d * (i + 1), w * perColumn, d * (i + 1));
         }
 
-        for(int i = 0; i < perColumn; i++) {
+        for (int i = 0; i < perColumn; i++) {
             int x = ((w + (3 * MULTI)) * (i + 1)) - (int) (MULTI * 1.5);
             g.drawLine(x, 0, x, d * rows);
         }
@@ -101,7 +101,7 @@ public class RealBuilding {
     public void drawFloor(Graphics2D g, int floor) {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
-        for(RealObject obj : getObjectsOnFloor(floor)) {
+        for (RealObject obj : getObjectsOnFloor(floor)) {
             obj.drawObject(g);
         }
     }
@@ -120,11 +120,11 @@ public class RealBuilding {
         g.drawLine(quad, 0, quad, getDepth() * MULTI);
         int qqaud = 7 * quad;
         g.drawLine(qqaud, 0, qqaud, getDepth() * MULTI);
-        for(int i = 0; i <= getFloors() + 1; i++) {
+        for (int i = 0; i <= getFloors() + 1; i++) {
             g.setColor(Color.BLACK);
             g.drawLine(quad, i * total, qqaud, i * total);
 
-            if(i > getFloors()) {
+            if (i > getFloors()) {
                 break;
             }
 
@@ -135,12 +135,12 @@ public class RealBuilding {
             AffineTransform transform = g.getTransform();
             int y = 0;
             int x = BASE_OFFSET;
-            for(RealObject obj : getObjectsOnFloor(floor)) {
-                if(obj.drawsSide()) {
+            for (RealObject obj : getObjectsOnFloor(floor)) {
+                if (obj.drawsSide()) {
                     obj.drawSide(g);
                     g.translate(DISTANCE_BETWEEN, 0);
                     x += DISTANCE_BETWEEN;
-                    if(x > qqaud - DISTANCE_BETWEEN * 2) {
+                    if (x > qqaud - DISTANCE_BETWEEN * 2) {
                         g.setTransform(transform);
                         y += DISTANCE_BETWEEN;
                         g.translate(0, y);
@@ -159,32 +159,21 @@ public class RealBuilding {
     }
 
     public RealObject obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor,
-                                      int range) {
+                                      int range, Transition transition) {
         List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream()
                 .filter(obj -> obj.getFloor() == floor && obj instanceof RealObstacle)
                 .map(obj -> (RealObstacle) obj).collect(Collectors.toList());
-        for(RealObstacle obstacle : obstacles) {
-            if((((Math.pow(obstacle.getX() - x, 2) + Math.pow(obstacle.getY() - y, 2)) <
+        for (RealObstacle obstacle : obstacles) {
+            if ((((Math.pow(obstacle.getX() - x, 2) + Math.pow(obstacle.getY() - y, 2)) <
                     range * range))
                     || (lx <= obstacle.getX() && ly <= obstacle.getY()) &&
                     (obstacle.getX() <= rx && obstacle.getY() <= ry)) {
                 return obstacle;
             }
         }
-        Line2D droneLine = new Line2D.Double(lx, ly, rx, ry);
-        List<RealWall> walls =
-                getAllWalls().stream().filter(w -> w.isNotDetected() && w.getFloor() == floor).collect(Collectors.toList());
-        for(RealWall wall: walls) {
-            Line2D wallLine = wall.toLine();
-            if (wallLine.intersectsLine(droneLine)) {
-                System.out.println("Found intersecting line");
-                System.out.println(wallLine.ptLineDist(x, y) < range);
-                wall.setDetected(true);
-                return wall;
-            }
-        }
-
-        return null;
+        // Line2D droneLine = new Line2D.Double(lx, ly, rx, ry);
+        return getAllWalls().stream().filter(w -> w.getFloor() == floor && w.hasUndetected() &&
+                w.hasUndetected(transition)).findFirst().orElse(null);
     }
 
     public RealDrone getDrone(int id) {

@@ -58,18 +58,18 @@ public class Drone {
     }
 
     public List<Node> getNextNode() {
-        if(currentGoals.isEmpty()) {
+        if (currentGoals.isEmpty()) {
             return null;
         }
-        if(currentNode == currentGoals.peekFirst()) {
+        if (currentNode == currentGoals.peekFirst()) {
             currentGoals.removeFirst();
-            if(currentGoals.isEmpty()) {
+            if (currentGoals.isEmpty()) {
                 return null;
             }
         }
         List<Node> list = Algorithm.findPath(currentNode, currentGoals.peekFirst()).stream()
                 .map(Transition::getTo).collect(Collectors.toList());
-        if(list.isEmpty()) {
+        if (list.isEmpty()) {
             return null;
         }
         return list;
@@ -85,7 +85,7 @@ public class Drone {
     }
 
     public void render(Graphics2D g, int floor) {
-        if(!notBusy() && currentNode != null && currentNode.getZ() == floor) {
+        if (!notBusy() && currentNode != null && currentNode.getZ() == floor) {
             int num = Simulation.getHalfSecond();
             int x = currentNode.getX() * GUI.MULTIPLIER;
             int y = currentNode.getY() * GUI.MULTIPLIER;

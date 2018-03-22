@@ -49,15 +49,15 @@ public class PlacementListener extends MouseAdapter {
         ActionListener menuListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(e.getActionCommand().equals(OBSTACLE_ACTION)) {
+                if (e.getActionCommand().equals(OBSTACLE_ACTION)) {
                     startObject = new int[]{x, y, z};
                     placingObstacle = true;
-                } else if(e.getActionCommand().equals(HUMAN_ACTION)) {
+                } else if (e.getActionCommand().equals(HUMAN_ACTION)) {
                     sim.getBuilding().addObject(new RealHuman(x, y, z));
-                } else if(e.getActionCommand().equals(WALL_ACTION)) {
+                } else if (e.getActionCommand().equals(WALL_ACTION)) {
                     startObject = new int[]{x, y, z};
                     placingWall = true;
-                } else if(e.getActionCommand().equals(DRONE_ACTION)) {
+                } else if (e.getActionCommand().equals(DRONE_ACTION)) {
                     sim.addOrder(x, y, z);
                 }
             }
@@ -73,27 +73,22 @@ public class PlacementListener extends MouseAdapter {
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-        int[] coords = sim.screenToCoords(e.getX(), e.getY());
-        x = coords[0];
-        y = coords[1];
-        z = coords[2];
+    public void mousePressed(MouseEvent e) {
+        guiToBuildingCoords(e.getX(), e.getY());
+    }
 
-        System.out
-                .println("Made " + Arrays.toString(coords) + " from " + e.getX() + ", " + e.getY());
+    @Override
+    public void mouseReleased(MouseEvent e) {
 
-        // super.mouseClicked(e);
-
-        if(placingWall) {
-            if(z == startObject[2]) {
-                RealWall object = new RealWall(z, startObject[0], startObject[1], x, y, false);
-                object.setDetected(false);
-                sim.getBuilding().addObject(
-                        object);
+        if (placingWall) {
+            guiToBuildingCoords(e.getX(),e.getY());
+            if (z == startObject[2]) {
+                sim.addNewWallObject(new RealWall(z, startObject[0], startObject[1], x, y, false));
                 placingWall = false;
             }
-        } else if(placingObstacle) {
-            if(z == startObject[2]) {
+        } else if (placingObstacle) {
+            guiToBuildingCoords(e.getX(),e.getY());
+            if (z == startObject[2]) {
                 int diffX = Math.abs(x - startObject[0]);
                 int diffY = Math.abs(y - startObject[1]);
                 int obsX = (startObject[0] > x ? x + diffX : startObject[0] + diffX);
@@ -104,25 +99,32 @@ public class PlacementListener extends MouseAdapter {
                 sim.getBuilding().addObject(new RealObstacle(obsX, obsY, z, obsSize));
                 placingObstacle = false;
             }
-        } else if(e.getButton() == MouseEvent.BUTTON3) {
-            System.out.println(e);
-            contextMenu.show(gui, e.getX(), e.getY());
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
+            if (x >= 0 && y >= 0 && z >= 0) {
+                contextMenu.show(gui, e.getX(), e.getY());
+            }
         }
     }
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-        super.mousePressed(e);
-        if(e.isPopupTrigger()) {
-            contextMenu.show(gui, e.getX(), e.getY());
-        }
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        super.mouseReleased(e);
-        if(e.isPopupTrigger()) {
-            contextMenu.show(gui, e.getX(), e.getY());
+    /**
+     * Converts the GUI coordinates to building coordinates and stores them in the x, y and z fields.
+     * @param xCoord the GUI x coordinate
+     * @param yCoord the GUI y coordinate
+     */
+    private void guiToBuildingCoords(int xCoord, int yCoord) {
+        // building coordinates of the click
+        int[] coords = sim.screenToCoords(xCoord, yCoord);
+        if ((coords[0] >= 0 && coords[0] <= sim.getBuilding().getWidth()) &&
+                (coords[1] >= 0 && coords[1] <= sim.getBuilding().getDepth()) &&
+                (coords[2] >= 0 && coords[2] <= sim.getBuilding().getFloors())) {
+            // if coordinates are withing the building, store them
+            x = coords[0];
+            y = coords[1];
+            z = coords[2];
+        } else {
+            x = -1;
+            y = -1;
+            z = -1;
         }
     }
 }
