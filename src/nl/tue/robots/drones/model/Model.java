@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,21 +116,24 @@ public class Model {
 
         // Send drone back to its previous node
         simulation.clearInstruction(blockedId, true);
-        simulation.droneInstruction(blockedId, Arrays.asList(blockedDrone.getCurrentNode()));
+        simulation.droneInstruction(blockedId,
+                Collections.singletonList(blockedDrone.getCurrentNode()));
         nextDroneInstruction(blockedDrone);
 
         updateRelatedPaths(blockedId, currentTrans);
     }
 
-    private void updateRelatedPaths(int ignoreId, Transition transition) {
+    private void updateRelatedPaths(int ignoreId, Transition trans) {
+        Transition op = trans.getOpposite();
         for (int id = 0; id < drones.size(); id++) {
             if (id != ignoreId) {
-                if (simulation.travelsThrough(id, transition)) {
+                if (simulation.travelsThrough(id, trans) || simulation.travelsThrough(id, op)) {
                     System.out.println("Clearing instructions of " + id);
                     simulation.clearInstruction(id, true);
                     Drone drone = getDrone(id);
                     simulation
-                            .droneInstruction(drone.getId(), Arrays.asList(drone.getCurrentNode()));
+                            .droneInstruction(drone.getId(),
+                                    Collections.singletonList(drone.getCurrentNode()));
                     // drone.updateCurrent(from);
                     nextDroneInstruction(drone);
                 }
