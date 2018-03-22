@@ -23,7 +23,7 @@ public class Building {
     //id to node
     private HashMap<Integer, Node> nodes = new HashMap<>();
     private Map<Integer, Set<Node>> floorList = new HashMap<>();
-    private List<Transition> transition = new ArrayList<>();
+    private List<Transition> transitions = new ArrayList<>();
 
     public List<Node> getAllNodes() {
         return new ArrayList<>(nodes.values());
@@ -92,6 +92,9 @@ public class Building {
     public void drawFloor(Graphics2D g, int floor) {
         g.setStroke(new BasicStroke(2));
         for (Transition t : getTransitionsOnFloor(floor)) {
+            if (!t.shouldRender()) {
+                continue;
+            }
             Node from = t.getFrom();
             Node to = t.getTo();
             if (from.getZ() != floor) {
@@ -99,6 +102,20 @@ public class Building {
             }
             if (t.isPermanent()) {
                 g.setColor(Color.BLUE);
+            } else if (!t.getStatus()) {
+                int timeLocked = t.getTimeLocked();
+                int i = Transition.TEMP_TIMEOUT / 4;
+                int i1 = Transition.TEMP_TIMEOUT / 2;
+                // System.out.println("T:" + timeLocked + "," + i + "," + i1);
+                if (timeLocked < i) {
+                    g.setColor(new Color(52,176,111));
+                } else {
+                    if (timeLocked < i1) {
+                        g.setColor(Color.ORANGE);
+                    } else {
+                        g.setColor(Color.YELLOW);
+                    }
+                }
             } else if (t.isOutside()) {
                 g.setColor(Color.RED);
             } else {
@@ -129,11 +146,24 @@ public class Building {
         // add transitions to nodes
         a.addTransition(transAB);
         b.addTransition(transBA);
-        transition.add(transAB);
+        transitions.add(transAB);
     }
 
     public List<Transition> getAllTransitions() {
-        return transition;
+        return transitions;
+    }
+
+    public boolean update() {
+        boolean result = false;
+        for (Transition t: transitions) {
+            if (!t.getStatus() && !t.isPermanent() && t.shouldRender()) {
+                t.update();
+                if (t.getStatus()) {
+                    result = true;
+                }
+            }
+        }
+        return result;
     }
 
     /*

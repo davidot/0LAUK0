@@ -69,16 +69,22 @@ public class Simulation {
         g.translate(floorWidth, 0);
 
         for (int floor = from; floor < from + FLOORS; floor++) {
-            building.drawFloor(g, floor);
+            building.drawBackground(g, floor);
             g.translate(-MULTIPLIER, -MULTIPLIER);
             if (drawModel) {
                 model.drawFloor(g, floor);
             }
             g.translate(MULTIPLIER, MULTIPLIER);
+            building.drawForeground(g, floor);
             g.translate(floorWidth, 0);
         }
 
         counter++;
+    }
+
+    public void update() {
+        building.update();
+        model.update();
     }
 
     /**

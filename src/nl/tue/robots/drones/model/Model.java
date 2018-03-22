@@ -53,7 +53,7 @@ public class Model {
             return;
         }
         orders.add(nodes);
-        update();
+        updateOrder();
     }
 
     public static int getHeuristic(Node startNode, Node destinationNode) {
@@ -63,7 +63,7 @@ public class Model {
         return (int) Math.sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
     }
 
-    private void update() {
+    private void updateOrder() {
         if (!orders.isEmpty()) {
             Node start = orders.peekFirst().get(0);
             List<Drone> list = drones.stream().filter(Drone::notBusy).collect(Collectors.toList());
@@ -136,7 +136,7 @@ public class Model {
 
         nextDroneInstruction(drone);
         if (drone.notBusy()) {
-            update();
+            updateOrder();
         }
     }
 
@@ -177,5 +177,16 @@ public class Model {
 
     public Building getBuilding() {
         return building;
+    }
+
+    public void update() {
+        if (building.update()) {
+            System.out.println("Found change in transition timing");
+            for (Drone drone : drones) {
+                simulation.clearInstruction(drone.getId(), true);
+                simulation.droneInstruction(drone.getId(), Arrays.asList(drone.getCurrentNode()));
+            }
+
+        }
     }
 }

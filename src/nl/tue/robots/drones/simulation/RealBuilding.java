@@ -98,11 +98,22 @@ public class RealBuilding {
         }
     }
 
-    public void drawFloor(Graphics2D g, int floor) {
+    public void drawBackground(Graphics2D g, int floor) {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
+
         for (RealObject obj : getObjectsOnFloor(floor)) {
-            obj.drawObject(g);
+            if (obj instanceof RealWall) {
+                obj.drawObject(g);
+            }
+        }
+    }
+
+    public void drawForeground(Graphics2D g, int floor) {
+        for (RealObject obj : getObjectsOnFloor(floor)) {
+            if (!(obj instanceof RealWall)) {
+                obj.drawObject(g);
+            }
         }
     }
 
@@ -154,10 +165,6 @@ public class RealBuilding {
         }
     }
 
-    public void update() {
-
-    }
-
     public RealObject obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor,
                                       int range, Transition transition) {
         List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream()
@@ -180,5 +187,9 @@ public class RealBuilding {
         return objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast)
                 .filter(d -> d.getId() == id).findFirst()
                 .orElseThrow(() -> new IllegalStateException("WOWOWO"));
+    }
+
+    public void update() {
+        objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast).forEach(RealDrone::update);
     }
 }

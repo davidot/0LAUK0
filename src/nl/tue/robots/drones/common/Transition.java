@@ -1,5 +1,7 @@
 package nl.tue.robots.drones.common;
 
+import nl.tue.robots.drones.gui.GUI;
+
 import java.awt.geom.Line2D;
 
 public class Transition {
@@ -10,16 +12,28 @@ public class Transition {
     private final Node to;
     private final boolean outside;
     private final int distance;
+    private final boolean opposite;
     private Transition otherDirection;
 
-    private boolean enabled = true;
+    public static final int TEMP_TIMEOUT = GUI.TARGET_TICKS * 15;
+
+    private int timeLocked = 0;
     private boolean permanentlyBlocked;
 
-
     public Transition(Node from, Node to, boolean outside, Transition otherDirection) {
-        this(from, to, outside);
+        this.from = from;
+        this.to = to;
+        this.outside = outside;
+
+        if (this.outside) {
+            this.distance = (int) (OUTSIDE_FACTOR + OUTSIDE_MULTIPLIER * from.distanceTo(to));
+        } else {
+            this.distance = from.distanceTo(to);
+        }
+
         this.otherDirection = otherDirection;
         otherDirection.otherDirection = this;
+        opposite = true;
     }
 
     public Transition(Node from, Node to, boolean outside) {
@@ -32,6 +46,7 @@ public class Transition {
         } else {
             this.distance = from.distanceTo(to);
         }
+        opposite = false;
     }
 
     public Node getTo() {
@@ -55,18 +70,17 @@ public class Transition {
     }
 
     public void toggleTransition(boolean state, boolean permanent) {
-        enabled = state;
-        if (state) {
-            permanentlyBlocked = false;
-        } else {
-            System.out.println("STATE: " + state + " perm?" + permanent);
-            permanentlyBlocked = permanent;
-            System.out.println("WOW PERM" + isPermanent());
-        }
+        System.out.println("LOCKING??");
+        timeLocked = state ? 0 : TEMP_TIMEOUT;
+        permanentlyBlocked = !state && permanent;
     }
 
     public boolean getStatus() {
-        return enabled;
+        return timeLocked <= 0;
+    }
+
+    public int getTimeLocked() {
+        return timeLocked;
     }
 
     public Line2D toLine() {
@@ -74,6 +88,19 @@ public class Transition {
     }
 
     public boolean isPermanent() {
-        return permanentlyBlocked && (!enabled);
+        return permanentlyBlocked;
+    }
+
+    public void update() {
+        if (!permanentlyBlocked && timeLocked > 0) {
+            timeLocked--;
+        }
+        if (timeLocked <= 0) {
+            getOpposite().timeLocked = 0;
+        }
+    }
+
+    public boolean shouldRender() {
+        return !opposite;
     }
 }

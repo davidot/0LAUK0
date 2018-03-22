@@ -244,6 +244,7 @@ public class GUI extends Canvas implements Runnable {
 
     //private to make sure the amount of ticks stays on target
     private void tick() {
+        simulation.update();
     }
 
     private void render() {

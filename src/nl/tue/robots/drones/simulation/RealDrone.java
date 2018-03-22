@@ -279,7 +279,6 @@ public class RealDrone extends RealObject {
         g.drawImage(imageSequence[Simulation.getHalfSecond()], x, y, sWidth / DRONE_DRAW_SIZE,
                 sHeight / DRONE_DRAW_SIZE, null);
         g.setComposite(composite);
-        update();
     }
 
     @Override
