@@ -182,9 +182,9 @@ public class GUI extends Canvas implements Runnable {
             System.exit(0);
         }
 
-        PlacementListener placeListener = new PlacementListener(simulation, this);
+        PlacementListener placeListener = new PlacementListener(this);
         this.addMouseListener(placeListener);
-        this.addKeyListener(new KeyboardListener(simulation, this));
+        this.addKeyListener(new KeyboardListener(this));
 //        this.add(placeListener.getContextMenu());
     }
 
@@ -293,5 +293,9 @@ public class GUI extends Canvas implements Runnable {
 
     public void reload() {
         reload = true;
+    }
+
+    public Simulation getSimulation() {
+        return simulation;
     }
 }
