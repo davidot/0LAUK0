@@ -43,17 +43,28 @@ public class RealDrone extends RealObject {
     private LinkedList<Node> destinations;
 
     //Image and rendering
-    private BufferedImage[] imageSequence;
+    private BufferedImage[] imageSequence; //Coloured version
     private static final String[] DEFAULT_IMAGE_SEQUENCE =
             {"drone_frame1.png", "drone_frame2.png"};
 
+    //Uncoloured version
     private static final BufferedImage[] frames = new BufferedImage[DEFAULT_IMAGE_SEQUENCE.length];
+
+    //Alert rendering
+    private static final String[] DEFAULT_ALERT_SEQUENCE =
+            {"alert_yellow.png", "alert_red.png"};
+    private static BufferedImage[] alertSequence = new BufferedImage[DEFAULT_ALERT_SEQUENCE.length];
+
+
 
     private static final int width;
     private static final int height;
     private RealObject lastObstacle;
     private int lastFloor;
     private int floorStep;
+
+    //alarm for when no path was found
+    private boolean alarm;
 
     public static int getImgWidth() {
         return width;
@@ -75,6 +86,11 @@ public class RealDrone extends RealObject {
                     nWidth = frames[i].getWidth();
                     nHeight = frames[i].getHeight();
                 }
+            }
+
+            //Open up all the alert frames and store them
+            for(int i = 0; i < DEFAULT_ALERT_SEQUENCE.length; i++) {
+                alertSequence[i] = ImageIO.read(new File("res/" + DEFAULT_ALERT_SEQUENCE[i]));
             }
 
         } catch (IOException e) {
@@ -110,6 +126,7 @@ public class RealDrone extends RealObject {
         }
         this.id = id;
         destinations = new LinkedList<>();
+        alarm = false;
     }
 
     /**
@@ -126,6 +143,16 @@ public class RealDrone extends RealObject {
             imgSequence[i] = Images.convertImageColor(frames[i], color, alpha);
         }
         return imgSequence;
+    }
+
+    //Basic setter
+    public void setAlarm(boolean enable){
+        alarm = enable;
+    }
+
+    //Basic getter
+    public boolean getAlarm(){
+        return alarm;
     }
 
     public int getX() {
@@ -208,25 +235,6 @@ public class RealDrone extends RealObject {
         return destinations.getLast();
     }
 
-
-    /*
-    public int getDestinationX(){
-        return destinationX;
-    }
-
-
-    public int getDestinationY(){
-        return destinationY;
-    }
-
-
-    public void setDestination(int x, int y){
-        this.destinationX = x;
-        this.destinationY = y;
-    }
-    */
-
-
     public int getSpeedX() {
         return speedX;
     }
@@ -279,6 +287,11 @@ public class RealDrone extends RealObject {
         g.drawImage(imageSequence[Simulation.getHalfSecond()], x, y, sWidth / DRONE_DRAW_SIZE,
                 sHeight / DRONE_DRAW_SIZE, null);
         g.setComposite(composite);
+
+        //Alarm
+        if (alarm){
+             g.drawImage(alertSequence[Simulation.getHalfSecond()], x+20, y-20, null);
+        }
     }
 
     @Override

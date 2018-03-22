@@ -62,21 +62,16 @@ public class Building {
 
     public Node getNearestNode(int x, int y, int z) {
         Node nearestNode = null;
-        int minimalDx = 10;
-        int minimalDy = 10;
-
-        int d = 10000;
+        int r = 100; // radius
 
         for (Node node : nodes.values()) {
             if (node.getZ() == z) {
                 int dx = (node.getX() - x) * (node.getX() - x);
                 int dy = (node.getY() - y) * (node.getY() - y);
 
-                if (dx < minimalDx && dy < minimalDy) {
-                    if (dx + dy < d) {
-                        d = dx + dy;
-                        nearestNode = node;
-                    }
+                if(dx + dy < r) {
+                    r = dx + dy;
+                    nearestNode = node;
                 }
             }
         }
@@ -128,9 +123,23 @@ public class Building {
         g.setStroke(new BasicStroke(1));
 
         for (Node node : floorList.get(floor)) {
+            int x = node.getX() * MULTIPLIER;
+            int y = node.getY() * MULTIPLIER;
             g.setColor(Color.BLACK);
-            g.fillOval(node.getX() * MULTIPLIER - NODE_R, node.getY() * MULTIPLIER - NODE_R,
-                    NODE_R * 2, NODE_R * 2);
+
+            if (node.getUp()) {
+                g.fillPolygon(
+                    new int[] {x - 10, x + 10, x}, 
+                    new int[] {y - 5, y - 5, y - 17}, 3);
+            } 
+            if (node.getDown()) {
+                g.fillPolygon(
+                    new int[] {x - 10, x + 10, x}, 
+                    new int[] {y + 5, y + 5, y + 17}, 3);
+            }
+
+            g.fillOval(x - NODE_R, y - NODE_R,
+                 NODE_R * 2, NODE_R * 2);
         }
 
     }

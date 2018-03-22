@@ -10,6 +10,8 @@ public class Node {
     private final int x;
     private final int y;
     private final int z;
+    private boolean up = false;
+    private boolean down = false;
 
     private final ArrayList<Transition> transitions = new ArrayList<>();
 
@@ -21,6 +23,20 @@ public class Node {
 
     public void addTransition(Transition transition) {
         transitions.add(transition);
+        if (transition.getTo().getZ() > z) {
+            up = true;
+        }
+        if (transition.getTo().getZ() < z) {
+            down = true;
+        }
+    }
+    
+    public boolean getUp() {
+        return this.up;
+    }
+    
+    public boolean getDown() {
+        return this.down;
     }
 
     public List<Node> getConnectedNodes() {

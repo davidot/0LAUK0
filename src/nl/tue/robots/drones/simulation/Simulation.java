@@ -99,7 +99,7 @@ public class Simulation {
         if (floor < 0 || floor >= FLOORS) {
             return new int[]{-1, -1, -1};
         }
-        int xF = (x % ((building.getWidth() + FLOORS_OFFSET) * MULTIPLIER)) / MULTIPLIER;
+        int xF = ((x + (MULTIPLIER / 2)) / MULTIPLIER) % (building.getWidth() + FLOORS_OFFSET);
         int yF = (y - PADDING) / MULTIPLIER;
         return new int[]{xF, yF, floor};
     }
@@ -123,6 +123,11 @@ public class Simulation {
     public void droneInstruction(int id, List<Node> next) {
         RealDrone d = building.getDrone(id);
         d.addDestinations(next);
+    }
+    
+    public void droneSetAlarm(int id, boolean enable){
+        RealDrone d = building.getDrone(id);
+        d.setAlarm(enable);
     }
 
     public Node clearInstruction(int id, boolean everything) {
