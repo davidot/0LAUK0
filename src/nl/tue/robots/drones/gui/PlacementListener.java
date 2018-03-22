@@ -73,23 +73,21 @@ public class PlacementListener extends MouseAdapter {
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-        int[] coords = sim.screenToCoords(e.getX(), e.getY());
-        x = coords[0];
-        y = coords[1];
-        z = coords[2];
+    public void mousePressed(MouseEvent e) {
+        guiToBuildingCoords(e.getX(), e.getY());
+    }
 
-        System.out
-                .println("Made " + Arrays.toString(coords) + " from " + e.getX() + ", " + e.getY());
-
-        // super.mouseClicked(e);
+    @Override
+    public void mouseReleased(MouseEvent e) {
 
         if (placingWall) {
+            guiToBuildingCoords(e.getX(),e.getY());
             if (z == startObject[2]) {
                 sim.addNewWallObject(new RealWall(z, startObject[0], startObject[1], x, y, false));
                 placingWall = false;
             }
         } else if (placingObstacle) {
+            guiToBuildingCoords(e.getX(),e.getY());
             if (z == startObject[2]) {
                 int diffX = Math.abs(x - startObject[0]);
                 int diffY = Math.abs(y - startObject[1]);
@@ -102,24 +100,31 @@ public class PlacementListener extends MouseAdapter {
                 placingObstacle = false;
             }
         } else if (e.getButton() == MouseEvent.BUTTON3) {
-            System.out.println(e);
-            contextMenu.show(gui, e.getX(), e.getY());
+            if (x >= 0 && y >= 0 && z >= 0) {
+                contextMenu.show(gui, e.getX(), e.getY());
+            }
         }
     }
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-        super.mousePressed(e);
-        if (e.isPopupTrigger()) {
-            contextMenu.show(gui, e.getX(), e.getY());
-        }
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        super.mouseReleased(e);
-        if (e.isPopupTrigger()) {
-            contextMenu.show(gui, e.getX(), e.getY());
+    /**
+     * Converts the GUI coordinates to building coordinates and stores them in the x, y and z fields.
+     * @param xCoord the GUI x coordinate
+     * @param yCoord the GUI y coordinate
+     */
+    private void guiToBuildingCoords(int xCoord, int yCoord) {
+        // building coordinates of the click
+        int[] coords = sim.screenToCoords(xCoord, yCoord);
+        if ((coords[0] >= 0 && coords[0] <= sim.getBuilding().getWidth()) &&
+                (coords[1] >= 0 && coords[1] <= sim.getBuilding().getDepth()) &&
+                (coords[2] >= 0 && coords[2] <= sim.getBuilding().getFloors())) {
+            // if coordinates are withing the building, store them
+            x = coords[0];
+            y = coords[1];
+            z = coords[2];
+        } else {
+            x = -1;
+            y = -1;
+            z = -1;
         }
     }
 }
