@@ -10,13 +10,14 @@ import java.awt.Graphics2D;
  */
 public class RealObstacle extends RealObject {
     protected int x, y;
-    protected int size;
+    protected int sizeX, sizeY;
 
-    public RealObstacle(int x, int y, int floor, int size) {
+    public RealObstacle(int x, int y, int floor, int sizeX, int sizeY) {
         super(floor);
         this.x = x;
         this.y = y;
-        this.size = size;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
     }
 
     public int getX() {
@@ -30,12 +31,12 @@ public class RealObstacle extends RealObject {
     @Override
     public void drawObject(Graphics2D g) {
         g.setColor(Color.RED);
-        g.fillOval(GUI.MULTIPLIER * x - size / 2, GUI.MULTIPLIER * y - size / 2, size, size);
+        g.fillRect(GUI.MULTIPLIER * (x - sizeX / 2), GUI.MULTIPLIER * (y - sizeY / 2), GUI.MULTIPLIER * sizeX, GUI.MULTIPLIER * sizeY);
     }
 
     @Override
     public void drawSide(Graphics2D g) {
         g.setColor(Color.RED);
-        g.fillOval(0, 0, RealBuilding.DRAW_SIZE, RealBuilding.DRAW_SIZE);
+        g.fillRect(0, 0, RealBuilding.DRAW_SIZE, RealBuilding.DRAW_SIZE);
     }
 }

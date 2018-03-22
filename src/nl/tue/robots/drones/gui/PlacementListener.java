@@ -94,12 +94,10 @@ public class PlacementListener extends MouseAdapter {
             if(z == startObject[2]) {
                 int diffX = Math.abs(x - startObject[0]);
                 int diffY = Math.abs(y - startObject[1]);
-                int obsX = (startObject[0] > x ? x + diffX : startObject[0] + diffX);
-                int obsY = (startObject[1] > y ? y + diffY : startObject[1] + diffY);
-                int obsSize = (diffX > diffY ? diffX / 2 :
-                        diffY / 2); // size of obstacle is 0.5 times smallest of differences
-                System.out.println("Addin ob: " + obsX + "," + obsY + "," + obsSize);
-                sim.getBuilding().addObject(new RealObstacle(obsX, obsY, z, obsSize));
+                int obsX = (startObject[0] > x ? x + diffX / 2 : startObject[0] + diffX / 2);
+                int obsY = (startObject[1] > y ? y + diffY / 2 : startObject[1] + diffY / 2);
+                System.out.println("Adding ob: (" + obsX + "," + obsY + ") of " + diffX + " by " + diffY);
+                sim.getBuilding().addObject(new RealObstacle(obsX, obsY, z, diffX, diffY));
                 placingObstacle = false;
             }
         } else if(e.getButton() == MouseEvent.BUTTON3) {
