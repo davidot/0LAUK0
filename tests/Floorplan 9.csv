@@ -10,11 +10,11 @@
 7;11;4;0;
 8;4;4;0;# stairwell
 9;27;60;0;
-10;35;60;0;# elevator shaft
+10;38;60;0;# elevator shaft
 11;38;16;0;
 12;38;4;0;
 # All nodes on floor 1;;;;
-100;35;60;1;# elevator shaft
+100;38;60;1;# elevator shaft
 101;4;4;1;# stairwell
 102;10;4;1;
 103;10;8;1;
@@ -60,7 +60,7 @@
 145;21;47;1;
 #All nodes on floor 2;;;;
 # All nodes on floor 1;;;;
-200;35;60;2;# elevator shaft
+200;38;60;2;# elevator shaft
 201;4;4;2;# stairwell
 202;10;4;2;
 203;10;8;2;
@@ -113,8 +113,8 @@
 306;28;16;3;
 307;32;16;3;
 308;32;12;3;
-309;14;12;3;
-310;28;12;3;
+309;14;10;3;
+310;28;10;3;
 311;10;22;3;
 312;10;28;3;
 313;5;28;3;
@@ -150,25 +150,25 @@
 345;5;22;3;
 346;10;25;3;
 347;32;25;3;
-348;35;60;3;
-349;35;4;3;#Stairwell top right
+348;38;60;3;#Elevator Bottom Left
+349;38;4;3;#Stairwell top right
 350;32;4;3;
 #All nodes on floor 4;;;;
-400;35;4;4;#Part of building in top-right
+400;38;4;4;#Part of building in top-right
 401;30;4;4;
 402;30;10;4;
-403;35;10;4;
+403;38;10;4;
 #404 node not found
-405;35;60;4;#Part of the building in the bottom-right
+405;38;60;4;#Part of the building in the bottom-right
 406;30;60;4;
-407;30;54;4;
-408;35;54;4;
-410;30;15;4;#Part of the outside space on floor 4
-411;30;50;4;
+407;30;53;4;
+408;38;53;4;
+410;30;16;4;#Part of the outside space on floor 4
+411;30;46;4;
 412;30;33;4;
-413;35;15;4;
-414;35;50;4;
-415;35;33;4;
+413;38;16;4;
+414;38;46;4;
+415;38;33;4;
 ___;;;;
 # All transitions on floor 0:;;;;
 0;9;;;

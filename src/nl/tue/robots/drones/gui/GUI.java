@@ -65,8 +65,8 @@ public class GUI extends Canvas implements Runnable {
     private boolean running;
     private Thread mainThread;
 
-
-    public static final int MULTIPLIER = 10;
+    //Should be 10, but can be any other number due to debugging
+    public static final int MULTIPLIER = 7;
 
     private Simulation simulation;
     private boolean reload = false;

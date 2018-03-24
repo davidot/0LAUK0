@@ -17,9 +17,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Building {
-    private static final boolean DRAW_NODE_COORDINATES = true;
-    private static final boolean DRAW_NODE_ID = true;
-    private static final boolean DRAW_TRANSITION_CONNECTIONS = true;
+    private static final boolean DRAW_NODE_COORDINATES = false;
+    private static final boolean DRAW_NODE_ID = false;
+    private static final boolean DRAW_TRANSITION_CONNECTIONS = false;
             
     private static final int MULTIPLIER = GUI.MULTIPLIER;
     private static final int NODE_R = 4;

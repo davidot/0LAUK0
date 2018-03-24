@@ -20,6 +20,10 @@ public class Simulation {
     private RealBuilding building;
     private Model model;
     private static final int MULTIPLIER = GUI.MULTIPLIER;
+    
+    //Number of Floors to fit on a single row (NOTE: The sideview also counts as one!)
+    //Should be 4 but can be another number during debugging
+    private static final int NUM_FLOORS_PER_ROW = 6;
 
     private static final int FLOORS = 5;
     private static final int FLOORS_OFFSET = 3;
@@ -109,7 +113,7 @@ public class Simulation {
     }
 
     public Dimension getSize() {
-        return new Dimension((building.getWidth() * 4 + (FLOORS + 1) * FLOORS_OFFSET) * MULTIPLIER,
+        return new Dimension((building.getWidth() * NUM_FLOORS_PER_ROW + (FLOORS + 1) * FLOORS_OFFSET) * MULTIPLIER,
                 building.getDepth() * MULTIPLIER + PADDING * 2);
     }
 
