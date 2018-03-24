@@ -107,13 +107,26 @@ public class Simulation {
      * @return an array containing the coordinates in the order {x, y, z}
      */
     public int[] screenToCoords(int x, int y) {
-        int floor = x / ((building.getWidth() + FLOORS_OFFSET) * MULTIPLIER) - 1;
+        int floor = (int) (x / ((building.getWidth() + FLOORS_OFFSET - 0.5) * MULTIPLIER) - 1);
         if (floor < 0 || floor >= FLOORS) {
             return new int[]{-1, -1, -1};
         }
         int xF = ((x + (MULTIPLIER / 2)) / MULTIPLIER) % (building.getWidth() + FLOORS_OFFSET);
         int yF = (y - PADDING) / MULTIPLIER;
         return new int[]{xF, yF, floor};
+    }
+    
+    /**
+     * Checks if given coordinates fall within the GUI building limits
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @param z z-coordinate
+     * @return True if (x,y,z) is within the building
+     */
+    public boolean isWithinBuilding(int x, int y, int z){
+        return x >= 0 && x <= getBuilding().getWidth() &&
+               y >= 0 && y <= getBuilding().getDepth() &&
+               z >= 0 && z <= getBuilding().getFloors();
     }
 
     public RealBuilding getBuilding() {

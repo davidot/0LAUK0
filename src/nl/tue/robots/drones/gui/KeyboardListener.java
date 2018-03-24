@@ -7,7 +7,7 @@ import java.awt.event.KeyListener;
 
 public class KeyboardListener implements KeyListener {
 
-    private GUI gui;
+    private final GUI gui;
 
     public KeyboardListener(GUI gui) {
         this.gui = gui;
@@ -26,6 +26,11 @@ public class KeyboardListener implements KeyListener {
                 break;
             case KeyEvent.VK_R:
                 gui.reload();
+                break;
+            case KeyEvent.VK_ESCAPE:
+                //Pressing escape while placing a wall/obstacle allows you to
+                //not place it instead
+                gui.placeListener.cancelObjectPlacement();
                 break;
             case KeyEvent.VK_P:
                 gui.getSimulation().togglePause();
