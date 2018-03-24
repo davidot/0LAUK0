@@ -33,6 +33,7 @@ public class Simulation {
 
     private int from = 0;
     private boolean drawModel = true;
+    private boolean paused = false;
 
     public Simulation(File file) throws FileNotFoundException, MalformedWallFileException {
         //This is where a real application would open the file.
@@ -86,9 +87,15 @@ public class Simulation {
         counter++;
     }
 
+    public void togglePause() {
+        paused = !paused;
+    }
+
     public void update() {
-        building.update();
-        model.update();
+        if (!paused) {
+            building.update();
+            model.update();
+        }
     }
 
     /**

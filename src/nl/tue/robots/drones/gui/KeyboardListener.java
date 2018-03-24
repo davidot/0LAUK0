@@ -27,6 +27,9 @@ public class KeyboardListener implements KeyListener {
             case KeyEvent.VK_R:
                 gui.reload();
                 break;
+            case KeyEvent.VK_P:
+                gui.getSimulation().togglePause();
+                break;
         }
     }
 
