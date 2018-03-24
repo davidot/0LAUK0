@@ -52,7 +52,7 @@ public class GraphIO {
                     int y = scan.nextInt();
                     int z = scan.nextInt();
 
-                    Node n = new Node(x, y, z);
+                    Node n = new Node(x, y, z, id);
 
                     build.addNode(n, id);
                 } // else line is a comment skip it

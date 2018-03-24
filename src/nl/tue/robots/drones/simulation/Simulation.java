@@ -21,7 +21,7 @@ public class Simulation {
     private Model model;
     private static final int MULTIPLIER = GUI.MULTIPLIER;
 
-    private static final int FLOORS = 3;
+    private static final int FLOORS = 5;
     private static final int FLOORS_OFFSET = 3;
     private static final int PADDING = 20;
 
@@ -46,8 +46,8 @@ public class Simulation {
             building.addObject(new RealHuman(10, 11 * i + 40, 0));
         }
 
-        model.addOrder(Arrays.asList(start, model.getNode(144), start, model.getNode(232), start));
-        model.addOrder(Arrays.asList(start, model.getNode(232), start));
+        model.addOrder(Arrays.asList(start, model.getNode(144), start, model.getNode(332), start));
+        model.addOrder(Arrays.asList(start, model.getNode(332), start));
         model.addOrder(Arrays.asList(start, model.getNode(8), start));
         model.addOrder(Arrays.asList(start, model.getNode(134), start));
         /*for(int i = 0; i < 100; i++) {

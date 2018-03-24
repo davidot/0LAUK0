@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Node {
-
+    private final int id;
     private final int x;
     private final int y;
     private final int z;
@@ -15,10 +15,11 @@ public class Node {
 
     private final ArrayList<Transition> transitions = new ArrayList<>();
 
-    public Node(int x, int y, int z) {
+    public Node(int x, int y, int z, int id) {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.id = id;
     }
 
     public void addTransition(Transition transition) {
@@ -29,6 +30,10 @@ public class Node {
         if (transition.getTo().getZ() < z) {
             down = true;
         }
+    }
+    
+    public int getID() {
+        return this.id;
     }
     
     public boolean getUp() {

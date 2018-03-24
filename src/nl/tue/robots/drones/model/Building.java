@@ -17,7 +17,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Building {
-
+    private static final boolean DRAW_NODE_COORDINATES = true;
+    private static final boolean DRAW_NODE_ID = true;
+    private static final boolean DRAW_TRANSITION_CONNECTIONS = true;
+            
     private static final int MULTIPLIER = GUI.MULTIPLIER;
     private static final int NODE_R = 4;
     //id to node
@@ -118,6 +121,15 @@ public class Building {
             }
             g.drawLine(from.getX() * MULTIPLIER, from.getY() * MULTIPLIER,
                     to.getX() * MULTIPLIER, to.getY() * MULTIPLIER);
+            
+            //draw node IDs to which this transition is connected
+            if (DRAW_TRANSITION_CONNECTIONS){
+                int transitionX = (t.getFrom().getX() + t.getTo().getX()) / 2 * MULTIPLIER;
+                int transitionY = (t.getFrom().getY() + t.getTo().getY()) / 2 * MULTIPLIER;
+                g.setColor(Color.CYAN);
+                g.drawString("(" + t.getFrom().getID() + "->" + t.getTo().getID() + ")",
+                        transitionX, transitionY);
+            }
         }
 
         g.setStroke(new BasicStroke(1));
@@ -140,8 +152,16 @@ public class Building {
 
             g.fillOval(x - NODE_R, y - NODE_R,
                  NODE_R * 2, NODE_R * 2);
+            
+            //draw coordinates:
+            if (DRAW_NODE_COORDINATES){
+                g.drawString("(" + node.getX() + "," + node.getY() + ")", x+5, y-5);
+            }
+            //draw ID:
+            if (DRAW_NODE_ID){
+                g.drawString(Integer.toString(node.getID()), x+5, y+10);
+            }
         }
-
     }
 
     public void addTransition(int from, int to, boolean outside) {

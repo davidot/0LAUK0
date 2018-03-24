@@ -23,8 +23,10 @@ public class KeyboardListener implements KeyListener {
             case KeyEvent.VK_M:
                 Simulation simulation = gui.getSimulation();
                 simulation.setDrawModel(!simulation.getDrawModel());
+                break;
             case KeyEvent.VK_R:
                 gui.reload();
+                break;
         }
     }
 
