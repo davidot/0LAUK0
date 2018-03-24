@@ -89,6 +89,7 @@ public class Simulation {
 
     public void togglePause() {
         paused = !paused;
+        System.out.println((paused ? "Pausing" : "Unpause"));
     }
 
     public void update() {

@@ -33,7 +33,7 @@ public class RealWall extends RealObject {
     @Override
     public void drawObject(Graphics2D g) {
         //draw the walls
-        g.setStroke(new BasicStroke(MULTI));
+        g.setStroke(new BasicStroke(MULTI/2));
         g.setColor(undetected.isEmpty() ? Color.GRAY : Color.RED);
         g.drawLine(x1 * MULTI, y1 * MULTI, x2 * MULTI, y2 * MULTI);
         g.setStroke(new BasicStroke(1));
@@ -86,4 +86,8 @@ public class RealWall extends RealObject {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return String.format("[Wall on floor %d from (%d,%d) to (%d,%d)]", getFloor(),x1,y1,x2,y2);
+    }
 }

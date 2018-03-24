@@ -10,6 +10,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -386,10 +387,13 @@ public class RealDrone extends RealObject {
             }
         }
 
+//        RealObject obstacle =
+//                getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, getFloor(), range,
+//                        currentTransition);
         RealObject obstacle =
-                getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, getFloor(), range,
-                        currentTransition);
+                getRealBuilding().pathObstructionInRange(new Point2D.Double(x,y), new Point2D.Double(destinationX,destinationY), getFloor(), range);
         if (obstacle != null && obstacle != lastObstacle) {
+            System.out.printf("At (%d,%d) with destination (%d,%d) found obstacle: %s%n", x,y,destinationX,destinationY,obstacle);
             // tell simulation that an obstacle is in the way for this drone
             lastObstacle = obstacle;
             boolean permanent = obstacle instanceof RealWall;

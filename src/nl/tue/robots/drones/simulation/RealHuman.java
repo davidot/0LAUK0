@@ -21,7 +21,7 @@ public class RealHuman extends RealObstacle {
     private BufferedImage humanIcon;
 
     public RealHuman(int x, int y, int floor) {
-        super(x, y, floor, 2, 2);
+        super(floor, x-1 , y-1, x+1, y+1);
         try {
             humanIcon = ImageIO.read(new File("res/construction-worker.png"));
         } catch (IOException e) {
@@ -31,13 +31,18 @@ public class RealHuman extends RealObstacle {
 
     @Override
     public void drawObject(Graphics2D g) {
-        g.drawImage(humanIcon.getScaledInstance(sizeX * GUI.MULTIPLIER, sizeY * GUI.MULTIPLIER,
-                BufferedImage.SCALE_SMOOTH), (int) (GUI.MULTIPLIER * (x - 1)),
-                (int) (GUI.MULTIPLIER * (y - 1)), null);
+        g.drawImage(humanIcon.getScaledInstance(getXSize() * GUI.MULTIPLIER, getYSize() * GUI.MULTIPLIER,
+                BufferedImage.SCALE_SMOOTH), (GUI.MULTIPLIER * (getX() - 1)),
+                (GUI.MULTIPLIER * (getY() - 1)), null);
     }
 
     @Override
     public void drawSide(Graphics2D g) {
         g.drawImage(humanIcon, 0, 0, RealBuilding.DRAW_SIZE, RealBuilding.DRAW_SIZE, null);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[Human at (%d,%d)]", getX(),getY());
     }
 }

@@ -100,12 +100,9 @@ public class MouseClickListener extends MouseAdapter {
         } else if (placingObstacle) {
             guiToBuildingCoords(e.getX(),e.getY());
             if (z == startObject[2]) {
-                int diffX = Math.abs(x - startObject[0]);
-                int diffY = Math.abs(y - startObject[1]);
-                int obsX = (startObject[0] > x ? x + diffX / 2 : startObject[0] + diffX / 2);
-                int obsY = (startObject[1] > y ? y + diffY / 2 : startObject[1] + diffY / 2);
-                System.out.println("Adding ob: (" + obsX + "," + obsY + ") of " + diffX + " by " + diffY);
-                sim().getBuilding().addObject(new RealObstacle(obsX, obsY, z, diffX, diffY));
+                RealObstacle ob = new RealObstacle(z, startObject[0], startObject[1], x, y);
+                sim().getBuilding().addObject(ob);
+                System.out.println("Adding ob: (" + ob.getX() + "," + ob.getY() + ") of " + ob.getXSize()+ " by " + ob.getYSize());
                 placingObstacle = false;
             }
         } else if (e.getButton() == MouseEvent.BUTTON3) {
