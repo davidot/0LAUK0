@@ -32,6 +32,9 @@ public class KeyboardListener implements KeyListener {
                 //not place it instead
                 gui.placeListener.cancelObjectPlacement();
                 break;
+            case KeyEvent.VK_P:
+                gui.getSimulation().togglePause();
+                break;
         }
     }
 
