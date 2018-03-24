@@ -20,12 +20,14 @@ public class MouseClickListener extends MouseAdapter {
     private static final String OBSTACLE_ACTION = "obstacle";
     private static final String REMOVE_ACTION = "remove";
 
+    protected int guiX;
+    protected int guiY;
     int x;
     int y;
     int z;
-    int[] startObject;
-    boolean placingWall;
-    boolean placingObstacle;
+    protected int[] startObject;
+    protected boolean placingWall;
+    protected boolean placingObstacle;
     JPopupMenu contextMenu;
 
     final GUI gui;
@@ -41,7 +43,7 @@ public class MouseClickListener extends MouseAdapter {
         JMenuItem humanMenuItem = new JMenuItem("Place Worker");
         JMenuItem wallMenuItem = new JMenuItem("Draw Wall");
         JMenuItem droneMenuItem = new JMenuItem("Send drone");
-        JMenuItem removeMenuItem = new JMenuItem("Remove Obstacle/Human");
+        JMenuItem removeMenuItem = new JMenuItem("Remove Obstacle/Worker");
 
         objectMenuItem.setActionCommand(OBSTACLE_ACTION);
         humanMenuItem.setActionCommand(HUMAN_ACTION);
@@ -79,6 +81,11 @@ public class MouseClickListener extends MouseAdapter {
         contextMenu.add(droneMenuItem);
         contextMenu.add(removeMenuItem);
     }
+    
+    protected void cancelObjectPlacement(){
+        placingWall = false;
+        placingObstacle = false;
+    }
 
     private Simulation sim() {
         return gui.getSimulation();
@@ -90,13 +97,20 @@ public class MouseClickListener extends MouseAdapter {
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
-        if (placingWall) {
+    public void mouseReleased(MouseEvent e) {   
+        guiX = e.getX();
+        guiY = e.getY();
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            if (x >= 0 && y >= 0 && z >= 0) {
+                contextMenu.show(gui, e.getX(), e.getY());
+                cancelObjectPlacement();
+            }
+        } else if (placingWall) {
             guiToBuildingCoords(e.getX(),e.getY());
             if (z == startObject[2]) {
                 sim().addNewWallObject(new RealWall(z, startObject[0], startObject[1], x, y, false));
-                placingWall = false;
             }
+            placingWall = false;
         } else if (placingObstacle) {
             guiToBuildingCoords(e.getX(),e.getY());
             if (z == startObject[2]) {
@@ -106,12 +120,8 @@ public class MouseClickListener extends MouseAdapter {
                 int obsY = (startObject[1] > y ? y + diffY / 2 : startObject[1] + diffY / 2);
                 System.out.println("Adding ob: (" + obsX + "," + obsY + ") of " + diffX + " by " + diffY);
                 sim().getBuilding().addObject(new RealObstacle(obsX, obsY, z, diffX, diffY));
-                placingObstacle = false;
             }
-        } else if (e.getButton() == MouseEvent.BUTTON3) {
-            if (x >= 0 && y >= 0 && z >= 0) {
-                contextMenu.show(gui, e.getX(), e.getY());
-            }
+            placingObstacle = false;
         }
     }
 
@@ -123,9 +133,7 @@ public class MouseClickListener extends MouseAdapter {
     private void guiToBuildingCoords(int xCoord, int yCoord) {
         // building coordinates of the click
         int[] coords = sim().screenToCoords(xCoord, yCoord);
-        if ((coords[0] >= 0 && coords[0] <= sim().getBuilding().getWidth()) &&
-                (coords[1] >= 0 && coords[1] <= sim().getBuilding().getDepth()) &&
-                (coords[2] >= 0 && coords[2] <= sim().getBuilding().getFloors())) {
+        if (sim().isWithinBuilding(coords[0], coords[1], coords[2])) {
             // if coordinates are withing the building, store them
             x = coords[0];
             y = coords[1];
