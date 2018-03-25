@@ -42,6 +42,21 @@ public class KeyboardListener implements KeyListener {
             case KeyEvent.VK_DOWN:
                 gui.getSimulation().floorUp();
                 break;
+            case KeyEvent.VK_1:
+                gui.getMenuPanel().activate(GUIMenuPanel.MenuPanelButton.DESTINATION);
+                break;
+            case KeyEvent.VK_2:
+                gui.getMenuPanel().activate(GUIMenuPanel.MenuPanelButton.WORKER);
+                break;
+            case KeyEvent.VK_3:
+                gui.getMenuPanel().activate(GUIMenuPanel.MenuPanelButton.WALL);
+                break;
+            case KeyEvent.VK_4:
+                gui.getMenuPanel().activate(GUIMenuPanel.MenuPanelButton.OBSTACLE);
+                break;
+            case KeyEvent.VK_5:
+                gui.getMenuPanel().activate(GUIMenuPanel.MenuPanelButton.REMOVE);
+                break;
         }
     }
 

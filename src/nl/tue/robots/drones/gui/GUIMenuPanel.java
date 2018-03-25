@@ -88,7 +88,7 @@ public class GUIMenuPanel extends Canvas {
      * Sets the given button as active.
      * @param b the button to set as active
      */
-    private void activate(MenuPanelButton b) {
+    protected void activate(MenuPanelButton b) {
         destinationActive = false;
         workerActive = false;
         wallActive = false;

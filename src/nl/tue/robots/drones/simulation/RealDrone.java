@@ -397,9 +397,7 @@ public class RealDrone extends RealObject {
                     destinationX, destinationY, obstacle);
             // tell simulation that an obstacle is in the way for this drone
             lastObstacle = obstacle;
-            boolean permanent = obstacle instanceof RealWall;
-            System.out.println("FOuND " + permanent + "permanent");
-            simulation.sendObstacle(id, permanent);
+            simulation.sendObstacle(id, obstacle instanceof RealWall);
             return;
         }
 
