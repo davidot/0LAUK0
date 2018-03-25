@@ -22,7 +22,6 @@ import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 
 public class GUI extends Canvas implements Runnable {
@@ -80,6 +79,8 @@ public class GUI extends Canvas implements Runnable {
 
     private double lastMouseX = 0;
     private double lastMouseY = 0;
+
+    private GUIMenuPanel menuPanel;
     
     private GUI() {
 
@@ -118,11 +119,20 @@ public class GUI extends Canvas implements Runnable {
         GUI.setPreferredSize(new Dimension(RENDER_WIDTH, RENDER_HEIGHT));
         GUI.setIgnoreRepaint(true);
 
+        GUIMenuPanel menu = new GUIMenuPanel();
+        Dimension menuDimension = new Dimension(RENDER_WIDTH, GUIMenuPanel.BUTTON_HEIGHT + 2 * GUIMenuPanel.BUTTON_MARGIN);
+        menu.setMinimumSize(menuDimension);
+        menu.setMaximumSize(menuDimension);
+        menu.setPreferredSize(menuDimension);
+
+        GUI.setMenuPanel(menu);
+
         //Make the frame
         frame = new JFrame(TITLE);
         frame.setIgnoreRepaint(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
+        frame.add(menu, BorderLayout.NORTH);
         frame.add(GUI, BorderLayout.CENTER);
         frame.setResizable(false);
         GUI.addComponentListener(new ComponentAdapter() {
@@ -143,6 +153,10 @@ public class GUI extends Canvas implements Runnable {
         //Hack for a way to display the fps on the frame
         GUI.start();
 
+    }
+
+    private void setMenuPanel(GUIMenuPanel menuPanel) {
+        this.menuPanel = menuPanel;
     }
 
     private static void setPixelSize(int width, int height) {
@@ -194,8 +208,10 @@ public class GUI extends Canvas implements Runnable {
 
         placeListener = new MouseClickListener(this);
         this.addMouseListener(placeListener);
+        menuPanel.setMouseClickListener(placeListener);
         keyboardListener = new KeyboardListener(this);
         this.addKeyListener(keyboardListener);
+        menuPanel.addKeyListener(keyboardListener);
 //        this.add(placeListener.getContextMenu());
     }
 
@@ -286,7 +302,7 @@ public class GUI extends Canvas implements Runnable {
         
         //start drawing here
         AffineTransform t = g.getTransform();
-        
+
         //draw the building
         simulation.draw(g, width, height);
         
@@ -294,7 +310,7 @@ public class GUI extends Canvas implements Runnable {
         //int floorWidth = (simulation.getBuilding().getWidth() + Simulation.FLOORS_OFFSET) * MULTIPLIER;
         
         //draw ghost images when placing objects
-        if (placeListener.placingWall || placeListener.placingObstacle){
+        if ((placeListener.placingWall || placeListener.placingObstacle) && !placeListener.placingFirst){
             //draw a 'ghost' wall
             g.setColor(new Color(1, 1, 1, 0.5f));
             g.setStroke(new BasicStroke(MULTIPLIER));
@@ -346,5 +362,9 @@ public class GUI extends Canvas implements Runnable {
 
     public Simulation getSimulation() {
         return simulation;
+    }
+
+    public GUIMenuPanel getMenuPanel() {
+        return menuPanel;
     }
 }

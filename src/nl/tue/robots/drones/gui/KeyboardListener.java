@@ -30,7 +30,8 @@ public class KeyboardListener implements KeyListener {
             case KeyEvent.VK_ESCAPE:
                 //Pressing escape while placing a wall/obstacle allows you to
                 //not place it instead
-                gui.placeListener.cancelObjectPlacement();
+                gui.getMenuPanel().deactivate();
+                gui.placeListener.cancelAction();
                 break;
             case KeyEvent.VK_P:
                 gui.getSimulation().togglePause();
