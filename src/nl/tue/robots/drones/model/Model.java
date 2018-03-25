@@ -166,7 +166,7 @@ public class Model {
     }
 
     public boolean droneTransition(int id, Transition transition) {
-        if (transitionLocked(transition)) {
+        if (transitionLocked(transition) || !transition.open()) {
             return false;
         }
         getDrone(id).updateCurrentTransition(transition);
@@ -189,7 +189,6 @@ public class Model {
 
     public void update() {
         for (Transition t : building.update()) {
-            System.out.println("Found change in transition timing");
             //ignore nothing
             updateRelatedPaths(-1, t);
         }

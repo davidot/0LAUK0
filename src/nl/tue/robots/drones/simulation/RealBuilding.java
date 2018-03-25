@@ -240,6 +240,12 @@ public class RealBuilding {
             } // else nothing found in range in path, obstruction remains null
         }
 
+        if (obstruction instanceof RealWall) {
+            //tell wall it is detected
+            RealWall realWall = (RealWall) obstruction;
+            realWall.hasDetected();
+        }
+
         return obstruction;
     }
 

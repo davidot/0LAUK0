@@ -142,9 +142,6 @@ public class Simulation {
     }
 
     public void sendObstacle(int id, boolean permanent) {
-        if (permanent) {
-            System.out.println("SENDING PERM TO MODEL");
-        }
         model.droneBlocked(id, permanent);
     }
 
@@ -207,7 +204,6 @@ public class Simulation {
                 .filter(t -> t.getFrom().getZ() == object.getFloor() &&
                         object.toLine().intersectsLine(t.toLine())).forEach(
                 object::addUndetected);
-        System.out.println("INTERSECT" + object.undetected.size());
         building.addObject(object);
     }
 

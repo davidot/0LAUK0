@@ -70,7 +70,6 @@ public class Transition {
     }
 
     public void toggleTransition(boolean state, boolean permanent) {
-        System.out.println("LOCKING??");
         timeLocked = state ? 0 : TEMP_TIMEOUT;
         permanentlyBlocked = !state && permanent;
     }
@@ -102,5 +101,9 @@ public class Transition {
 
     public boolean shouldRender() {
         return !opposite;
+    }
+
+    public boolean open() {
+        return getStatus() && !permanentlyBlocked;
     }
 }

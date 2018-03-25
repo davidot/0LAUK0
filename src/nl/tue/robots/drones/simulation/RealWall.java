@@ -7,8 +7,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RealWall extends RealObject {
     private static final boolean DRAW_WALL_COORDINATES = false;
@@ -19,7 +17,7 @@ public class RealWall extends RealObject {
     private final int x2;
     private final int y2;
     private final boolean outer;
-    public List<Transition> undetected = new ArrayList<>();
+    private boolean undetected = false;
 
     public RealWall(int floor, int x1, int y1, int x2, int y2, boolean outerWall) {
         super(floor);
@@ -34,7 +32,7 @@ public class RealWall extends RealObject {
     public void drawObject(Graphics2D g) {
         //draw the walls
         g.setStroke(new BasicStroke(MULTI / 2));
-        g.setColor(undetected.isEmpty() ? Color.GRAY : Color.RED);
+        g.setColor(undetected ? Color.RED : Color.GRAY);
         g.drawLine(x1 * MULTI, y1 * MULTI, x2 * MULTI, y2 * MULTI);
         g.setStroke(new BasicStroke(1));
 
@@ -67,7 +65,11 @@ public class RealWall extends RealObject {
     }
 
     public boolean hasUndetected() {
-        return !undetected.isEmpty();
+        return undetected;
+    }
+
+    public void hasDetected() {
+        undetected = false;
     }
 
     public Line2D toLine() {
@@ -75,15 +77,11 @@ public class RealWall extends RealObject {
     }
 
     public void addUndetected(Transition t) {
-        undetected.add(t);
+        undetected = true;
     }
 
     public boolean hasUndetected(Transition transition) {
-        if (undetected.contains(transition)) {
-            undetected.remove(transition);
-            return true;
-        }
-        return false;
+        return undetected;
     }
 
     @Override
