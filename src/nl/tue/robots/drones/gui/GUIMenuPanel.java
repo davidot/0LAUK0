@@ -1,11 +1,17 @@
 package nl.tue.robots.drones.gui;
 
-import java.awt.*;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 
-import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.*;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.DESTINATION;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.OBSTACLE;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.REMOVE;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.WALL;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.WORKER;
 
 public class GUIMenuPanel extends Canvas {
 
@@ -144,6 +150,10 @@ public class GUIMenuPanel extends Canvas {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+        if (getBufferStrategy() == null) {
+            createBufferStrategy(2);
+        }
+
         g.setColor(getBackground());
         g.fillRect(0,0, getWidth(), getHeight());
 
