@@ -36,6 +36,12 @@ public class KeyboardListener implements KeyListener {
             case KeyEvent.VK_P:
                 gui.getSimulation().togglePause();
                 break;
+            case KeyEvent.VK_UP:
+                gui.getSimulation().floorDown();
+                break;
+            case KeyEvent.VK_DOWN:
+                gui.getSimulation().floorUp();
+                break;
         }
     }
 

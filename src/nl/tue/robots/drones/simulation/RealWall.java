@@ -12,7 +12,7 @@ import java.util.List;
 
 public class RealWall extends RealObject {
     private static final boolean DRAW_WALL_COORDINATES = false;
-    
+
     private static final int MULTI = GUI.MULTIPLIER;
     private final int x1;
     private final int y1;
@@ -33,15 +33,15 @@ public class RealWall extends RealObject {
     @Override
     public void drawObject(Graphics2D g) {
         //draw the walls
-        g.setStroke(new BasicStroke(MULTI/2));
+        g.setStroke(new BasicStroke(MULTI / 2));
         g.setColor(undetected.isEmpty() ? Color.GRAY : Color.RED);
         g.drawLine(x1 * MULTI, y1 * MULTI, x2 * MULTI, y2 * MULTI);
         g.setStroke(new BasicStroke(1));
-        
-        if (DRAW_WALL_COORDINATES){
+
+        if (DRAW_WALL_COORDINATES) {
             g.setColor(Color.YELLOW);
             g.drawString("(" + x1 + "," + y1 + "," + x2 + "," + y2 + ")",
-                        (x1+x2)/2*MULTI-38, (y1+y2)/2*MULTI+4);
+                    (x1 + x2) / 2 * MULTI - 38, (y1 + y2) / 2 * MULTI + 4);
         }
     }
 
@@ -88,6 +88,7 @@ public class RealWall extends RealObject {
 
     @Override
     public String toString() {
-        return String.format("[Wall on floor %d from (%d,%d) to (%d,%d)]", getFloor(),x1,y1,x2,y2);
+        return String
+                .format("[Wall on floor %d from (%d,%d) to (%d,%d)]", getFloor(), x1, y1, x2, y2);
     }
 }

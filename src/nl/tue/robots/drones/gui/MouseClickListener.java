@@ -39,7 +39,6 @@ public class MouseClickListener extends MouseAdapter {
     private boolean pickingDestination;
     private boolean pickingRemoval;
     JPopupMenu contextMenu;
-    ActionListener menuListener;
 
     final GUI gui;
 
@@ -67,7 +66,7 @@ public class MouseClickListener extends MouseAdapter {
         droneMenuItem.setActionCommand(DRONE_ACTION);
         removeMenuItem.setActionCommand(REMOVE_ACTION);
 
-        menuListener = new ActionListener() {
+        ActionListener menuListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getActionCommand().equals(OBSTACLE_ACTION)) {
@@ -83,7 +82,7 @@ public class MouseClickListener extends MouseAdapter {
                 } else if (e.getActionCommand().equals(DRONE_ACTION)) {
                     sim().addOrder(x, y, z);
                 } else if (e.getActionCommand().equals(REMOVE_ACTION)) {
-                    sim().getBuilding().removeObstacle(x,y,z);
+                    sim().getBuilding().removeObstacle(x, y, z);
                 }
             }
         };
@@ -120,7 +119,6 @@ public class MouseClickListener extends MouseAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
         guiToBuildingCoords(e.getX(), e.getY());
-
     }
 
     @Override
@@ -156,19 +154,22 @@ public class MouseClickListener extends MouseAdapter {
             }
         } else if (placingWall) {
             // we already have our first point and are placing a wall
-            guiToBuildingCoords(e.getX(),e.getY());
+            guiToBuildingCoords(e.getX(), e.getY());
             if (z == startObject[2]) {
-                sim().addNewWallObject(new RealWall(z, startObject[0], startObject[1], x, y, false));
+                sim().addNewWallObject(
+                        new RealWall(z, startObject[0], startObject[1], x, y, false));
             }
             placingWall = false;
             panel().deactivate();
         } else if (placingObstacle) {
             // we already have our first point and are placing an obstacle
-            guiToBuildingCoords(e.getX(),e.getY());
+            guiToBuildingCoords(e.getX(), e.getY());
             if (z == startObject[2]) {
                 RealObstacle ob = new RealObstacle(z, startObject[0], startObject[1], x, y);
                 sim().getBuilding().addObject(ob);
-                System.out.println("Adding ob: (" + ob.getX() + "," + ob.getY() + ") of " + ob.getXSize()+ " by " + ob.getYSize());
+                System.out.println(
+                        "Adding ob: (" + ob.getX() + "," + ob.getY() + ") of " + ob.getXSize() +
+                                " by " + ob.getYSize());
             }
             placingObstacle = false;
             panel().deactivate();
@@ -177,6 +178,7 @@ public class MouseClickListener extends MouseAdapter {
 
     /**
      * Converts the GUI coordinates to building coordinates and stores them in the x, y and z fields.
+     *
      * @param xCoord the GUI x coordinate
      * @param yCoord the GUI y coordinate
      */
