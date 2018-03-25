@@ -207,11 +207,14 @@ public class GUI extends Canvas implements Runnable {
         }
 
         placeListener = new MouseClickListener(this);
-        this.addMouseListener(placeListener);
+        addMouseListener(placeListener);
         menuPanel.setMouseClickListener(placeListener);
+
         keyboardListener = new KeyboardListener(this);
-        this.addKeyListener(keyboardListener);
+        addKeyListener(keyboardListener);
+        addMouseWheelListener(keyboardListener);
         menuPanel.addKeyListener(keyboardListener);
+        menuPanel.addMouseWheelListener(keyboardListener);
 //        this.add(placeListener.getContextMenu());
     }
 

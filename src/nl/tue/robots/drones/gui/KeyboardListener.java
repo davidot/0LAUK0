@@ -4,8 +4,10 @@ import nl.tue.robots.drones.simulation.Simulation;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
-public class KeyboardListener implements KeyListener {
+public class KeyboardListener implements KeyListener, MouseWheelListener {
 
     private final GUI gui;
 
@@ -62,5 +64,14 @@ public class KeyboardListener implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (e.getWheelRotation() < 0) {
+            gui.getSimulation().floorDown();
+        } else if (e.getWheelRotation() > 0) {
+            gui.getSimulation().floorUp();
+        }
     }
 }

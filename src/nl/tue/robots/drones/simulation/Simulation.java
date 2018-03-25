@@ -210,8 +210,6 @@ public class Simulation {
     public void floorUp() {
         if (FLOORS + from <= (building.getFloors() + 1)) {
             from += FLOORS;
-        } else {
-            System.out.println("NO FLOORS" + from + "+" + FLOORS + ":" + building.getFloors());
         }
     }
 
