@@ -4,7 +4,6 @@ import nl.tue.robots.drones.gui.GUI;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -17,7 +16,8 @@ public class RealObstacle extends RealObject {
 
     public RealObstacle(int floor, int x1, int y1, int x2, int y2) {
         super(floor);
-        bounds = new Rectangle2D.Double(Math.min(x1, x2),Math.min(y1, y2), Math.abs(x1 - x2),Math.abs(y1-y2));
+        bounds = new Rectangle2D.Double(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x1 - x2),
+                Math.abs(y1 - y2));
     }
 
     public int getX() {
@@ -28,9 +28,13 @@ public class RealObstacle extends RealObject {
         return (int) this.bounds.getCenterY();
     }
 
-    public int getXSize() {return (int) this.bounds.getWidth();}
+    public int getXSize() {
+        return (int) this.bounds.getWidth();
+    }
 
-    public int getYSize() {return (int) this.bounds.getHeight();}
+    public int getYSize() {
+        return (int) this.bounds.getHeight();
+    }
 
     public Point2D getTopLeft() {
         return new Point2D.Double(bounds.getX(), bounds.getY());
@@ -52,7 +56,8 @@ public class RealObstacle extends RealObject {
     public void drawObject(Graphics2D g) {
         g.setColor(Color.RED);
         g.fillRect((int) (GUI.MULTIPLIER * bounds.getX()), (int) (GUI.MULTIPLIER * bounds.getY()),
-                (int)(GUI.MULTIPLIER * bounds.getWidth()), (int)(GUI.MULTIPLIER * bounds.getHeight()));
+                (int) (GUI.MULTIPLIER * bounds.getWidth()),
+                (int) (GUI.MULTIPLIER * bounds.getHeight()));
     }
 
     @Override
@@ -63,6 +68,7 @@ public class RealObstacle extends RealObject {
 
     @Override
     public String toString() {
-        return String.format("[Obstacle at (%d,%d) with size %d by %d]", getX(),getY(),getXSize(),getYSize());
+        return String.format("[Obstacle at (%d,%d) with size %d by %d]", getX(), getY(), getXSize(),
+                getYSize());
     }
 }

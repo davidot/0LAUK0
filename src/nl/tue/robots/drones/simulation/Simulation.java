@@ -20,14 +20,15 @@ public class Simulation {
     private RealBuilding building;
     private Model model;
     private static final int MULTIPLIER = GUI.MULTIPLIER;
-    
-    //Number of Floors to fit on a single row (NOTE: The sideview also counts as one!)
-    //Should be 4 but can be another number during debugging
-    private static final int NUM_FLOORS_PER_ROW = 6;
 
-    private static final int FLOORS = 5;
+    private static final int FLOORS = 3;
     private static final int FLOORS_OFFSET = 3;
     private static final int PADDING = 20;
+
+    //Number of Floors to fit on a single row (NOTE: The sideview also counts as one!)
+    //Should be 4 but can be another number during debugging
+    private static final int NUM_FLOORS_PER_ROW = FLOORS + 1;
+
 
     private static int counter = 0;
 
@@ -73,7 +74,8 @@ public class Simulation {
         int floorWidth = (building.getWidth() + FLOORS_OFFSET) * MULTIPLIER;
         g.translate(floorWidth, 0);
 
-        for (int floor = from; floor < from + FLOORS; floor++) {
+        int to = Math.min(from + FLOORS, building.getFloors() + 1);
+        for (int floor = from; floor < to; floor++) {
             building.drawBackground(g, floor);
             if (drawModel) {
                 model.drawFloor(g, floor);
@@ -111,20 +113,21 @@ public class Simulation {
         }
         int xF = ((x + (MULTIPLIER / 2)) / MULTIPLIER) % (building.getWidth() + FLOORS_OFFSET);
         int yF = (y - PADDING) / MULTIPLIER;
-        return new int[]{xF, yF, floor};
+        return new int[]{xF, yF, from + floor};
     }
-    
+
     /**
      * Checks if given coordinates fall within the GUI building limits
+     *
      * @param x x-coordinate
      * @param y y-coordinate
      * @param z z-coordinate
      * @return True if (x,y,z) is within the building
      */
-    public boolean isWithinBuilding(int x, int y, int z){
+    public boolean isWithinBuilding(int x, int y, int z) {
         return x >= 0 && x <= getBuilding().getWidth() &&
-               y >= 0 && y <= getBuilding().getDepth() &&
-               z >= 0 && z <= getBuilding().getFloors();
+                y >= 0 && y <= getBuilding().getDepth() &&
+                z >= 0 && z <= getBuilding().getFloors();
     }
 
     public RealBuilding getBuilding() {
@@ -132,7 +135,9 @@ public class Simulation {
     }
 
     public Dimension getSize() {
-        return new Dimension((building.getWidth() * NUM_FLOORS_PER_ROW + (FLOORS + 1) * FLOORS_OFFSET) * MULTIPLIER,
+        return new Dimension(
+                (building.getWidth() * NUM_FLOORS_PER_ROW + (FLOORS + 1) * FLOORS_OFFSET) *
+                        MULTIPLIER,
                 building.getDepth() * MULTIPLIER + PADDING * 2);
     }
 
@@ -147,8 +152,8 @@ public class Simulation {
         RealDrone d = building.getDrone(id);
         d.addDestinations(next);
     }
-    
-    public void droneSetAlarm(int id, boolean enable){
+
+    public void droneSetAlarm(int id, boolean enable) {
         RealDrone d = building.getDrone(id);
         d.setAlarm(enable);
     }
@@ -205,4 +210,20 @@ public class Simulation {
         System.out.println("INTERSECT" + object.undetected.size());
         building.addObject(object);
     }
+
+    public void floorUp() {
+        if (FLOORS + from <= (building.getFloors() + 1)) {
+            from += FLOORS;
+        } else {
+            System.out.println("NO FLOORS" + from + "+" + FLOORS + ":" + building.getFloors());
+        }
+    }
+
+    public void floorDown() {
+        if (from > 0) {
+            from -= FLOORS;
+            from = Math.max(0, from);
+        }
+    }
+
 }

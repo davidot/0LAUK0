@@ -92,7 +92,7 @@ public class Model {
         List<Node> next = drone.getNextNode();
         if (next != null) {
             simulation.droneInstruction(drone.getId(), next);
-        }else if (!drone.notBusy()){
+        } else if (!drone.notBusy()) {
             //If a path could not be found but there was a task allocated,
             //enable the alarm
             simulation.droneSetAlarm(drone.getId(), true);
@@ -188,7 +188,7 @@ public class Model {
     }
 
     public void update() {
-        for (Transition t :building.update()) {
+        for (Transition t : building.update()) {
             System.out.println("Found change in transition timing");
             //ignore nothing
             updateRelatedPaths(-1, t);

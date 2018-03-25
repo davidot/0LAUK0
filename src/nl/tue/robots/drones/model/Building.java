@@ -20,7 +20,7 @@ public class Building {
     private static final boolean DRAW_NODE_COORDINATES = false;
     private static final boolean DRAW_NODE_ID = false;
     private static final boolean DRAW_TRANSITION_CONNECTIONS = false;
-            
+
     private static final int MULTIPLIER = GUI.MULTIPLIER;
     private static final int NODE_R = 4;
     //id to node
@@ -72,7 +72,7 @@ public class Building {
                 int dx = (node.getX() - x) * (node.getX() - x);
                 int dy = (node.getY() - y) * (node.getY() - y);
 
-                if(dx + dy < r) {
+                if (dx + dy < r) {
                     r = dx + dy;
                     nearestNode = node;
                 }
@@ -106,7 +106,7 @@ public class Building {
                 int i1 = Transition.TEMP_TIMEOUT / 2;
                 // System.out.println("T:" + timeLocked + "," + i + "," + i1);
                 if (timeLocked < i) {
-                    g.setColor(new Color(52,176,111));
+                    g.setColor(new Color(52, 176, 111));
                 } else {
                     if (timeLocked < i1) {
                         g.setColor(Color.ORANGE);
@@ -121,9 +121,9 @@ public class Building {
             }
             g.drawLine(from.getX() * MULTIPLIER, from.getY() * MULTIPLIER,
                     to.getX() * MULTIPLIER, to.getY() * MULTIPLIER);
-            
+
             //draw node IDs to which this transition is connected
-            if (DRAW_TRANSITION_CONNECTIONS){
+            if (DRAW_TRANSITION_CONNECTIONS) {
                 int transitionX = (t.getFrom().getX() + t.getTo().getX()) / 2 * MULTIPLIER;
                 int transitionY = (t.getFrom().getY() + t.getTo().getY()) / 2 * MULTIPLIER;
                 g.setColor(Color.CYAN);
@@ -141,25 +141,25 @@ public class Building {
 
             if (node.getUp()) {
                 g.fillPolygon(
-                    new int[] {x - 10, x + 10, x},
-                    new int[] {y - 5, y - 5, y - 17}, 3);
+                        new int[]{x - 10, x + 10, x},
+                        new int[]{y - 5, y - 5, y - 17}, 3);
             }
             if (node.getDown()) {
                 g.fillPolygon(
-                    new int[] {x - 10, x + 10, x},
-                    new int[] {y + 5, y + 5, y + 17}, 3);
+                        new int[]{x - 10, x + 10, x},
+                        new int[]{y + 5, y + 5, y + 17}, 3);
             }
 
             g.fillOval(x - NODE_R, y - NODE_R,
-                 NODE_R * 2, NODE_R * 2);
-            
+                    NODE_R * 2, NODE_R * 2);
+
             //draw coordinates:
-            if (DRAW_NODE_COORDINATES){
-                g.drawString("(" + node.getX() + "," + node.getY() + ")", x+5, y-5);
+            if (DRAW_NODE_COORDINATES) {
+                g.drawString("(" + node.getX() + "," + node.getY() + ")", x + 5, y - 5);
             }
             //draw ID:
-            if (DRAW_NODE_ID){
-                g.drawString(Integer.toString(node.getID()), x+5, y+10);
+            if (DRAW_NODE_ID) {
+                g.drawString(Integer.toString(node.getID()), x + 5, y + 10);
             }
         }
     }
@@ -184,7 +184,7 @@ public class Building {
 
     public List<Transition> update() {
         List<Transition> changedTransitions = new ArrayList<>(0);
-        for (Transition t: transitions) {
+        for (Transition t : transitions) {
             if (!t.getStatus() && !t.isPermanent() && t.shouldRender()) {
                 t.update();
                 if (t.getStatus()) {

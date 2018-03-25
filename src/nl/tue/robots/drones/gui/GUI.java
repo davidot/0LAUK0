@@ -1,6 +1,5 @@
 package nl.tue.robots.drones.gui;
 
-import java.awt.BasicStroke;
 import nl.tue.robots.drones.fileIO.MalformedWallFileException;
 import nl.tue.robots.drones.simulation.Simulation;
 
@@ -9,6 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -22,7 +22,6 @@ import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 
 public class GUI extends Canvas implements Runnable {
@@ -73,14 +72,14 @@ public class GUI extends Canvas implements Runnable {
     private Thread mainThread;
 
     //Should be 10, but can be any other number due to debugging
-    public static final int MULTIPLIER = 7;
+    public static final int MULTIPLIER = 10;
 
     private Simulation simulation;
     private boolean reload = false;
 
     private double lastMouseX = 0;
     private double lastMouseY = 0;
-    
+
     private GUI() {
 
     }
@@ -279,53 +278,54 @@ public class GUI extends Canvas implements Runnable {
         //get the current size of the screen
         int width = getRenderWidth();
         int height = getRenderHeight();
-        
+
         //clear the last frame
         g.setColor(getBackground());
         g.fillRect(0, 0, width, height);
-        
+
         //start drawing here
         AffineTransform t = g.getTransform();
-        
+
         //draw the building
         simulation.draw(g, width, height);
-        
+
         g.setTransform(t);
         //int floorWidth = (simulation.getBuilding().getWidth() + Simulation.FLOORS_OFFSET) * MULTIPLIER;
-        
+
         //draw ghost images when placing objects
-        if (placeListener.placingWall || placeListener.placingObstacle){
+        if (placeListener.placingWall || placeListener.placingObstacle) {
             //draw a 'ghost' wall
             g.setColor(new Color(1, 1, 1, 0.5f));
             g.setStroke(new BasicStroke(MULTIPLIER));
-            
+
             //get current mouse location
             Point p = this.getMousePosition();
             int x = placeListener.guiX;
             int y = placeListener.guiY;
-            
-            if (p != null){
+
+            if (p != null) {
                 int[] buildingCoords = simulation.screenToCoords((int) p.getX(), (int) p.getY());
                 if (buildingCoords[2] == placeListener.startObject[2]
-                        && simulation.isWithinBuilding(buildingCoords[0], buildingCoords[1], buildingCoords[2])){
+                        && simulation.isWithinBuilding(buildingCoords[0], buildingCoords[1],
+                        buildingCoords[2])) {
                     lastMouseX = p.getX();
                     lastMouseY = p.getY();
                 }
             }
-            if (placeListener.placingWall){
+            if (placeListener.placingWall) {
                 g.drawLine(x, y, (int) lastMouseX, (int) lastMouseY);
             }
-            if (placeListener.placingObstacle){
+            if (placeListener.placingObstacle) {
                 int minX = Math.min(x, (int) lastMouseX);
                 int minY = Math.min(y, (int) lastMouseY);
                 int diffX = Math.abs(x - (int) lastMouseX);
                 int diffY = Math.abs(y - (int) lastMouseY);
                 g.fillRect(minX, minY, diffX, diffY);
             }
-            
+
         }
-        
-        
+
+
         //stop drawing here
         g.dispose();
         buffer.show();

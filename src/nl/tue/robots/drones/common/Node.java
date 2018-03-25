@@ -31,15 +31,15 @@ public class Node {
             down = true;
         }
     }
-    
+
     public int getID() {
         return this.id;
     }
-    
+
     public boolean getUp() {
         return this.up;
     }
-    
+
     public boolean getDown() {
         return this.down;
     }

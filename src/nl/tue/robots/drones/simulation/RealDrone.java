@@ -57,7 +57,6 @@ public class RealDrone extends RealObject {
     private static BufferedImage[] alertSequence = new BufferedImage[DEFAULT_ALERT_SEQUENCE.length];
 
 
-
     private static final int width;
     private static final int height;
     private RealObject lastObstacle;
@@ -90,7 +89,7 @@ public class RealDrone extends RealObject {
             }
 
             //Open up all the alert frames and store them
-            for(int i = 0; i < DEFAULT_ALERT_SEQUENCE.length; i++) {
+            for (int i = 0; i < DEFAULT_ALERT_SEQUENCE.length; i++) {
                 alertSequence[i] = ImageIO.read(new File("res/" + DEFAULT_ALERT_SEQUENCE[i]));
             }
 
@@ -147,12 +146,12 @@ public class RealDrone extends RealObject {
     }
 
     //Basic setter
-    public void setAlarm(boolean enable){
+    public void setAlarm(boolean enable) {
         alarm = enable;
     }
 
     //Basic getter
-    public boolean getAlarm(){
+    public boolean getAlarm() {
         return alarm;
     }
 
@@ -280,18 +279,18 @@ public class RealDrone extends RealObject {
             sHeight = (int) (sHeight * scale);
         }
 
-        int x = (this.x - 1) * GUI.MULTIPLIER - sWidth / DOUBLE_DRAW_SIZE;
-        int y = (this.y - 1) * GUI.MULTIPLIER - sHeight / DOUBLE_DRAW_SIZE;
+        int xx = x * GUI.MULTIPLIER - sWidth / DOUBLE_DRAW_SIZE;
+        int yy = y * GUI.MULTIPLIER - sHeight / DOUBLE_DRAW_SIZE;
         if (ac != null) {
             g.setComposite(ac);
         }
-        g.drawImage(imageSequence[Simulation.getHalfSecond()], x, y, sWidth / DRONE_DRAW_SIZE,
+        g.drawImage(imageSequence[Simulation.getHalfSecond()], xx, yy, sWidth / DRONE_DRAW_SIZE,
                 sHeight / DRONE_DRAW_SIZE, null);
         g.setComposite(composite);
 
         //Alarm
-        if (alarm){
-             g.drawImage(alertSequence[Simulation.getHalfSecond()], x+20, y-20, null);
+        if (alarm) {
+            g.drawImage(alertSequence[Simulation.getHalfSecond()], xx + 20, yy - 20, null);
         }
     }
 
@@ -391,9 +390,11 @@ public class RealDrone extends RealObject {
 //                getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, getFloor(), range,
 //                        currentTransition);
         RealObject obstacle =
-                getRealBuilding().pathObstructionInRange(new Point2D.Double(x,y), new Point2D.Double(destinationX,destinationY), getFloor(), range);
+                getRealBuilding().pathObstructionInRange(new Point2D.Double(x, y),
+                        new Point2D.Double(destinationX, destinationY), getFloor(), range);
         if (obstacle != null && obstacle != lastObstacle) {
-            System.out.printf("At (%d,%d) with destination (%d,%d) found obstacle: %s%n", x,y,destinationX,destinationY,obstacle);
+            System.out.printf("At (%d,%d) with destination (%d,%d) found obstacle: %s%n", x, y,
+                    destinationX, destinationY, obstacle);
             // tell simulation that an obstacle is in the way for this drone
             lastObstacle = obstacle;
             boolean permanent = obstacle instanceof RealWall;
