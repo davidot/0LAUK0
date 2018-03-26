@@ -4,11 +4,7 @@ import nl.tue.robots.drones.common.Node;
 import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.model.Model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Algorithm {
 
@@ -154,5 +150,50 @@ public class Algorithm {
     public static void sortedAdd(ExpandedNode newNode, ArrayList<ExpandedNode> frontier) {
         frontier.add(newNode);
         Collections.sort(frontier);
+    }
+
+    /**
+     * Finds the quickest way to get inside the building for the given node.
+     * Uses breadth first search to find a node which is inside the building
+     * @param startNode the node from which to get inside
+     * @return the nodes on the inside which is the quickest to go to
+     */
+    public static Node findQuickestPathInside(Node startNode) {
+        // Setup the expanded node list
+        ExpandedNode rootNode = new ExpandedNode(startNode, 0,0, emptyNode);
+        Set<Node> seenNodes = new HashSet<>();
+        Set<ExpandedNode> visitedNodes = new HashSet<>();
+        seenNodes.add(startNode);
+
+        // Setup the frontier list
+        LinkedList<ExpandedNode> frontier = new LinkedList<>();
+        frontier.add(rootNode);
+
+        ExpandedNode foundDestination = null;
+
+        // create BFS tree until a node on the inside is found
+        ExpandedNode inspect;
+        boolean found = false;
+        while (!found && frontier.size() > 0) {
+            inspect = frontier.poll();
+            for (Node n : inspect.getNode().getConnectedNodes()) {
+                if (!seenNodes.contains(n)) {
+                    // if not seen before, add to frontier
+                    ExpandedNode expNode = new ExpandedNode(n, inspect.getDistanceTravelled() + 1, 0, inspect);
+                    if (!n.isOutside()) {
+                        // we found a node inside
+                        foundDestination = expNode;
+                        found = true;
+                    } else {
+                        // just add it to the frontier
+                        frontier.add(expNode);
+                    }
+                    seenNodes.add(n);
+                }
+            }
+            visitedNodes.add(inspect);
+        } // once we terminate we either found a node which is on the inside or no such node exists
+
+        return foundDestination.getNode();
     }
 }

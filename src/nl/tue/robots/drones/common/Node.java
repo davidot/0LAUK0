@@ -80,4 +80,8 @@ public class Node {
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }
+
+    public boolean isOutside() {
+        return transitions.stream().allMatch(Transition::isOutside);
+    }
 }

@@ -1,5 +1,6 @@
 package nl.tue.robots.drones.model;
 
+import nl.tue.robots.drones.algorithm.Algorithm;
 import nl.tue.robots.drones.common.Node;
 import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.simulation.Simulation;
@@ -96,6 +97,19 @@ public class Model {
             //If a path could not be found but there was a task allocated,
             //enable the alarm
             simulation.droneSetAlarm(drone.getId(), true);
+            // if outside move back inside
+            //TODO
+            Node current = drone.getCurrentNode();
+            if (current.isOutside()) {
+                //all transitions are to the outside thus so is the node
+                // thus find the quickest path to inside
+                Node inside = Algorithm.findQuickestPathInside(current);
+//                System.out.printf("Drone %d could not reach goal while outside, going to %s to get inside%n",
+//                        drone.getId(), inside);
+                if (inside != null) {
+                    drone.addEmergencyGoal(inside); // and send there
+                } // else we are stuck outside
+            }
         }
     }
 
@@ -117,6 +131,11 @@ public class Model {
         simulation.clearInstruction(blockedId, true);
         simulation.droneInstruction(blockedId,
                 Collections.singletonList(blockedDrone.getCurrentNode()));
+
+        // if could not reach emergency goal, drop it
+        if (blockedDrone.hasEmergencyState()) {
+            blockedDrone.dropEmergency();
+        }
         nextDroneInstruction(blockedDrone);
 
         updateRelatedPaths(blockedId, currentTrans, true);

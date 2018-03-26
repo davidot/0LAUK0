@@ -25,6 +25,7 @@ public class Drone {
 
     private Deque<Node> currentGoals = new ArrayDeque<>();
     private boolean stuck;
+    private boolean emergency = false;
 
 
     public Drone(int id, Node start) {
@@ -46,7 +47,15 @@ public class Drone {
     }
 
     public void addEmergencyGoal(Node node) {
+        System.out.printf("Adding %s as emergency goal for Drone %d%n", node, id);
         currentGoals.addFirst(node);
+        emergency = true;
+    }
+
+    public void dropEmergency() {
+        System.out.printf("Dropping emergency goal for Drone %d%n", id);
+        currentGoals.removeFirst();
+        emergency = false;
     }
 
     public Transition getCurrentTransition() {
@@ -60,6 +69,7 @@ public class Drone {
     public List<Node> getNextNode() {
         if (currentGoals.isEmpty()) {
             stuck = false;
+            emergency = false;
             return null;
         }
         if (currentNode == currentGoals.peekFirst()) {
@@ -67,12 +77,15 @@ public class Drone {
             if (currentGoals.isEmpty()) {
                 return null;
             }
+            emergency = false;
             stuck = false;
         }
         List<Node> list = Algorithm.findPath(currentNode, currentGoals.peekFirst()).stream()
                 .map(Transition::getTo).collect(Collectors.toList());
         if (list.isEmpty()) {
-            if (!notBusy()) {
+            if (emergency) {
+                dropEmergency();
+            } else if (!notBusy()) {
                 stuck = true;
             }
             return null;
@@ -109,5 +122,9 @@ public class Drone {
 
     public boolean isStuck() {
         return stuck;
+    }
+
+    public boolean hasEmergencyState() {
+        return emergency;
     }
 }
