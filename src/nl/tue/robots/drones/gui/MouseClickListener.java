@@ -106,6 +106,7 @@ public class MouseClickListener extends MouseAdapter {
         this.placingHuman = false;
         this.pickingDestination = false;
         this.pickingRemoval = false;
+        gui.menuPanel.deactivate();
     }
 
     private Simulation sim() {
@@ -118,11 +119,12 @@ public class MouseClickListener extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        guiToBuildingCoords(e.getX(), e.getY());
+        
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        guiToBuildingCoords(e.getX(), e.getY());
         guiX = e.getX();
         guiY = e.getY();
         if (e.getButton() == MouseEvent.BUTTON3) {

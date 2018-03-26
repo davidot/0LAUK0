@@ -73,5 +73,6 @@ public class KeyboardListener implements KeyListener, MouseWheelListener {
         } else if (e.getWheelRotation() > 0) {
             gui.getSimulation().floorUp();
         }
+        gui.placeListener.cancelAction();
     }
 }

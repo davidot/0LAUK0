@@ -52,6 +52,7 @@ public class GUI extends Canvas implements Runnable {
     //User interactions
     protected MouseClickListener placeListener;
     protected KeyboardListener keyboardListener;
+    protected GUIMenuPanel menuPanel;
 
     /**
      * Default width of the frame
@@ -79,8 +80,6 @@ public class GUI extends Canvas implements Runnable {
 
     private double lastMouseX = 0;
     private double lastMouseY = 0;
-
-    private GUIMenuPanel menuPanel;
 
     private GUI() {
 
