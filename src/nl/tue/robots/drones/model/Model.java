@@ -100,7 +100,7 @@ public class Model {
     }
 
     public void droneBlocked(int blockedId, boolean permanent) {
-        System.out.println("Drone:" + blockedId + " blocked permanent?" + permanent);
+        // System.out.println("Drone:" + blockedId + " blocked permanent?" + permanent);
         Drone blockedDrone = getDrone(blockedId);
 
         // Find the transitions the drone is currently on and block it
@@ -115,13 +115,9 @@ public class Model {
 
         // Send drone back to its previous node
         simulation.clearInstruction(blockedId, true);
-        if (currentTrans != null) {
-            simulation.droneInstruction(blockedId,
-                    Collections.singletonList(blockedDrone.getCurrentNode()));
-            nextDroneInstruction(blockedDrone);
-        } else {
-            //todo add something in case we are stuck nowhere
-        }
+        simulation.droneInstruction(blockedId,
+                Collections.singletonList(blockedDrone.getCurrentNode()));
+        nextDroneInstruction(blockedDrone);
 
         updateRelatedPaths(blockedId, currentTrans, true);
         blockedDrone.updateCurrentTransition(null);

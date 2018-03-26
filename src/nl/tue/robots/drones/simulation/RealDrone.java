@@ -33,6 +33,7 @@ public class RealDrone extends RealObject {
     private static final int FLOOR_STEPS = 30;
     public static final int DRONE_DRAW_SIZE = 1;
     public static final int DOUBLE_DRAW_SIZE = 2 * DRONE_DRAW_SIZE;
+    public static final int VISION_RANGE = 3;
 
     //where the drones are on the screen
     private int x;
@@ -288,6 +289,9 @@ public class RealDrone extends RealObject {
                 sHeight / DRONE_DRAW_SIZE, null);
         g.setComposite(composite);
 
+        g.setColor(Color.GREEN);
+        g.drawOval((x - VISION_RANGE) * GUI.MULTIPLIER, (y - VISION_RANGE) * GUI.MULTIPLIER, VISION_RANGE * 2 * GUI.MULTIPLIER, VISION_RANGE * 2 * GUI.MULTIPLIER);
+
         //Alarm
         if (alarm) {
             g.drawImage(alertSequence[Simulation.getHalfSecond()], xx + 20, yy - 20, null);
@@ -374,40 +378,16 @@ public class RealDrone extends RealObject {
         int destinationX = destination.getX();
         int destinationY = destination.getY();
 
-
         // Check for nearby obstacles
-        int range = 3;
-        int lx = getX();
-        int ly = getY();
-        int rx = destinationX;
-        int ry = destinationY;
-        if (destinationX == getX()) {
-            if (destinationY > getY()) {
-                lx += range;
-                rx -= range;
-            } else {
-                lx -= range;
-                rx += range;
-            }
-        } else {
-            if (destinationX > getX()) {
-                ly += range;
-                ry -= range;
-            } else {
-                ly -= range;
-                ry += range;
-            }
-        }
-
-//        RealObject obstacle =
-//                getRealBuilding().obstaclesOnPath(x, y, lx, ly, rx, ry, getFloor(), range,
-//                        currentTransition);
         RealObject obstacle =
                 getRealBuilding().pathObstructionInRange(new Point2D.Double(x, y),
-                        new Point2D.Double(destinationX, destinationY), getFloor(), range);
-        if (obstacle != null && obstacle != lastObstacle) {
-            System.out.printf("At (%d,%d) with destination (%d,%d) found obstacle: %s%n", x, y,
-                    destinationX, destinationY, obstacle);
+                        new Point2D.Double(destinationX, destinationY), getFloor(),
+                        VISION_RANGE);
+        if (obstacle != null) {
+            if (obstacle != lastObstacle) {
+                System.out.printf("At (%d,%d) with destination (%d,%d) found obstacle: %s%n", x, y,
+                        destinationX, destinationY, obstacle);
+            }
             // tell simulation that an obstacle is in the way for this drone
             lastObstacle = obstacle;
             simulation.sendObstacle(id, obstacle instanceof RealWall);
