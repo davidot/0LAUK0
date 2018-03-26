@@ -136,14 +136,17 @@ public class MouseClickListener extends MouseAdapter {
         } else if (placingHuman) {
             sim().getBuilding().addObject(new RealHuman(x, y, z));
             placingHuman = false;
+            resetCoords();
             panel().deactivate();
         } else if (pickingDestination) {
             sim().addOrder(x, y, z);
             pickingDestination = false;
+            resetCoords();
             panel().deactivate();
         } else if (pickingRemoval) {
             sim().getBuilding().removeObstacle(x,y,z);
             pickingRemoval = false;
+            resetCoords();
             panel().deactivate();
         } else if (placingFirst) {
             // we just got our first location on the press so store it as start and reset boolean
@@ -162,6 +165,7 @@ public class MouseClickListener extends MouseAdapter {
                         new RealWall(z, startObject[0], startObject[1], x, y, false));
             }
             placingWall = false;
+            resetCoords();
             panel().deactivate();
         } else if (placingObstacle) {
             // we already have our first point and are placing an obstacle
@@ -174,6 +178,7 @@ public class MouseClickListener extends MouseAdapter {
                                 " by " + ob.getYSize());
             }
             placingObstacle = false;
+            resetCoords();
             panel().deactivate();
         }
     }
@@ -215,5 +220,11 @@ public class MouseClickListener extends MouseAdapter {
     }
     public void startRemoval() {
         pickingRemoval = true;
+    }
+
+    private void resetCoords() {
+        x = -1;
+        y = -1;
+        z = -1;
     }
 }
