@@ -48,8 +48,8 @@ public class Simulation {
             building.addObject(new RealDrone(this, i, start.getZ(), start.getX(), start.getY()));
         }
 
-        for (int i = 0; i < 2; i++) {
-            building.addObject(new RealHuman(10, 11 * i + 40, 0));
+        for (int i = 0; i < 1; i++) {
+            building.addObject(new RealHuman(10, 11 * i + 30, 0));
         }
 
         model.addOrder(Arrays.asList(start, model.getNode(144), start, model.getNode(332), start));
@@ -107,9 +107,9 @@ public class Simulation {
      * @return an array containing the coordinates in the order {x, y, z}
      */
     public int[] screenToCoords(int x, int y) {
-        int floor = (int) (x / ((building.getWidth() + FLOORS_OFFSET - 0.5) * MULTIPLIER) - 1);
+        int floor = x / ((building.getWidth() + FLOORS_OFFSET) * MULTIPLIER - MULTIPLIER / 2) - 1;
         if (floor < 0 || floor >= FLOORS) {
-            return new int[]{-1, -1, -1};
+            return new int[] {-1, -1, -1};
         }
         int xF = ((x + (MULTIPLIER / 2)) / MULTIPLIER) % (building.getWidth() + FLOORS_OFFSET);
         int yF = (y - PADDING) / MULTIPLIER;
@@ -208,15 +208,14 @@ public class Simulation {
     }
 
     public void floorUp() {
-        if (FLOORS + from <= (building.getFloors() + 1)) {
-            from += FLOORS;
+        if (from < building.getFloors()) {
+            from++;
         }
     }
 
     public void floorDown() {
         if (from > 0) {
-            from -= FLOORS;
-            from = Math.max(0, from);
+            from--;
         }
     }
 

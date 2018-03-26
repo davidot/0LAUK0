@@ -82,7 +82,6 @@ public class GUI extends Canvas implements Runnable {
     private double lastMouseY = 0;
 
     private GUI() {
-
     }
 
 
@@ -184,20 +183,8 @@ public class GUI extends Canvas implements Runnable {
     //private init since it should only be called once
     private void init() {
         try {
-            // JFileChooser fileBrowser = new JFileChooser(new File("."));
-            // int returnVal = fileBrowser.showOpenDialog(this);
-
-            // if (returnVal == JFileChooser.APPROVE_OPTION) {
-            //     File file = fileBrowser.getSelectedFile();
             simulation = new Simulation(new File("tests/Floorplan 9.csv"));
             internalResize(simulation.getSize());
-            // } else {
-            //     System.out.println("User canceled opening a file");
-            //     JOptionPane.showConfirmDialog(this, "Did not select anything, shutting down",
-            //             "Stopping", JOptionPane.DEFAULT_OPTION);
-            //     System.exit(0);
-            // }
-
         } catch (FileNotFoundException | MalformedWallFileException e) {
             e.printStackTrace();
             JOptionPane.showConfirmDialog(this, "Error opening files",
@@ -214,7 +201,6 @@ public class GUI extends Canvas implements Runnable {
         addMouseWheelListener(keyboardListener);
         menuPanel.addKeyListener(keyboardListener);
         menuPanel.addMouseWheelListener(keyboardListener);
-//        this.add(placeListener.getContextMenu());
     }
 
     @Override
@@ -309,7 +295,6 @@ public class GUI extends Canvas implements Runnable {
         simulation.draw(g, width, height);
 
         g.setTransform(t);
-        //int floorWidth = (simulation.getBuilding().getWidth() + Simulation.FLOORS_OFFSET) * MULTIPLIER;
 
         //draw ghost images when placing objects
         if ((placeListener.placingWall || placeListener.placingObstacle) && !placeListener.placingFirst) {

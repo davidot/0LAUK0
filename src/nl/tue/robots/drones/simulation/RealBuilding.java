@@ -65,41 +65,6 @@ public class RealBuilding {
         }
     }
 
-
-    public void render(Graphics2D g, int floors, int from, int perColumn) {
-        if (floors % perColumn != 0) {
-            return;
-        }
-        int rows = floors / perColumn;
-
-        int w = maxWidth * MULTI;
-        int d = maxDepth * MULTI;
-
-
-        AffineTransform transform = g.getTransform();
-
-        for (int floor = from; floor < from + floors; floor++) {
-            g.translate((floor % perColumn) * (w + 3 * MULTI), (floor / perColumn) * d);
-            g.setColor(Color.LIGHT_GRAY);
-            g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
-            for (RealObject obj : getObjectsOnFloor(floor)) {
-                obj.drawObject(g);
-            }
-            g.setTransform(transform);
-        }
-
-        g.setColor(Color.BLACK);
-
-        for (int i = 1; i < rows; i++) {
-            g.drawLine(0, d * (i + 1), w * perColumn, d * (i + 1));
-        }
-
-        for (int i = 0; i < perColumn; i++) {
-            int x = ((w + (3 * MULTI)) * (i + 1)) - (int) (MULTI * 1.5);
-            g.drawLine(x, 0, x, d * rows);
-        }
-    }
-
     public void drawBackground(Graphics2D g, int floor) {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
@@ -184,7 +149,7 @@ public class RealBuilding {
 
         // get walls in range crossing the path
         List<RealWall> blockingWalls = getAllWalls().stream().filter(
-                w -> w.getFloor() == floor && (w.toLine().ptLineDist(location) <= range) &&
+                w -> w.getFloor() == floor && (w.toLine().ptSegDist(location) <= range) &&
                         w.toLine().intersectsLine(path))
                 .collect(Collectors.toList());
 
@@ -192,7 +157,7 @@ public class RealBuilding {
         if (blockingWalls.size() > 1) {
             // multiple walls, get closest one
             obstruction = blockingWalls.stream().sorted(
-                    (o1, o2) -> (int) Math.signum(o1.toLine().ptLineDist(location) -
+                    (o1, o2) -> (int) Math.signum(o1.toLine().ptSegDist(location) -
                             o2.toLine().ptLineDist(location)))
                     .findFirst().orElse(null);
         } else if (blockingWalls.size() > 0) {
@@ -217,7 +182,7 @@ public class RealBuilding {
                                 new Line2D.Double(obs.getTopRight(), obs.getBottomRight());
                         // get both diagonals
                         Line2D diagonal1 =
-                                new Line2D.Double(obs.getTopRight(), obs.getBottomRight());
+                                new Line2D.Double(obs.getTopLeft(), obs.getBottomRight());
                         Line2D diagonal2 =
                                 new Line2D.Double(obs.getBottomLeft(), obs.getTopRight());
 
@@ -226,10 +191,10 @@ public class RealBuilding {
                          * going over a diagonal. It also means crossing the edges but diagonals are used for this
                          * rather than edges since it saves 2 lineIntersect() calls.
                          */
-                        return ((topEdge.ptLineDist(location) <= range) ||
-                                (bottomEdge.ptLineDist(location) <= range) ||
-                                (leftEdge.ptLineDist(location) <= range) ||
-                                (rightEdge.ptLineDist(location) <= range))
+                        return ((topEdge.ptSegDist(location) <= range) ||
+                                (bottomEdge.ptSegDist(location) <= range) ||
+                                (leftEdge.ptSegDist(location) <= range) ||
+                                (rightEdge.ptSegDist(location) <= range))
                                 &&
                                 (diagonal1.intersectsLine(path) || diagonal2.intersectsLine(path));
                     }).collect(Collectors.toList());

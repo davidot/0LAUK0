@@ -96,7 +96,9 @@ public class GraphIO {
      * @throws IOException If something goes wrong during the writing process
      */
     public static void writeBuilding(Building b, File buildFile) throws IOException {
-        buildFile.createNewFile();
+        if (!buildFile.createNewFile()) {
+            throw new IOException("Can not create file" + buildFile.getAbsolutePath());
+        }
 
         try(BufferedWriter fileWriter = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(buildFile, false), "UTF-8"))) {
@@ -144,7 +146,7 @@ public class GraphIO {
 
             fileWriter.flush(); // ensure buffer is fully written to file
         } catch (IOException e) {
-            throw e; // bounce exception
+            throw new IOException("Could not save building", e); // bounce exception
         }
     }
 
@@ -258,7 +260,9 @@ public class GraphIO {
     }
 
     public static void writeWalls(RealBuilding b, File wallFile) throws IOException {
-        wallFile.createNewFile();
+        if (!wallFile.createNewFile()) {
+            throw new IOException("Can not create file" + wallFile.getAbsolutePath());
+        }
 
         try(BufferedWriter fileWriter = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(wallFile, false), "UTF-8"))) {
@@ -278,7 +282,7 @@ public class GraphIO {
 
             fileWriter.flush(); // ensure buffer is fully written to file
         } catch (IOException e) {
-            throw e; // bounce exception
+            throw new IOException("Could not write wall", e); // bounce exception
         }
     }
 

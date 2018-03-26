@@ -32,15 +32,15 @@ public class Algorithm {
         // Setup the expanded node list
         ExpandedNode rootNode = new ExpandedNode(startNode, 0,
                 Model.getHeuristic(startNode, destinationNode), emptyNode);
-        Set<ExpandedNode> seenNodes = new HashSet<ExpandedNode>();
+        Set<ExpandedNode> seenNodes = new HashSet<>();
         seenNodes.add(rootNode);
 
         // Setup the frontier list
-        ArrayList<ExpandedNode> frontier = new ArrayList<ExpandedNode>();
+        ArrayList<ExpandedNode> frontier = new ArrayList<>();
         frontier.add(rootNode);
 
         ExpandedNode foundDestination = pathSearch(destinationNode, seenNodes, frontier);
-        ArrayList<Transition> transitionList = new ArrayList<Transition>();
+        ArrayList<Transition> transitionList = new ArrayList<>();
 
         // Check whether foundDestination is the actual destination
         if (foundDestination.getNode() == destinationNode) {
@@ -67,7 +67,7 @@ public class Algorithm {
             ExpandedNode nodeToExpand = frontier.get(0);
             Node currentNode = nodeToExpand.getNode();
             List<Node> newNodes = currentNode.getConnectedNodes();
-            ArrayList<ExpandedNode> newExpandedNodes = new ArrayList<ExpandedNode>();
+            ArrayList<ExpandedNode> newExpandedNodes = new ArrayList<>();
 
             // remove all the nodes we have already visited
             for (ExpandedNode node : seenNodes) {
