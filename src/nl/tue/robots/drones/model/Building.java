@@ -87,7 +87,7 @@ public class Building {
                 .flatMap(node -> node.getTransitions().stream()).collect(Collectors.toList());
     }
 
-    public void drawFloor(Graphics2D g, int floor) {
+    public void renderFloor(Graphics2D g, int floor) {
         g.setStroke(new BasicStroke(2));
         for (Transition t : getTransitionsOnFloor(floor)) {
             if (!t.shouldRender()) {

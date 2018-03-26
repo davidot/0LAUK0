@@ -38,7 +38,7 @@ public class Simulation {
     private static int counter = 0;
 
     private int from = 0;
-    private boolean drawModel = true;
+    private boolean renderModel = true;
     private boolean paused = false;
     private Queue<RealObject> addQueue = new LinkedList<>();
 
@@ -46,7 +46,7 @@ public class Simulation {
         //This is where a real application would open the file.
         model = new Model(this, GraphIO.readBuilding(file), NUM_DRONES);
         File wallsFile = new File(file.getParent(), file.getName().replace(".csv", ".walls"));
-        building = GraphIO.readWalls(this, wallsFile);
+        building = GraphIO.readWalls(wallsFile);
 
         Node start = model.getStartingNode();
 
@@ -73,7 +73,7 @@ public class Simulation {
 
     }
 
-    public void draw(Graphics2D g, int width, int height) {
+    public void render(Graphics2D g) {
         g.translate(0, PADDING);
         building.renderSideView(g, from, FLOORS);
 
@@ -82,25 +82,29 @@ public class Simulation {
 
         int to = Math.min(from + FLOORS, building.getFloors() + 1);
         for (int floor = from; floor < to; floor++) {
-            building.drawBackground(g, floor);
-            if (drawModel) {
-                model.drawFloor(g, floor);
+            building.renderBackground(g, floor);
+            if (renderModel) {
+                model.renderFloor(g, floor);
             }
-            building.drawForeground(g, floor);
-            Font oldFont = g.getFont();
-            Font font = oldFont.deriveFont(Font.BOLD, 30);
-            g.setFont(font);
-            int textWidth = g.getFontMetrics().stringWidth(floor + "");
-            int textHeight = g.getFontMetrics().getHeight();
-            g.setColor(Color.BLACK);
-            g.drawString(floor + "", (floorWidth - textWidth) / 2,
-                    building.getDepth() * MULTIPLIER +
-                            (FLOOR_NUMBER_SIZE - textHeight) / 2 + textHeight);
-            g.setFont(oldFont);
+            building.renderForeground(g, floor);
+            renderFloorNumber(g, floor, floorWidth);
             g.translate(floorWidth, 0);
         }
 
         counter++;
+    }
+
+    private void renderFloorNumber(Graphics2D g, int floor, int floorWidth) {
+        Font oldFont = g.getFont();
+        Font font = oldFont.deriveFont(Font.BOLD, 30);
+        g.setFont(font);
+        int textWidth = g.getFontMetrics().stringWidth(floor + "");
+        int textHeight = g.getFontMetrics().getHeight();
+        g.setColor(Color.BLACK);
+        g.drawString(floor + "", (floorWidth - textWidth) / 2,
+                building.getDepth() * MULTIPLIER + (FLOOR_NUMBER_SIZE - textHeight) / 2
+                        + textHeight);
+        g.setFont(oldFont);
     }
 
     public void togglePause() {
@@ -193,10 +197,6 @@ public class Simulation {
         return model.droneTransition(id, transition);
     }
 
-    public static int getCounter() {
-        return counter;
-    }
-
     public static int getHalfSecond() {
         return (counter % 60) / 30;
     }
@@ -211,12 +211,12 @@ public class Simulation {
         }
     }
 
-    public void setDrawModel(boolean drawModel) {
-        this.drawModel = drawModel;
+    public void setRenderModel(boolean renderModel) {
+        this.renderModel = renderModel;
     }
 
-    public boolean getDrawModel() {
-        return drawModel;
+    public boolean getRenderModel() {
+        return renderModel;
     }
 
     public void addNewObject(RealObject object) {

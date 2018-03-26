@@ -252,7 +252,7 @@ public class RealDrone extends RealObject {
     }
 
     @Override
-    public void drawObject(Graphics2D g) {
+    public void renderObject(Graphics2D g) {
 
         //Draw the image centered around its XY-coordinates, rather than them
         //being at the topleft of the image
@@ -299,7 +299,7 @@ public class RealDrone extends RealObject {
     }
 
     @Override
-    public void drawSide(Graphics2D g) {
+    public void renderSide(Graphics2D g) {
         g.drawImage(imageSequence[Simulation.getHalfSecond()], 0, 0, RealBuilding.DRAW_SIZE,
                 RealBuilding.DRAW_SIZE, null);
     }

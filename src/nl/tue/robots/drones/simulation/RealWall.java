@@ -29,7 +29,7 @@ public class RealWall extends RealObject {
     }
 
     @Override
-    public void drawObject(Graphics2D g) {
+    public void renderObject(Graphics2D g) {
         //draw the walls
         g.setStroke(new BasicStroke(MULTI / 2));
         g.setColor(undetected ? Color.RED : Color.GRAY);
@@ -44,12 +44,12 @@ public class RealWall extends RealObject {
     }
 
     @Override
-    public void drawSide(Graphics2D g) {
+    public void renderSide(Graphics2D g) {
         //don't
     }
 
     @Override
-    public boolean drawsSide() {
+    public boolean onSide() {
         return false;
     }
 

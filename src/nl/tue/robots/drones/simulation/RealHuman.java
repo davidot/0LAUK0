@@ -30,7 +30,7 @@ public class RealHuman extends RealObstacle {
     }
 
     @Override
-    public void drawObject(Graphics2D g) {
+    public void renderObject(Graphics2D g) {
         g.drawImage(humanIcon
                         .getScaledInstance(getXSize() * GUI.MULTIPLIER, getYSize() * GUI.MULTIPLIER,
                                 BufferedImage.SCALE_SMOOTH), (GUI.MULTIPLIER * (getX() - 1)),
@@ -38,7 +38,7 @@ public class RealHuman extends RealObstacle {
     }
 
     @Override
-    public void drawSide(Graphics2D g) {
+    public void renderSide(Graphics2D g) {
         g.drawImage(humanIcon, 0, 0, RealBuilding.DRAW_SIZE, RealBuilding.DRAW_SIZE, null);
     }
 

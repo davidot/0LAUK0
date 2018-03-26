@@ -5,7 +5,6 @@ import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.model.Building;
 import nl.tue.robots.drones.simulation.RealBuilding;
 import nl.tue.robots.drones.simulation.RealWall;
-import nl.tue.robots.drones.simulation.Simulation;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -166,15 +165,13 @@ public class GraphIO {
     /**
      * Reads the wall map from file and constructs a RealBuilding out of it.
      *
-     * @param simulation
      * @param wallsFile  The file from which to read
      * @return The constructed RealBuilding or {@code null} if the building could not be constructed.
      *
      * @throws FileNotFoundException      If the given file cannot be opened for reading.
      * @throws MalformedWallFileException If the given file does not properly specify the building.
      */
-    public static RealBuilding readWalls(Simulation simulation,
-                                         File wallsFile) throws FileNotFoundException, MalformedWallFileException {
+    public static RealBuilding readWalls(File wallsFile) throws FileNotFoundException, MalformedWallFileException {
         try(BufferedReader fileReader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(wallsFile), "UTF-8"))) {
             ArrayList<RealWall> walls = new ArrayList<>();
@@ -244,7 +241,7 @@ public class GraphIO {
             }
 
             // if we get here the file was fully read and nothing was wrong
-            RealBuilding build = new RealBuilding(simulation, maxFloor, maxX, maxY);
+            RealBuilding build = new RealBuilding(maxFloor, maxX, maxY);
             build.addWalls(walls);
 
             return build;

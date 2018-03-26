@@ -21,12 +21,9 @@ public class RealBuilding {
     private final int maxDepth;
 
     private final ArrayList<RealObject> objects = new ArrayList<>();
-    private final Simulation simulation;
     private List<RealObject> toRemove = new LinkedList<>();
 
-    public RealBuilding(Simulation simulation, int floors,
-                        int maxWidth, int maxDepth) {
-        this.simulation = simulation;
+    public RealBuilding(int floors, int maxWidth, int maxDepth) {
         this.floors = floors;
         this.maxWidth = maxWidth;
         this.maxDepth = maxDepth;
@@ -66,21 +63,21 @@ public class RealBuilding {
         }
     }
 
-    public void drawBackground(Graphics2D g, int floor) {
+    public void renderBackground(Graphics2D g, int floor) {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
 
         for (RealObject obj : getObjectsOnFloor(floor)) {
             if (obj instanceof RealWall) {
-                obj.drawObject(g);
+                obj.renderObject(g);
             }
         }
     }
 
-    public void drawForeground(Graphics2D g, int floor) {
+    public void renderForeground(Graphics2D g, int floor) {
         for (RealObject obj : getObjectsOnFloor(floor)) {
             if (!(obj instanceof RealWall)) {
-                obj.drawObject(g);
+                obj.renderObject(g);
             }
         }
     }
@@ -121,8 +118,8 @@ public class RealBuilding {
             int y = 0;
             int x = BASE_OFFSET;
             for (RealObject obj : getObjectsOnFloor(floor)) {
-                if (obj.drawsSide()) {
-                    obj.drawSide(g);
+                if (obj.onSide()) {
+                    obj.renderSide(g);
                     g.translate(DISTANCE_BETWEEN, 0);
                     x += DISTANCE_BETWEEN;
                     if (x > qQuad - DISTANCE_BETWEEN * 2) {

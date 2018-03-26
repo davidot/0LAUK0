@@ -31,11 +31,11 @@ public abstract class RealObject {
         this.floor = floor;
     }
 
-    public abstract void drawObject(Graphics2D g);
+    public abstract void renderObject(Graphics2D g);
 
-    public abstract void drawSide(Graphics2D g);
+    public abstract void renderSide(Graphics2D g);
 
-    public boolean drawsSide() {
+    public boolean onSide() {
         return true;
     }
 }

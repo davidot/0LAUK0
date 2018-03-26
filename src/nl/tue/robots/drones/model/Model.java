@@ -37,8 +37,8 @@ public class Model {
         return building.getNode(0);
     }
 
-    public void drawFloor(Graphics2D g, int floor) {
-        building.drawFloor(g, floor);
+    public void renderFloor(Graphics2D g, int floor) {
+        building.renderFloor(g, floor);
 
         drones.forEach(d -> d.render(g, floor));
 

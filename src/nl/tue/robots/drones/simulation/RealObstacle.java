@@ -2,7 +2,8 @@ package nl.tue.robots.drones.simulation;
 
 import nl.tue.robots.drones.gui.GUI;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -56,7 +57,7 @@ public class RealObstacle extends RealObject {
     }
 
     @Override
-    public void drawObject(Graphics2D g) {
+    public void renderObject(Graphics2D g) {
         g.setColor(Color.RED);
         g.fillRect((int) (GUI.MULTIPLIER * bounds.getX()), (int) (GUI.MULTIPLIER * bounds.getY()),
                 (int) (GUI.MULTIPLIER * bounds.getWidth()),
@@ -64,7 +65,7 @@ public class RealObstacle extends RealObject {
     }
 
     @Override
-    public void drawSide(Graphics2D g) {
+    public void renderSide(Graphics2D g) {
         g.setColor(Color.RED);
         g.fillRect(0, 0, RealBuilding.DRAW_SIZE, RealBuilding.DRAW_SIZE);
     }

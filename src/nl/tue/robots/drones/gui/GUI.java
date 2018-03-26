@@ -293,7 +293,7 @@ public class GUI extends Canvas implements Runnable {
         AffineTransform t = g.getTransform();
 
         //draw the building
-        simulation.draw(g, width, height);
+        simulation.render(g);
 
         g.setTransform(t);
 

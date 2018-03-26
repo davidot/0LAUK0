@@ -24,7 +24,7 @@ public class KeyboardListener implements KeyListener, MouseWheelListener {
         switch(e.getKeyCode()) {
             case KeyEvent.VK_M:
                 Simulation simulation = gui.getSimulation();
-                simulation.setDrawModel(!simulation.getDrawModel());
+                simulation.setRenderModel(!simulation.getRenderModel());
                 break;
             case KeyEvent.VK_R:
                 gui.reload();
