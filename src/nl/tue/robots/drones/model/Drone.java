@@ -24,6 +24,7 @@ public class Drone {
     private Transition currentTransition;
 
     private Deque<Node> currentGoals = new ArrayDeque<>();
+    private boolean stuck;
 
 
     public Drone(int id, Node start) {
@@ -52,13 +53,13 @@ public class Drone {
         return currentTransition;
     }
 
-    // TODO: update that currentTransition!
     public void updateCurrentTransition(Transition trans) {
         this.currentTransition = trans;
     }
 
     public List<Node> getNextNode() {
         if (currentGoals.isEmpty()) {
+            stuck = false;
             return null;
         }
         if (currentNode == currentGoals.peekFirst()) {
@@ -66,11 +67,17 @@ public class Drone {
             if (currentGoals.isEmpty()) {
                 return null;
             }
+            stuck = false;
         }
         List<Node> list = Algorithm.findPath(currentNode, currentGoals.peekFirst()).stream()
                 .map(Transition::getTo).collect(Collectors.toList());
         if (list.isEmpty()) {
+            if (!notBusy()) {
+                stuck = true;
+            }
             return null;
+        } else {
+            stuck = false;
         }
         return list;
     }
@@ -97,4 +104,7 @@ public class Drone {
         }
     }
 
+    public boolean isStuck() {
+        return stuck;
+    }
 }

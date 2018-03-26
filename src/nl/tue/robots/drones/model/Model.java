@@ -120,10 +120,10 @@ public class Model {
                 Collections.singletonList(blockedDrone.getCurrentNode()));
         nextDroneInstruction(blockedDrone);
 
-        updateRelatedPaths(blockedId, currentTrans);
+        updateRelatedPaths(blockedId, currentTrans, true);
     }
 
-    private void updateRelatedPaths(int ignoreId, Transition trans) {
+    private void updateRelatedPaths(int ignoreId, Transition trans, boolean all) {
         Transition op = trans.getOpposite();
         for (int id = 0; id < drones.size(); id++) {
             if (id != ignoreId) {
@@ -188,9 +188,14 @@ public class Model {
     }
 
     public void update() {
+        boolean update = false;
         for (Transition t : building.update()) {
+            update = true;
             //ignore nothing
-            updateRelatedPaths(-1, t);
+            updateRelatedPaths(-1, t, false);
+        }
+        if (update) {
+            drones.stream().filter(Drone::isStuck).forEach(this::nextDroneInstruction);
         }
     }
 }

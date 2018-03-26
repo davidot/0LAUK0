@@ -276,6 +276,7 @@ public class GUI extends Canvas implements Runnable {
         BufferStrategy buffer = getBufferStrategy();
         if (buffer == null) {
             this.createBufferStrategy(2);
+            requestFocus();
             return;
         }
         Graphics2D g = (Graphics2D) buffer.getDrawGraphics();
