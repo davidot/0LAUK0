@@ -346,6 +346,19 @@ public class RealDrone extends RealObject {
             }
             floorStep += 1;
             if (floorStep > FLOOR_STEPS / 2) {
+                RealObject obstacle = getRealBuilding().destinationObstructed(
+                        new Point2D.Double(destination.getX(), destination.getY()), destination.getZ());
+                if (obstacle != null && obstacle != lastObstacle) {
+                    System.out.printf("At (%d,%d,%d) with destination (%d,%d,%d) found obstacle: %s%n", x, y, getFloor(),
+                            destination.getX(), destination.getY(), destination.getZ(), obstacle);
+                    // tell simulation that an obstacle is in the way for this drone
+                    lastObstacle = obstacle;
+                    simulation.sendObstacle(id, obstacle instanceof RealWall);
+
+                    floorStep = 0; // reset floor transition
+                    return;
+                }
+
                 setFloor(destination.getZ());
                 // just in case the coords are not the same
                 setXY(destination.getX(), destination.getY());

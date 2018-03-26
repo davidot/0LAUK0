@@ -214,22 +214,42 @@ public class RealBuilding {
         return obstruction;
     }
 
-    public RealObject obstaclesOnPath(int x, int y, int lx, int ly, int rx, int ry, int floor,
-                                      int range, Transition transition) {
-        List<RealObstacle> obstacles = getObjectsOnFloor(floor).stream()
-                .filter(obj -> obj.getFloor() == floor && obj instanceof RealObstacle)
-                .map(obj -> (RealObstacle) obj).collect(Collectors.toList());
-        for (RealObstacle obstacle : obstacles) {
-            if ((((Math.pow(obstacle.getX() - x, 2) + Math.pow(obstacle.getY() - y, 2)) <
-                    range * range))
-                    || (lx <= obstacle.getX() && ly <= obstacle.getY()) &&
-                    (obstacle.getX() <= rx && obstacle.getY() <= ry)) {
-                return obstacle;
-            }
+    public RealObject destinationObstructed(Point2D destination, int floor){
+        RealObject obstruction = null;
+
+        // get walls in range crossing the path
+        List<RealWall> blockingWalls = getAllWalls().stream().filter(
+                w -> w.getFloor() == floor && (w.toLine().ptSegDist(destination) < 1))
+                .collect(Collectors.toList());
+
+        // assign the closest (or only) wall or obstruction to the result
+        if (blockingWalls.size() > 0) {
+            // there is a wall
+            obstruction = blockingWalls.get(0);
+        } else {
+            // no walls in the path, so find obstacles
+
+            // list all obstacles on floor
+            List<RealObstacle> allObstacles = getObjectsOnFloor(floor).stream()
+                    .filter(o -> o instanceof RealObstacle).map(o -> (RealObstacle) o)
+                    .collect(Collectors.toList());
+            // filter obstacles to only contain those in range and in path
+            List<RealObstacle> relevantObstacles = allObstacles.stream()
+                    .filter(obs -> obs.covers(destination)).collect(Collectors.toList());
+
+            if (relevantObstacles.size() > 0) {
+                // if at least one obstacle
+                obstruction = relevantObstacles.get(0);
+            } // else nothing found in range in path, obstruction remains null
         }
-        // Line2D droneLine = new Line2D.Double(lx, ly, rx, ry);
-        return getAllWalls().stream().filter(w -> w.getFloor() == floor && w.hasUndetected() &&
-                w.hasUndetected(transition)).findFirst().orElse(null);
+
+        if (obstruction instanceof RealWall) {
+            //tell wall it is detected
+            RealWall realWall = (RealWall) obstruction;
+            realWall.hasDetected();
+        }
+
+        return obstruction;
     }
 
     public RealDrone getDrone(int id) {
@@ -254,10 +274,6 @@ public class RealBuilding {
         List<RealObstacle> candidates =
                 localObstacles.stream().filter(obj -> obj.bounds.contains(x, y))
                         .collect(Collectors.toList());
-
-//        List<RealObstacle> candidates = localObstacles.stream().filter(obj -> (
-//                (obj.getX() - obj.getXSize() / 2 <= x && obj.getX() + obj.getYSize() / 2 >= x) &&
-//                    (obj.getY() - obj.getYSize() / 2 <= y && obj.getY() + obj.getYSize() / 2 >= y))).collect(Collectors.toList());
 
         // pick the first as option
         if (candidates.size() > 0) {

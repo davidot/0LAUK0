@@ -2,8 +2,7 @@ package nl.tue.robots.drones.simulation;
 
 import nl.tue.robots.drones.gui.GUI;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -50,6 +49,10 @@ public class RealObstacle extends RealObject {
 
     public Point2D getBottomRight() {
         return new Point2D.Double(bounds.getMaxX(), bounds.getMaxY());
+    }
+
+    public boolean covers(Point2D p) {
+        return bounds.contains(p);
     }
 
     @Override
