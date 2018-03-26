@@ -1,6 +1,5 @@
 package nl.tue.robots.drones.simulation;
 
-import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.gui.GUI;
 
 import java.awt.BasicStroke;
@@ -10,6 +9,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +22,7 @@ public class RealBuilding {
 
     private final ArrayList<RealObject> objects = new ArrayList<>();
     private final Simulation simulation;
+    private List<RealObject> toRemove = new LinkedList<>();
 
     public RealBuilding(Simulation simulation, int floors,
                         int maxWidth, int maxDepth) {
@@ -89,18 +90,24 @@ public class RealBuilding {
     private static final int DISTANCE_BETWEEN = BASE_OFFSET + DRAW_SIZE;
 
 
-    public void renderSideView(Graphics2D g) {
-        int total = (getDepth() * MULTI) / (getFloors() + 1);
+    public void renderSideView(Graphics2D g, int from, int floors) {
+        int numFloors = getFloors() + 1;
+        int total = (getDepth() * MULTI) / (numFloors);
 
-        g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(2));
         int quad = getWidth() * MULTI / 8;
-        g.drawLine(quad, 0, quad, getDepth() * MULTI);
-        int qqaud = 7 * quad;
-        g.drawLine(qqaud, 0, qqaud, getDepth() * MULTI);
-        for (int i = 0; i <= getFloors() + 1; i++) {
-            g.setColor(Color.BLACK);
-            g.drawLine(quad, i * total, qqaud, i * total);
+        int qQuad = 7 * quad;
+        for (int i = 0; i <= numFloors; i++) {
+            if (numFloors - i - 1 >= from && numFloors - i - 1 < from + floors) {
+                g.setColor(Color.GRAY);
+                g.fillRect(quad, i * total, quad * 6, total);
+            }
+            if (numFloors - i >= from && numFloors - i < from + floors) {
+                g.setColor(Color.RED);
+            } else {
+                g.setColor(Color.BLACK);
+            }
+            g.drawLine(quad, i * total, qQuad, i * total);
 
             if (i > getFloors()) {
                 break;
@@ -118,7 +125,7 @@ public class RealBuilding {
                     obj.drawSide(g);
                     g.translate(DISTANCE_BETWEEN, 0);
                     x += DISTANCE_BETWEEN;
-                    if (x > qqaud - DISTANCE_BETWEEN * 2) {
+                    if (x > qQuad - DISTANCE_BETWEEN * 2) {
                         g.setTransform(transform);
                         y += DISTANCE_BETWEEN;
                         g.translate(0, y);
@@ -130,6 +137,10 @@ public class RealBuilding {
             g.setTransform(transform);
             g.translate(-quad - BASE_OFFSET, -i * total - BASE_OFFSET);
         }
+
+        g.setColor(Color.BLACK);
+        g.drawLine(quad, 0, quad, getDepth() * MULTI);
+        g.drawLine(qQuad, 0, qQuad, getDepth() * MULTI);
     }
 
     /**
@@ -259,6 +270,10 @@ public class RealBuilding {
     }
 
     public void update() {
+        if (toRemove.size() > 0) {
+            objects.removeAll(toRemove);
+            toRemove.clear();
+        }
         objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast)
                 .forEach(RealDrone::update);
     }
@@ -282,7 +297,7 @@ public class RealBuilding {
 
         if (removable != null) {
             // we found a object to remove
-            objects.remove(removable);
+            toRemove.add(removable);
         }
     }
 }

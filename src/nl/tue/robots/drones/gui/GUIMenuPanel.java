@@ -3,9 +3,11 @@ package nl.tue.robots.drones.gui;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferStrategy;
 
 import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.DESTINATION;
 import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.OBSTACLE;
@@ -148,12 +150,13 @@ public class GUIMenuPanel extends Canvas {
         repaint();
     }
 
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        if (getBufferStrategy() == null) {
-            createBufferStrategy(2);
+    public void render() {
+        BufferStrategy buffer = getBufferStrategy();
+        if (buffer == null) {
+            this.createBufferStrategy(2);
+            return;
         }
+        Graphics2D g = (Graphics2D) buffer.getDrawGraphics();
 
         g.setColor(getBackground());
         g.fillRect(0,0, getWidth(), getHeight());
@@ -176,14 +179,9 @@ public class GUIMenuPanel extends Canvas {
             g.setColor(statusColor);
             g.drawString(status, 5 * (BUTTON_WIDTH + 2 * BUTTON_MARGIN) + BUTTON_MARGIN, BUTTON_HEIGHT + BUTTON_MARGIN - INNER_MARGIN);
         }
-    }
 
-    @Override
-    public void update(Graphics g) {
-        super.update(g);
-        // just draw active button backgrounds
-        fillButtons(g);
-        drawButtonTexts(g);
+        g.dispose();
+        buffer.show();
     }
 
     private void fillButtons(Graphics g) {

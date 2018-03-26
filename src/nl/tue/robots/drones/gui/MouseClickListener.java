@@ -119,7 +119,7 @@ public class MouseClickListener extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        
+
     }
 
     @Override
@@ -134,7 +134,7 @@ public class MouseClickListener extends MouseAdapter {
             }
             panel().deactivate();
         } else if (placingHuman) {
-            sim().getBuilding().addObject(new RealHuman(x, y, z));
+            sim().addNewObject(new RealHuman(x, y, z));
             placingHuman = false;
             resetCoords();
             panel().deactivate();
@@ -144,7 +144,7 @@ public class MouseClickListener extends MouseAdapter {
             resetCoords();
             panel().deactivate();
         } else if (pickingRemoval) {
-            sim().getBuilding().removeObstacle(x,y,z);
+            sim().removeObject(x,y,z);
             pickingRemoval = false;
             resetCoords();
             panel().deactivate();
@@ -161,7 +161,7 @@ public class MouseClickListener extends MouseAdapter {
             // we already have our first point and are placing a wall
             guiToBuildingCoords(e.getX(), e.getY());
             if (z == startObject[2]) {
-                sim().addNewWallObject(
+                sim().addNewObject(
                         new RealWall(z, startObject[0], startObject[1], x, y, false));
             }
             placingWall = false;
@@ -172,7 +172,7 @@ public class MouseClickListener extends MouseAdapter {
             guiToBuildingCoords(e.getX(), e.getY());
             if (z == startObject[2]) {
                 RealObstacle ob = new RealObstacle(z, startObject[0], startObject[1], x, y);
-                sim().getBuilding().addObject(ob);
+                sim().addNewObject(ob);
                 System.out.println(
                         "Adding ob: (" + ob.getX() + "," + ob.getY() + ") of " + ob.getXSize() +
                                 " by " + ob.getYSize());

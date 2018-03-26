@@ -7,16 +7,21 @@ import nl.tue.robots.drones.fileIO.MalformedWallFileException;
 import nl.tue.robots.drones.gui.GUI;
 import nl.tue.robots.drones.model.Model;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class Simulation {
 
     private static final int NUM_DRONES = 10;
+    private static final int FLOOR_NUMBER_SIZE = 20;
     private RealBuilding building;
     private Model model;
     private static final int MULTIPLIER = GUI.MULTIPLIER;
@@ -35,6 +40,7 @@ public class Simulation {
     private int from = 0;
     private boolean drawModel = true;
     private boolean paused = false;
+    private Queue<RealObject> addQueue = new LinkedList<>();
 
     public Simulation(File file) throws FileNotFoundException, MalformedWallFileException {
         //This is where a real application would open the file.
@@ -69,7 +75,7 @@ public class Simulation {
 
     public void draw(Graphics2D g, int width, int height) {
         g.translate(0, PADDING);
-        building.renderSideView(g);
+        building.renderSideView(g, from, FLOORS);
 
         int floorWidth = (building.getWidth() + FLOORS_OFFSET) * MULTIPLIER;
         g.translate(floorWidth, 0);
@@ -81,6 +87,16 @@ public class Simulation {
                 model.drawFloor(g, floor);
             }
             building.drawForeground(g, floor);
+            Font oldFont = g.getFont();
+            Font font = oldFont.deriveFont(Font.BOLD, 30);
+            g.setFont(font);
+            int textWidth = g.getFontMetrics().stringWidth(floor + "");
+            int textHeight = g.getFontMetrics().getHeight();
+            g.setColor(Color.BLACK);
+            g.drawString(floor + "", (floorWidth - textWidth) / 2,
+                    building.getDepth() * MULTIPLIER +
+                            (FLOOR_NUMBER_SIZE - textHeight) / 2 + textHeight);
+            g.setFont(oldFont);
             g.translate(floorWidth, 0);
         }
 
@@ -94,6 +110,9 @@ public class Simulation {
 
     public void update() {
         if (!paused) {
+            while (!addQueue.isEmpty()) {
+                building.addObject(addQueue.poll());
+            }
             building.update();
             model.update();
         }
@@ -138,7 +157,7 @@ public class Simulation {
         return new Dimension(
                 (building.getWidth() * NUM_FLOORS_PER_ROW + (FLOORS + 1) * FLOORS_OFFSET) *
                         MULTIPLIER,
-                building.getDepth() * MULTIPLIER + PADDING * 2);
+                building.getDepth() * MULTIPLIER + PADDING * 2 + FLOOR_NUMBER_SIZE);
     }
 
     public void sendObstacle(int id, boolean permanent) {
@@ -199,16 +218,19 @@ public class Simulation {
         return drawModel;
     }
 
-    public void addNewWallObject(RealWall object) {
-        model.getBuilding().getAllTransitions().stream()
-                .filter(t -> t.getFrom().getZ() == object.getFloor() &&
-                        object.toLine().intersectsLine(t.toLine())).forEach(
-                object::addUndetected);
-        building.addObject(object);
+    public void addNewObject(RealObject object) {
+        if (object instanceof RealWall) {
+            RealWall wall = (RealWall) object;
+            model.getBuilding().getAllTransitions().stream()
+                    .filter(t -> t.getFrom().getZ() == object.getFloor() &&
+                            wall.toLine().intersectsLine(t.toLine())).forEach(
+                    wall::addUndetected);
+        }
+        addQueue.add(object);
     }
 
     public void floorUp() {
-        if (from < building.getFloors()) {
+        if (from + FLOORS < building.getFloors() + 1) {
             from++;
         }
     }
@@ -219,4 +241,7 @@ public class Simulation {
         }
     }
 
+    public void removeObject(int x, int y, int z) {
+        building.removeObstacle(x, y, z);
+    }
 }

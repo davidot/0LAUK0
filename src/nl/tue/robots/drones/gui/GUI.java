@@ -118,11 +118,12 @@ public class GUI extends Canvas implements Runnable {
         GUI.setIgnoreRepaint(true);
 
         GUIMenuPanel menu = new GUIMenuPanel();
-        Dimension menuDimension = new Dimension(RENDER_WIDTH, GUIMenuPanel.BUTTON_HEIGHT + 2 * GUIMenuPanel.BUTTON_MARGIN);
+        Dimension menuDimension = new Dimension(RENDER_WIDTH,
+                GUIMenuPanel.BUTTON_HEIGHT + 2 * GUIMenuPanel.BUTTON_MARGIN);
         menu.setMinimumSize(menuDimension);
         menu.setMaximumSize(menuDimension);
         menu.setPreferredSize(menuDimension);
-
+        menu.setIgnoreRepaint(true);
         GUI.setMenuPanel(menu);
 
         //Make the frame
@@ -275,7 +276,6 @@ public class GUI extends Canvas implements Runnable {
         BufferStrategy buffer = getBufferStrategy();
         if (buffer == null) {
             this.createBufferStrategy(2);
-            requestFocus();
             return;
         }
         Graphics2D g = (Graphics2D) buffer.getDrawGraphics();
@@ -333,6 +333,8 @@ public class GUI extends Canvas implements Runnable {
         //stop drawing here
         g.dispose();
         buffer.show();
+
+        menuPanel.render();
     }
 
     public void start() {

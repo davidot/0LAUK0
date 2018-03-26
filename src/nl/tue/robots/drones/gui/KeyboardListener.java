@@ -39,9 +39,11 @@ public class KeyboardListener implements KeyListener, MouseWheelListener {
                 gui.getSimulation().togglePause();
                 break;
             case KeyEvent.VK_UP:
+            case KeyEvent.VK_LEFT:
                 gui.getSimulation().floorDown();
                 break;
             case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_RIGHT:
                 gui.getSimulation().floorUp();
                 break;
             case KeyEvent.VK_1:
