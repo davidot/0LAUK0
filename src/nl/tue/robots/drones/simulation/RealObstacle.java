@@ -52,8 +52,14 @@ public class RealObstacle extends RealObject {
         return new Point2D.Double(bounds.getMaxX(), bounds.getMaxY());
     }
 
+    /**
+     * Whether the specified point lies underneath the obstacle.
+     * @param p the point to check
+     * @return {@code true} if the point is underneath the obstacle or on its edges
+     */
     public boolean covers(Point2D p) {
-        return bounds.contains(p);
+        return (bounds.getX() <= p.getX() && p.getX() <= bounds.getMaxX())
+                && (bounds.getY() <= p.getY() && p.getY() <= bounds.getMaxY());
     }
 
     @Override

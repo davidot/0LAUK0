@@ -284,7 +284,7 @@ public class RealBuilding {
         RealObstacle removable = null;
         // get all obstacles at x,y
         List<RealObstacle> candidates =
-                localObstacles.stream().filter(obj -> obj.bounds.contains(x, y))
+                localObstacles.stream().filter(obj -> obj.covers(new Point2D.Double(x, y)))
                         .collect(Collectors.toList());
 
         // pick the first as option
