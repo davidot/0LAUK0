@@ -112,7 +112,7 @@ public class Simulation {
             return new int[] {-1, -1, -1};
         }
         int xF = ((x + (MULTIPLIER / 2)) / MULTIPLIER) % (building.getWidth() + FLOORS_OFFSET);
-        int yF = (y - PADDING) / MULTIPLIER;
+        int yF = ((y + (MULTIPLIER / 2)) - PADDING) / MULTIPLIER;
         return new int[]{xF, yF, from + floor};
     }
 
