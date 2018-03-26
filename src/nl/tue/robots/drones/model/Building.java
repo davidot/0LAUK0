@@ -102,17 +102,14 @@ public class Building {
                 g.setColor(Color.BLUE);
             } else if (!t.getStatus()) {
                 int timeLocked = t.getTimeLocked();
-                int i = Transition.TEMP_TIMEOUT / 4;
-                int i1 = Transition.TEMP_TIMEOUT / 2;
-                // System.out.println("T:" + timeLocked + "," + i + "," + i1);
-                if (timeLocked < i) {
+                if (timeLocked < Transition.TEMP_TIMEOUT) {
+                    g.setColor(new Color(76, 255, 160));
+                } else if (timeLocked < 2*Transition.TEMP_TIMEOUT) {
                     g.setColor(new Color(52, 176, 111));
-                } else {
-                    if (timeLocked < i1) {
-                        g.setColor(Color.ORANGE);
-                    } else {
-                        g.setColor(Color.YELLOW);
-                    }
+                } else if (timeLocked < 4 * Transition.TEMP_TIMEOUT) {
+                    g.setColor(Color.ORANGE);
+                } else{
+                    g.setColor(Color.YELLOW);
                 }
             } else if (t.isOutside()) {
                 g.setColor(Color.RED);

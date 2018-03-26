@@ -88,6 +88,9 @@ public class Drone {
 
     public void updateCurrent(Node node) {
         currentNode = node;
+        if (currentTransition != null) {
+            currentTransition.dronePassing();
+        }
         currentTransition = null;
     }
 

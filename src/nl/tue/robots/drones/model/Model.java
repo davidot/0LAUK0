@@ -106,30 +106,37 @@ public class Model {
         // Find the transitions the drone is currently on and block it
         Transition currentTrans = blockedDrone.getCurrentTransition();
         if (currentTrans != null) {
-            System.out.println("Toggeling thing");
             currentTrans.toggleTransition(false, permanent);
             Transition opposite = currentTrans.getOpposite();
             opposite.toggleTransition(false, permanent);
-        } else {
-            System.out.println("HMMM not sure");
         }
+
+        //drone is now moving back and is not really on the transition
 
         // Send drone back to its previous node
         simulation.clearInstruction(blockedId, true);
-        simulation.droneInstruction(blockedId,
-                Collections.singletonList(blockedDrone.getCurrentNode()));
-        nextDroneInstruction(blockedDrone);
+        if (currentTrans != null) {
+            simulation.droneInstruction(blockedId,
+                    Collections.singletonList(blockedDrone.getCurrentNode()));
+            nextDroneInstruction(blockedDrone);
+        } else {
+            //todo add something in case we are stuck nowhere
+        }
 
         updateRelatedPaths(blockedId, currentTrans, true);
+        blockedDrone.updateCurrentTransition(null);
     }
 
     private void updateRelatedPaths(int ignoreId, Transition trans, boolean all) {
+        if (trans == null) {
+            return;
+        }
         Transition op = trans.getOpposite();
         for (int id = 0; id < drones.size(); id++) {
             if (id != ignoreId) {
                 if (simulation.travelsThrough(id, trans) || simulation.travelsThrough(id, op)) {
                     System.out.println("Clearing instructions of " + id);
-                    simulation.clearInstruction(id, true);
+                    simulation.clearInstruction(id, all);
                     Drone drone = getDrone(id);
                     simulation
                             .droneInstruction(drone.getId(),

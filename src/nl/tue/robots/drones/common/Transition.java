@@ -15,7 +15,9 @@ public class Transition {
     private final boolean opposite;
     private Transition otherDirection;
 
-    public static final int TEMP_TIMEOUT = GUI.TARGET_TICKS * 15;
+    public static final int TEMP_TIMEOUT = GUI.TARGET_TICKS * 5;
+
+    private int timesLocked = 0;
 
     private int timeLocked = 0;
     private boolean permanentlyBlocked;
@@ -70,7 +72,13 @@ public class Transition {
     }
 
     public void toggleTransition(boolean state, boolean permanent) {
-        timeLocked = state ? 0 : TEMP_TIMEOUT;
+        if (!state) {
+            timesLocked++;
+            if (timesLocked > 5) {
+                timesLocked = 5;
+            }
+        }
+        timeLocked = state ? 0 : 2 * timesLocked * TEMP_TIMEOUT;
         permanentlyBlocked = !state && permanent;
     }
 
@@ -105,5 +113,16 @@ public class Transition {
 
     public boolean open() {
         return getStatus() && !permanentlyBlocked;
+    }
+
+    public void dronePassing() {
+        dronePassing(true);
+    }
+
+    private void dronePassing(boolean other) {
+        if (other) {
+            otherDirection.dronePassing(false);
+        }
+        timesLocked = 0;
     }
 }
