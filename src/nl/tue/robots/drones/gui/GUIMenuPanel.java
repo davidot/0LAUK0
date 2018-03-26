@@ -89,6 +89,7 @@ public class GUIMenuPanel extends Canvas {
      * @param b the button to set as active
      */
     protected void activate(MenuPanelButton b) {
+        mcl.cancelAction();
         destinationActive = false;
         workerActive = false;
         wallActive = false;
