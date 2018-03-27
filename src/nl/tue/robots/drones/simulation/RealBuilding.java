@@ -9,6 +9,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -222,7 +223,25 @@ public class RealBuilding {
         return obstruction;
     }
 
+    /**
+     * Returns the RealObject that is obstructing the destination point.
+     * If the obstruction is as RealWall it is marked as seen.
+     * @param destination the destination to check for obstructing
+     * @param floor the floor on which the destination is
+     * @return the found obstruction
+     */
     public RealObject destinationObstructed(Point2D destination, int floor){
+        return destinationObstructed(destination, floor, false);
+    }
+
+    /**
+     * Returns the RealObject that is obstructing the destination point.
+     * @param destination the destination to check for obstructing
+     * @param floor the floor on which the destination is
+     * @param markDetected whether to tell the wall (if the obstruction is one) to mark itself seen
+     * @return the found obstruction
+     */
+    public RealObject destinationObstructed(Point2D destination, int floor, boolean markDetected){
         RealObject obstruction = null;
 
         // get walls in range crossing the path
@@ -233,7 +252,15 @@ public class RealBuilding {
         // assign the closest (or only) wall or obstruction to the result
         if (blockingWalls.size() > 0) {
             // there is a wall
-            obstruction = blockingWalls.get(0);
+            RealWall realWall = blockingWalls.stream()
+                    .min(Comparator.comparingDouble(o -> o.toLine().ptSegDist(destination))).orElse(null);
+
+            if (markDetected) {
+                //tell wall it is detected
+                realWall.hasDetected();
+            }
+
+            obstruction = realWall;
         } else {
             // no walls in the path, so find obstacles
 
@@ -249,12 +276,6 @@ public class RealBuilding {
                 // if at least one obstacle
                 obstruction = relevantObstacles.get(0);
             } // else nothing found in range in path, obstruction remains null
-        }
-
-        if (obstruction instanceof RealWall) {
-            //tell wall it is detected
-            RealWall realWall = (RealWall) obstruction;
-            realWall.hasDetected();
         }
 
         return obstruction;
@@ -273,6 +294,8 @@ public class RealBuilding {
         }
         objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast)
                 .forEach(RealDrone::update);
+        objects.stream().filter(o -> o instanceof RealHuman).map(RealHuman.class::cast)
+                .forEach(RealHuman::update);
     }
 
     public void removeObstacle(int x, int y, int floor) {

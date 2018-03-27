@@ -259,6 +259,9 @@ public class Simulation {
      * @param destination the destination for the worker
      */
     public void moveWorker(int floor, Point2D location, Point2D destination) {
-        // TODO implement
+        RealHuman worker = building.getObjectsOnFloor(floor).stream().
+                filter(o -> (o instanceof RealHuman) && ((RealHuman) o).covers(location)).
+                map(RealHuman.class::cast).findFirst().orElse(null);
+        worker.moveTo(destination);
     }
 }

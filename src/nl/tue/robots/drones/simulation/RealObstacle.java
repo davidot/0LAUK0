@@ -81,4 +81,15 @@ public class RealObstacle extends RealObject {
         return String.format("[Obstacle at (%d,%d) with size %d by %d]", getX(), getY(), getXSize(),
                 getYSize());
     }
+
+    /**
+     * Moves the obstacle to the given (x,y) point on the same floor
+     * @param x
+     * @param y
+     */
+    public void move(int x, int y) {
+        int dx = x - getX();
+        int dy = y - getY();
+        bounds.setFrame(bounds.getX() + dx, bounds.getY() + dy, bounds.getWidth(), bounds.getHeight());
+    }
 }
