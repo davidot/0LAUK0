@@ -36,7 +36,12 @@ public class KeyboardListener implements KeyListener, MouseWheelListener {
                 gui.placeListener.cancelAction();
                 break;
             case KeyEvent.VK_P:
-                gui.getSimulation().togglePause();
+                // toggle the pause status and show the new status in the UI
+                if (gui.getSimulation().togglePause()) {
+                    gui.getMenuPanel().setStatus("Simulation paused");
+                } else {
+                    gui.getMenuPanel().setStatus("Simulation Unpaused");
+                }
                 break;
             case KeyEvent.VK_UP:
             case KeyEvent.VK_LEFT:
@@ -59,6 +64,9 @@ public class KeyboardListener implements KeyListener, MouseWheelListener {
                 gui.getMenuPanel().activate(GUIMenuPanel.MenuPanelButton.OBSTACLE);
                 break;
             case KeyEvent.VK_5:
+                gui.getMenuPanel().activate(GUIMenuPanel.MenuPanelButton.MOVEMENT);
+                break;
+            case KeyEvent.VK_6:
                 gui.getMenuPanel().activate(GUIMenuPanel.MenuPanelButton.REMOVE);
                 break;
         }

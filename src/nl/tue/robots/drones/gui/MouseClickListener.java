@@ -7,10 +7,12 @@ import nl.tue.robots.drones.simulation.Simulation;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 
 public class MouseClickListener extends MouseAdapter {
 
@@ -22,6 +24,8 @@ public class MouseClickListener extends MouseAdapter {
     protected static final String HUMAN_TEXT = "Place Worker";
     private static final String OBSTACLE_ACTION = "obstacle";
     protected static final String OBSTACLE_TEXT = "Draw Obstacle";
+    private static final String MOVEMENT_ACTION = "movement";
+    protected static final String MOVEMENT_TEXT = "Move Worker";
     private static final String REMOVE_ACTION = "remove";
     protected static final String REMOVE_TEXT = "Remove";
     protected static final String REMOVE_TEXT_LONG = "Remove Obstacle/Worker";
@@ -38,6 +42,7 @@ public class MouseClickListener extends MouseAdapter {
     private boolean placingHuman;
     private boolean pickingDestination;
     private boolean pickingRemoval;
+    private boolean movingWorker;
     JPopupMenu contextMenu;
 
     final GUI gui;
@@ -54,48 +59,68 @@ public class MouseClickListener extends MouseAdapter {
 
         // Context menu for placing things
         contextMenu = new JPopupMenu();
-        JMenuItem objectMenuItem = new JMenuItem(OBSTACLE_TEXT);
+        JMenuItem droneMenuItem = new JMenuItem(DRONE_TEXT);
         JMenuItem humanMenuItem = new JMenuItem(HUMAN_TEXT);
         JMenuItem wallMenuItem = new JMenuItem(WALL_TEXT);
-        JMenuItem droneMenuItem = new JMenuItem(DRONE_TEXT);
+        JMenuItem objectMenuItem = new JMenuItem(OBSTACLE_TEXT);
+        JMenuItem movementMenuItem = new JMenuItem(MOVEMENT_TEXT);
         JMenuItem removeMenuItem = new JMenuItem(REMOVE_TEXT_LONG);
 
-        objectMenuItem.setActionCommand(OBSTACLE_ACTION);
+        droneMenuItem.setActionCommand(DRONE_ACTION);
         humanMenuItem.setActionCommand(HUMAN_ACTION);
         wallMenuItem.setActionCommand(WALL_ACTION);
-        droneMenuItem.setActionCommand(DRONE_ACTION);
+        objectMenuItem.setActionCommand(OBSTACLE_ACTION);
+        movementMenuItem.setActionCommand(MOVEMENT_ACTION);
         removeMenuItem.setActionCommand(REMOVE_ACTION);
 
         ActionListener menuListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (e.getActionCommand().equals(OBSTACLE_ACTION)) {
-                    startObject = new int[]{x, y, z};
-                    placingObstacle = true;
-                    panel().setStatus("Picking second obstacle point");
-                } else if (e.getActionCommand().equals(HUMAN_ACTION)) {
-                    sim().getBuilding().addObject(new RealHuman(x, y, z));
-                } else if (e.getActionCommand().equals(WALL_ACTION)) {
-                    startObject = new int[]{x, y, z};
-                    placingWall = true;
-                    panel().setStatus("Picking second wall point");
-                } else if (e.getActionCommand().equals(DRONE_ACTION)) {
-                    sim().addOrder(x, y, z);
-                } else if (e.getActionCommand().equals(REMOVE_ACTION)) {
-                    sim().getBuilding().removeObstacle(x, y, z);
+                switch (e.getActionCommand()) {
+                    case DRONE_ACTION:
+                        sim().addOrder(x, y, z);
+                        break;
+                    case HUMAN_ACTION:
+                        sim().getBuilding().addObject(new RealHuman(x, y, z));
+                        break;
+                    case WALL_ACTION:
+                        startObject = new int[]{x, y, z};
+                        placingWall = true;
+                        panel().setStatus("Picking second wall point");
+                        break;
+                    case OBSTACLE_ACTION:
+                        startObject = new int[]{x, y, z};
+                        placingObstacle = true;
+                        panel().setStatus("Picking second obstacle point");
+                        break;
+                    case MOVEMENT_ACTION:
+                        if (sim().getBuilding().hasWorkerAt(x, y, z)) {
+                            // there is a worker at the specified location
+                            startObject = new int[]{x, y, z};
+                            movingWorker = true;
+                            panel().setStatus("Picking worker destination");
+                        } else {
+                            panel().setStatus("No worker here");
+                        }
+                        break;
+                    case REMOVE_ACTION:
+                        sim().getBuilding().removeObstacle(x, y, z);
+                        break;
                 }
             }
         };
-        objectMenuItem.addActionListener(menuListener);
+        droneMenuItem.addActionListener(menuListener);
         humanMenuItem.addActionListener(menuListener);
         wallMenuItem.addActionListener(menuListener);
-        droneMenuItem.addActionListener(menuListener);
+        objectMenuItem.addActionListener(menuListener);
+        movementMenuItem.addActionListener(menuListener);
         removeMenuItem.addActionListener(menuListener);
 
-        contextMenu.add(objectMenuItem);
+        contextMenu.add(droneMenuItem);
         contextMenu.add(humanMenuItem);
         contextMenu.add(wallMenuItem);
-        contextMenu.add(droneMenuItem);
+        contextMenu.add(objectMenuItem);
+        contextMenu.add(movementMenuItem);
         contextMenu.add(removeMenuItem);
     }
 
@@ -127,6 +152,7 @@ public class MouseClickListener extends MouseAdapter {
         guiToBuildingCoords(e.getX(), e.getY());
         guiX = e.getX();
         guiY = e.getY();
+        String errorMessage = "";
         if (e.getButton() == MouseEvent.BUTTON3) {
             if (x >= 0 && y >= 0 && z >= 0) {
                 contextMenu.show(gui, e.getX(), e.getY());
@@ -156,6 +182,15 @@ public class MouseClickListener extends MouseAdapter {
                 panel().setStatus("Picking second wall point");
             } else if (placingObstacle) {
                 panel().setStatus("Picking second obstacle point");
+            } else if (movingWorker) {
+                if (sim().getBuilding().hasWorkerAt(x, y, z)) {
+                    // there is a worker at the specified location
+                    panel().setStatus("Picking worker destination");
+                } else {
+                    placingFirst = true;
+                    resetCoords();
+                    panel().setStatus("Pick a worker to move");
+                }
             }
         } else if (placingWall) {
             // we already have our first point and are placing a wall
@@ -180,6 +215,23 @@ public class MouseClickListener extends MouseAdapter {
             placingObstacle = false;
             resetCoords();
             panel().deactivate();
+        } else if (movingWorker) {
+            // we are moving a worker and already have their location
+            guiToBuildingCoords(e.getX(), e.getY());
+            if (z == startObject[2]) {
+                sim().moveWorker(z, new Point2D.Double(startObject[0], startObject[1]), new Point2D.Double(x,y));
+                System.out.printf("Telling worker on floor %d at (%d,%d) to move to (%d,%d)%n",
+                        z, startObject[0], startObject[1], x,y);
+            } else {
+                System.out.println("Worker told to move between floors");
+                errorMessage = "Workers cannot move between floors in simulation";
+
+            }
+            movingWorker = false;
+            resetCoords();
+            panel().deactivate();
+            // panel status was cleared by deactivate, set our error (or clear again if none exists)
+            panel().setStatus(errorMessage, Color.RED);
         }
     }
 
@@ -220,6 +272,10 @@ public class MouseClickListener extends MouseAdapter {
     }
     public void startRemoval() {
         pickingRemoval = true;
+    }
+    public void startWorkerMovement() {
+        placingFirst = true;
+        movingWorker = true;
     }
 
     private void resetCoords() {

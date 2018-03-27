@@ -297,4 +297,10 @@ public class RealBuilding {
             toRemove.add(removable);
         }
     }
+
+    /** Whether there is a worker at the specified location */
+    public boolean hasWorkerAt(int x, int y, int z) {
+        return getObjectsOnFloor(z).stream().
+                anyMatch(o -> o instanceof RealHuman && ((RealHuman) o).covers(new Point2D.Double(x,y)));
+    }
 }

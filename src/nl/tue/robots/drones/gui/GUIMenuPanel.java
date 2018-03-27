@@ -9,15 +9,11 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
 
-import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.DESTINATION;
-import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.OBSTACLE;
-import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.REMOVE;
-import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.WALL;
-import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.WORKER;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.*;
 
 public class GUIMenuPanel extends Canvas {
 
-    public enum MenuPanelButton {DESTINATION, WORKER, WALL, OBSTACLE, REMOVE}
+    public enum MenuPanelButton {DESTINATION, WORKER, WALL, OBSTACLE, MOVEMENT, REMOVE}
 
     public static final int BUTTON_HEIGHT = 25;
     public static final int BUTTON_WIDTH = 100;
@@ -32,6 +28,8 @@ public class GUIMenuPanel extends Canvas {
     private boolean wallActive = false;
     private Rectangle2D obstacle = new Rectangle2D.Double();
     private boolean obstacleActive = false;
+    private Rectangle2D movement = new Rectangle2D.Double();
+    private boolean movementActive = false;
     private Rectangle2D remove = new Rectangle2D.Double();
     private boolean removeActive = false;
     private String status = "";
@@ -50,6 +48,8 @@ public class GUIMenuPanel extends Canvas {
         xOffset += BUTTON_WIDTH + BUTTON_MARGIN;
         obstacle.setFrame(xOffset, BUTTON_MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT);
         xOffset += BUTTON_WIDTH + BUTTON_MARGIN;
+        movement.setFrame(xOffset, BUTTON_MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT);
+        xOffset += BUTTON_WIDTH + BUTTON_MARGIN;
         remove.setFrame(xOffset, BUTTON_MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT);
 
         this.addMouseListener(new MouseAdapter() {
@@ -65,6 +65,8 @@ public class GUIMenuPanel extends Canvas {
                     activate(WALL);
                 } else if (obstacle.contains(x,y)) {
                     activate(OBSTACLE);
+                } else if (movement.contains(x,y)) {
+                    activate(MOVEMENT);
                 } else if (remove.contains(x,y)) {
                     activate(REMOVE);
                 }
@@ -81,6 +83,7 @@ public class GUIMenuPanel extends Canvas {
         workerActive = false;
         wallActive = false;
         obstacleActive = false;
+        movementActive = false;
         removeActive = false;
         repaint();
         setStatus("");
@@ -92,11 +95,7 @@ public class GUIMenuPanel extends Canvas {
      */
     protected void activate(MenuPanelButton b) {
         mcl.cancelAction();
-        destinationActive = false;
-        workerActive = false;
-        wallActive = false;
-        obstacleActive = false;
-        removeActive = false;
+        deactivate();
         switch (b) {
             case DESTINATION:
                 destinationActive = true;
@@ -117,6 +116,11 @@ public class GUIMenuPanel extends Canvas {
                 obstacleActive = true;
                 mcl.startObstaclePlacement();
                 setStatus("Picking first obstacle point");
+                break;
+            case MOVEMENT:
+                movementActive = true;
+                mcl.startWorkerMovement();
+                setStatus("Picking worker to move");
                 break;
             case REMOVE:
                 removeActive = true;
@@ -167,6 +171,7 @@ public class GUIMenuPanel extends Canvas {
         g.drawRect((int) worker.getX(), (int) worker.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
         g.drawRect((int) wall.getX(), (int) wall.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
         g.drawRect((int) obstacle.getX(), (int) obstacle.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
+        g.drawRect((int) movement.getX(), (int) movement.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
         g.drawRect((int) remove.getX(), (int) remove.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
 
         fillButtons(g);
@@ -174,10 +179,10 @@ public class GUIMenuPanel extends Canvas {
 
         // draw status bar
         g.setColor(Color.BLACK);
-        g.drawRect(5 * (BUTTON_WIDTH + 2 * BUTTON_MARGIN), BUTTON_MARGIN, 3 * BUTTON_WIDTH, BUTTON_HEIGHT);
+        g.drawRect((int) remove.getX() + BUTTON_WIDTH + BUTTON_MARGIN, BUTTON_MARGIN, 3 * BUTTON_WIDTH, BUTTON_HEIGHT);
         if (!status.equals("")) {
             g.setColor(statusColor);
-            g.drawString(status, 5 * (BUTTON_WIDTH + 2 * BUTTON_MARGIN) + BUTTON_MARGIN, BUTTON_HEIGHT + BUTTON_MARGIN - INNER_MARGIN);
+            g.drawString(status, (int) remove.getX() + BUTTON_WIDTH + BUTTON_MARGIN + INNER_MARGIN, BUTTON_HEIGHT + BUTTON_MARGIN - INNER_MARGIN);
         }
 
         g.dispose();
@@ -191,14 +196,16 @@ public class GUIMenuPanel extends Canvas {
         g.fillRect((int) worker.getX(), (int) worker.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
         g.fillRect((int) wall.getX(), (int) wall.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
         g.fillRect((int) obstacle.getX(), (int) obstacle.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
+        g.fillRect((int) movement.getX(), (int) movement.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
         g.fillRect((int) remove.getX(), (int) remove.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
         // give active one a darker shade
-        if (destinationActive || workerActive || wallActive || obstacleActive || removeActive) {
+        if (destinationActive || workerActive || wallActive || obstacleActive || movementActive || removeActive) {
             g.setColor(Color.GRAY);
             if (destinationActive) { g.fillRect((int) destination.getX(), (int) destination.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
             if (workerActive) { g.fillRect((int) worker.getX(), (int) worker.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
             if (wallActive) { g.fillRect((int) wall.getX(), (int) wall.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
             if (obstacleActive) { g.fillRect((int) obstacle.getX(), (int) obstacle.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
+            if (movementActive) { g.fillRect((int) movement.getX(), (int) movement.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
             if (removeActive) { g.fillRect((int) remove.getX(), (int) remove.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
         }
     }
@@ -210,6 +217,7 @@ public class GUIMenuPanel extends Canvas {
         g.drawString(MouseClickListener.HUMAN_TEXT, (int) worker.getX() + INNER_MARGIN, (int) worker.getMaxY() - INNER_MARGIN);
         g.drawString(MouseClickListener.WALL_TEXT, (int) wall.getX() + INNER_MARGIN, (int) wall.getMaxY() - INNER_MARGIN);
         g.drawString(MouseClickListener.OBSTACLE_TEXT, (int) obstacle.getX() + INNER_MARGIN, (int) obstacle.getMaxY() - INNER_MARGIN);
+        g.drawString(MouseClickListener.MOVEMENT_TEXT, (int) movement.getX() + INNER_MARGIN, (int) movement.getMaxY() - INNER_MARGIN);
         g.drawString(MouseClickListener.REMOVE_TEXT, (int) remove.getX() + INNER_MARGIN, (int) remove.getMaxY() - INNER_MARGIN);
     }
 }

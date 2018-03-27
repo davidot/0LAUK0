@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -107,9 +108,14 @@ public class Simulation {
         g.setFont(oldFont);
     }
 
-    public void togglePause() {
+    /**
+     * Pauses/unpauses the simulation.
+     * @return whether the simulation is paused after this toggle
+     */
+    public boolean togglePause() {
         paused = !paused;
         System.out.println((paused ? "Pausing" : "Unpause"));
+        return paused;
     }
 
     public void update() {
@@ -244,5 +250,15 @@ public class Simulation {
 
     public void removeObject(int x, int y, int z) {
         building.removeObstacle(x, y, z);
+    }
+
+    /**
+     * Tells the worker at the given location to move to the specified destination.
+     * @param floor the floor on which the worker is
+     * @param location the location of the worker which is to move
+     * @param destination the destination for the worker
+     */
+    public void moveWorker(int floor, Point2D location, Point2D destination) {
+        // TODO implement
     }
 }
