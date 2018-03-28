@@ -70,7 +70,7 @@ public class RealBuilding {
         
         //first draw obstacles
         for (RealObject obj : getObjectsOnFloor(floor)) {
-            if (obj instanceof RealObstacle) {
+            if (obj instanceof RealObstacle && !(obj instanceof RealHuman)) {
                 obj.renderObject(g);
             }
         }
@@ -85,7 +85,8 @@ public class RealBuilding {
 
     public void renderForeground(Graphics2D g, int floor) {
         for (RealObject obj : getObjectsOnFloor(floor)) {
-            if (!(obj instanceof RealWall || obj instanceof RealObstacle)) {
+            if (!(obj instanceof RealWall ||
+                    (obj instanceof RealObstacle && !(obj instanceof RealHuman)))) {
                 obj.renderObject(g);
             }
         }

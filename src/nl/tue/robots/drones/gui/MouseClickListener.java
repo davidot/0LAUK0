@@ -206,6 +206,10 @@ public class MouseClickListener extends MouseAdapter {
             // we already have our first point and are placing an obstacle
             guiToBuildingCoords(e.getX(), e.getY());
             if (z == startObject[2]) {
+                //Empty areas are not allowed
+                x = (x - startObject[0] == 0) ? x+1 : x;
+                y = (y - startObject[1] == 0) ? y+1 : y;
+                
                 RealObstacle ob = new RealObstacle(z, startObject[0], startObject[1], x, y);
                 sim().addNewObject(ob);
                 System.out.println(
