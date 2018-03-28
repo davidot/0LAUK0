@@ -69,7 +69,7 @@ public class RealBuilding {
         g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
 
         for (RealObject obj : getObjectsOnFloor(floor)) {
-            if (obj instanceof RealWall) {
+            if (obj instanceof RealWall || obj instanceof RealObstacle) {
                 obj.renderObject(g);
             }
         }
@@ -77,7 +77,7 @@ public class RealBuilding {
 
     public void renderForeground(Graphics2D g, int floor) {
         for (RealObject obj : getObjectsOnFloor(floor)) {
-            if (!(obj instanceof RealWall)) {
+            if (!(obj instanceof RealWall || obj instanceof RealObstacle)) {
                 obj.renderObject(g);
             }
         }

@@ -32,7 +32,7 @@ public class RealWall extends RealObject {
     public void renderObject(Graphics2D g) {
         //draw the walls
         g.setStroke(new BasicStroke(MULTI / 2));
-        g.setColor(undetected ? Color.RED : Color.GRAY);
+        g.setColor(undetected ? Color.ORANGE.darker() : Color.GRAY);
         g.drawLine(x1 * MULTI, y1 * MULTI, x2 * MULTI, y2 * MULTI);
         g.setStroke(new BasicStroke(1));
 

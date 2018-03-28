@@ -301,7 +301,7 @@ public class GUI extends Canvas implements Runnable {
         if ((placeListener.placingWall || placeListener.placingObstacle) && !placeListener.placingFirst) {
             //draw a 'ghost' wall
             g.setColor(new Color(1, 1, 1, 0.5f));
-            g.setStroke(new BasicStroke(MULTIPLIER));
+            g.setStroke(new BasicStroke(MULTIPLIER/2));
 
             //get current mouse location
             Point p = this.getMousePosition();

@@ -64,7 +64,7 @@ public class RealObstacle extends RealObject {
 
     @Override
     public void renderObject(Graphics2D g) {
-        g.setColor(Color.RED);
+        g.setColor(Color.RED.darker());
         g.fillRect((int) (GUI.MULTIPLIER * bounds.getX()), (int) (GUI.MULTIPLIER * bounds.getY()),
                 (int) (GUI.MULTIPLIER * bounds.getWidth()),
                 (int) (GUI.MULTIPLIER * bounds.getHeight()));
