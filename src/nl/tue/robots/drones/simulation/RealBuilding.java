@@ -67,9 +67,17 @@ public class RealBuilding {
     public void renderBackground(Graphics2D g, int floor) {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
-
+        
+        //first draw obstacles
         for (RealObject obj : getObjectsOnFloor(floor)) {
-            if (obj instanceof RealWall || obj instanceof RealObstacle) {
+            if (obj instanceof RealObstacle) {
+                obj.renderObject(g);
+            }
+        }
+        
+        //then draw walls over those
+        for (RealObject obj : getObjectsOnFloor(floor)) {
+            if (obj instanceof RealWall) {
                 obj.renderObject(g);
             }
         }
@@ -287,15 +295,17 @@ public class RealBuilding {
                 .orElseThrow(() -> new IllegalStateException("WOWOWO"));
     }
 
-    public void update() {
+    public void update(boolean movement) {
         if (toRemove.size() > 0) {
             objects.removeAll(toRemove);
             toRemove.clear();
         }
-        objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast)
-                .forEach(RealDrone::update);
-        objects.stream().filter(o -> o instanceof RealHuman).map(RealHuman.class::cast)
-                .forEach(RealHuman::update);
+        if (movement){
+            objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast)
+                    .forEach(RealDrone::update);
+            objects.stream().filter(o -> o instanceof RealHuman).map(RealHuman.class::cast)
+                    .forEach(RealHuman::update);
+        }
     }
 
     public void removeObstacle(int x, int y, int floor) {

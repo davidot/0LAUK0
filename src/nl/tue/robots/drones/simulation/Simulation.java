@@ -119,11 +119,13 @@ public class Simulation {
     }
 
     public void update() {
+        //place new objects
+        while (!addQueue.isEmpty()) {
+            building.addObject(addQueue.poll());
+        }
+        building.update(!paused);
+        
         if (!paused) {
-            while (!addQueue.isEmpty()) {
-                building.addObject(addQueue.poll());
-            }
-            building.update();
             model.update();
         }
     }
