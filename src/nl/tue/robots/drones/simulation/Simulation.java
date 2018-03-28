@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,11 +19,17 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 
 public class Simulation {
 
     private static final int NUM_DRONES = 10;
     private static final int FLOOR_NUMBER_SIZE = 20;
+    private final RealHuman movingHumanR;
+    private final RealHuman movingHumanL;
+    private static final int WALK_X_R = 36;
+    private static final int WALK_X_L = 4;
+    private final Random moveRng;
     private RealBuilding building;
     private Model model;
     private static final int MULTIPLIER = GUI.MULTIPLIER;
@@ -58,6 +65,13 @@ public class Simulation {
         for (int i = 0; i < 1; i++) {
             building.addObject(new RealHuman(10, 11 * i + 30, 0));
         }
+
+        //hardcoded yes i know its bad todo fix
+        movingHumanR = new RealHuman(WALK_X_R, 33,1);
+        movingHumanL = new RealHuman(WALK_X_L, 33,1);
+        moveRng = new Random();
+        building.addObject(movingHumanR);
+        building.addObject(movingHumanL);
 
         model.addOrder(Arrays.asList(start, model.getNode(144), start, model.getNode(332), start));
         model.addOrder(Arrays.asList(start, model.getNode(332), start));
@@ -123,8 +137,16 @@ public class Simulation {
         while (!addQueue.isEmpty()) {
             building.addObject(addQueue.poll());
         }
+        if (!movingHumanR.isWalking() && moveRng.nextInt(240) < 1) {
+            movingHumanR.moveTo(new Point(WALK_X_R, moveRng.nextInt(5) * 6 + 14));
+        }
+
+        if (!movingHumanL.isWalking() && moveRng.nextInt(240) < 1) {
+            movingHumanL.moveTo(new Point(WALK_X_L, moveRng.nextInt(5) * 6 + 14));
+        }
+
         building.update(!paused);
-        
+
         if (!paused) {
             model.update();
         }
@@ -261,9 +283,9 @@ public class Simulation {
      * @param destination the destination for the worker
      */
     public void moveWorker(int floor, Point2D location, Point2D destination) {
-        RealHuman worker = building.getObjectsOnFloor(floor).stream().
+        building.getObjectsOnFloor(floor).stream().
                 filter(o -> (o instanceof RealHuman) && ((RealHuman) o).covers(location)).
-                map(RealHuman.class::cast).findFirst().orElse(null);
-        worker.moveTo(destination);
+                map(RealHuman.class::cast).findFirst()
+                .ifPresent(worker -> worker.moveTo(destination));
     }
 }

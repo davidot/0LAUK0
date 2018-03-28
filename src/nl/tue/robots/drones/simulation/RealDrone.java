@@ -289,8 +289,9 @@ public class RealDrone extends RealObject {
                 sHeight / DRONE_DRAW_SIZE, null);
         g.setComposite(composite);
 
-        g.setColor(Color.GREEN);
-        g.drawOval((x - VISION_RANGE) * GUI.MULTIPLIER, (y - VISION_RANGE) * GUI.MULTIPLIER, VISION_RANGE * 2 * GUI.MULTIPLIER, VISION_RANGE * 2 * GUI.MULTIPLIER);
+        //uncomment to draw vision circle
+        // g.setColor(Color.GREEN);
+        // g.drawOval((x - VISION_RANGE) * GUI.MULTIPLIER, (y - VISION_RANGE) * GUI.MULTIPLIER, VISION_RANGE * 2 * GUI.MULTIPLIER, VISION_RANGE * 2 * GUI.MULTIPLIER);
 
         //Alarm
         if (alarm) {

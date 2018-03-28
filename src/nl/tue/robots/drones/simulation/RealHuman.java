@@ -267,6 +267,10 @@ public class RealHuman extends RealObstacle {
         return neighbours;
     }
 
+    public boolean isWalking() {
+        return !destinations.isEmpty();
+    }
+
     private class ExpandedGridPoint implements Comparable<ExpandedGridPoint> {
         final Point2D gridPoint;
         final double travel;
