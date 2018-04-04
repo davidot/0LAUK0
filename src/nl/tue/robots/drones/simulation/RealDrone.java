@@ -46,8 +46,7 @@ public class RealDrone extends RealObject {
 
     //Image and rendering
     private BufferedImage[] imageSequence; //Coloured version
-    private static final String[] DEFAULT_IMAGE_SEQUENCE =
-            {"drone_frame1.png", "drone_frame2.png"};
+    private static final String[] DEFAULT_IMAGE_SEQUENCE ={"drone_frame1.png", "drone_frame2.png"};
 
     //Uncoloured version
     private static final BufferedImage[] frames = new BufferedImage[DEFAULT_IMAGE_SEQUENCE.length];
@@ -55,7 +54,7 @@ public class RealDrone extends RealObject {
     //Alert rendering
     private static final String[] DEFAULT_ALERT_SEQUENCE =
             {"alert_yellow.png", "alert_red.png"};
-    private static BufferedImage[] alertSequence = new BufferedImage[DEFAULT_ALERT_SEQUENCE.length];
+    private static final BufferedImage[] alertSequence = new BufferedImage[DEFAULT_ALERT_SEQUENCE.length];
 
 
     private static final int width;
@@ -352,10 +351,14 @@ public class RealDrone extends RealObject {
             floorStep += 1;
             if (floorStep > FLOOR_STEPS / 2) {
                 RealObject obstacle = getRealBuilding().destinationObstructed(
-                        new Point2D.Double(destination.getX(), destination.getY()), destination.getZ());
+                        new Point2D.Double(destination.getX(), destination.getY()),
+                        destination.getZ());
                 if (obstacle != null && obstacle != lastObstacle) {
-                    System.out.printf("At (%d,%d,%d) with destination (%d,%d,%d) found obstacle: %s%n", x, y, getFloor(),
-                            destination.getX(), destination.getY(), destination.getZ(), obstacle);
+                    System.out
+                            .printf("At (%d,%d,%d) with destination (%d,%d,%d) found obstacle: %s%n",
+                                    x, y, getFloor(),
+                                    destination.getX(), destination.getY(), destination.getZ(),
+                                    obstacle);
                     // tell simulation that an obstacle is in the way for this drone
                     lastObstacle = obstacle;
                     simulation.sendObstacle(id, obstacle instanceof RealWall);

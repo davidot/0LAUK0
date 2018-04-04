@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class Model {
 
-    private Deque<List<Node>> orders;
+    private final Deque<List<Node>> orders;
     private final List<Drone> drones;
     private final Simulation simulation;
     private final Building building;

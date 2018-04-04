@@ -7,8 +7,7 @@ import nl.tue.robots.drones.simulation.Simulation;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -43,7 +42,7 @@ public class MouseClickListener extends MouseAdapter {
     private boolean pickingDestination;
     private boolean pickingRemoval;
     private boolean movingWorker;
-    JPopupMenu contextMenu;
+    final JPopupMenu contextMenu;
 
     final GUI gui;
 
@@ -73,40 +72,37 @@ public class MouseClickListener extends MouseAdapter {
         movementMenuItem.setActionCommand(MOVEMENT_ACTION);
         removeMenuItem.setActionCommand(REMOVE_ACTION);
 
-        ActionListener menuListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switch (e.getActionCommand()) {
-                    case DRONE_ACTION:
-                        sim().addOrder(x, y, z);
-                        break;
-                    case HUMAN_ACTION:
-                        sim().getBuilding().addObject(new RealHuman(x, y, z));
-                        break;
-                    case WALL_ACTION:
+        ActionListener menuListener = e -> {
+            switch(e.getActionCommand()) {
+                case DRONE_ACTION:
+                    sim().addOrder(x, y, z);
+                    break;
+                case HUMAN_ACTION:
+                    sim().getBuilding().addObject(new RealHuman(x, y, z));
+                    break;
+                case WALL_ACTION:
+                    startObject = new int[]{x, y, z};
+                    placingWall = true;
+                    panel().setStatus("Picking second wall point");
+                    break;
+                case OBSTACLE_ACTION:
+                    startObject = new int[]{x, y, z};
+                    placingObstacle = true;
+                    panel().setStatus("Picking second obstacle point");
+                    break;
+                case MOVEMENT_ACTION:
+                    if (sim().getBuilding().hasWorkerAt(x, y, z)) {
+                        // there is a worker at the specified location
                         startObject = new int[]{x, y, z};
-                        placingWall = true;
-                        panel().setStatus("Picking second wall point");
-                        break;
-                    case OBSTACLE_ACTION:
-                        startObject = new int[]{x, y, z};
-                        placingObstacle = true;
-                        panel().setStatus("Picking second obstacle point");
-                        break;
-                    case MOVEMENT_ACTION:
-                        if (sim().getBuilding().hasWorkerAt(x, y, z)) {
-                            // there is a worker at the specified location
-                            startObject = new int[]{x, y, z};
-                            movingWorker = true;
-                            panel().setStatus("Picking worker destination");
-                        } else {
-                            panel().setStatus("No worker here");
-                        }
-                        break;
-                    case REMOVE_ACTION:
-                        sim().getBuilding().removeObstacle(x, y, z);
-                        break;
-                }
+                        movingWorker = true;
+                        panel().setStatus("Picking worker destination");
+                    } else {
+                        panel().setStatus("No worker here");
+                    }
+                    break;
+                case REMOVE_ACTION:
+                    sim().getBuilding().removeObstacle(x, y, z);
+                    break;
             }
         };
         droneMenuItem.addActionListener(menuListener);
@@ -124,7 +120,7 @@ public class MouseClickListener extends MouseAdapter {
         contextMenu.add(removeMenuItem);
     }
 
-    protected void cancelAction(){
+    protected void cancelAction() {
         this.placingWall = false;
         this.placingObstacle = false;
         this.placingFirst = false;
@@ -170,7 +166,7 @@ public class MouseClickListener extends MouseAdapter {
             resetCoords();
             panel().deactivate();
         } else if (pickingRemoval) {
-            sim().removeObject(x,y,z);
+            sim().removeObject(x, y, z);
             pickingRemoval = false;
             resetCoords();
             panel().deactivate();
@@ -207,9 +203,9 @@ public class MouseClickListener extends MouseAdapter {
             guiToBuildingCoords(e.getX(), e.getY());
             if (z == startObject[2]) {
                 //Empty areas are not allowed
-                x = (x - startObject[0] == 0) ? x+1 : x;
-                y = (y - startObject[1] == 0) ? y+1 : y;
-                
+                x = (x - startObject[0] == 0) ? x + 1 : x;
+                y = (y - startObject[1] == 0) ? y + 1 : y;
+
                 RealObstacle ob = new RealObstacle(z, startObject[0], startObject[1], x, y);
                 sim().addNewObject(ob);
                 System.out.println(
@@ -223,9 +219,10 @@ public class MouseClickListener extends MouseAdapter {
             // we are moving a worker and already have their location
             guiToBuildingCoords(e.getX(), e.getY());
             if (z == startObject[2]) {
-                sim().moveWorker(z, new Point2D.Double(startObject[0], startObject[1]), new Point2D.Double(x,y));
+                sim().moveWorker(z, new Point2D.Double(startObject[0], startObject[1]),
+                        new Point2D.Double(x, y));
                 System.out.printf("Telling worker on floor %d at (%d,%d) to move to (%d,%d)%n",
-                        z, startObject[0], startObject[1], x,y);
+                        z, startObject[0], startObject[1], x, y);
             } else {
                 System.out.println("Worker told to move between floors");
                 errorMessage = "Workers cannot move between floors in simulation";
@@ -264,19 +261,24 @@ public class MouseClickListener extends MouseAdapter {
         placingFirst = true;
         placingWall = true;
     }
+
     public void startObstaclePlacement() {
         placingFirst = true;
         placingObstacle = true;
     }
+
     public void startHumanPlacement() {
         placingHuman = true;
     }
+
     public void startDestinationPick() {
         pickingDestination = true;
     }
+
     public void startRemoval() {
         pickingRemoval = true;
     }
+
     public void startWorkerMovement() {
         placingFirst = true;
         movingWorker = true;

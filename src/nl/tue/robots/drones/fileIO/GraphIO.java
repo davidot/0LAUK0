@@ -149,29 +149,17 @@ public class GraphIO {
         }
     }
 
-    public static String reportBuildingGraph(Building b) {
-        String s = "";
-
-        for (Node n : b.getAllNodes()) {
-            s += "(" + n.getX() + "," + n.getY() + "," + n.getZ() + ") : \n";
-            for (Transition t : n.getTransitions()) {
-                s += "\t[(" + t.getTo().getX() + "," + t.getTo().getY() + "," + t.getTo().getZ() +
-                        ") : " + t.getDistance() + "]\n";
-            }
-        }
-        return s;
-    }
-
     /**
      * Reads the wall map from file and constructs a RealBuilding out of it.
      *
-     * @param wallsFile  The file from which to read
+     * @param wallsFile The file from which to read
      * @return The constructed RealBuilding or {@code null} if the building could not be constructed.
      *
      * @throws FileNotFoundException      If the given file cannot be opened for reading.
      * @throws MalformedWallFileException If the given file does not properly specify the building.
      */
-    public static RealBuilding readWalls(File wallsFile) throws FileNotFoundException, MalformedWallFileException {
+    public static RealBuilding readWalls(
+            File wallsFile) throws FileNotFoundException, MalformedWallFileException {
         try(BufferedReader fileReader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(wallsFile), "UTF-8"))) {
             ArrayList<RealWall> walls = new ArrayList<>();

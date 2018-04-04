@@ -70,7 +70,6 @@ public class GUI extends Canvas implements Runnable {
 
     //thread security
     private boolean running;
-    private Thread mainThread;
 
     //Should be 10, but can be any other number due to debugging
     public static final int MULTIPLIER = 10;
@@ -298,10 +297,11 @@ public class GUI extends Canvas implements Runnable {
         g.setTransform(t);
 
         //draw ghost images when placing objects
-        if ((placeListener.placingWall || placeListener.placingObstacle) && !placeListener.placingFirst) {
+        if ((placeListener.placingWall || placeListener.placingObstacle) &&
+                !placeListener.placingFirst) {
             //draw a 'ghost' wall
             g.setColor(new Color(1, 1, 1, 0.5f));
-            g.setStroke(new BasicStroke(MULTIPLIER/2));
+            g.setStroke(new BasicStroke(MULTIPLIER / 2));
 
             //get current mouse location
             Point p = this.getMousePosition();
@@ -343,8 +343,8 @@ public class GUI extends Canvas implements Runnable {
             return;
         }
         isRunning = true;
-        mainThread = new Thread(this, "Drone model");
-        mainThread.start();
+        new Thread(this, "Drone model").start();
+        //this thread ends here
     }
 
     public void reload() {

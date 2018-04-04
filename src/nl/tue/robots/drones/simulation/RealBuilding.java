@@ -22,7 +22,7 @@ public class RealBuilding {
     private final int maxDepth;
 
     private final ArrayList<RealObject> objects = new ArrayList<>();
-    private List<RealObject> toRemove = new LinkedList<>();
+    private final List<RealObject> toRemove = new LinkedList<>();
 
     public RealBuilding(int floors, int maxWidth, int maxDepth) {
         this.floors = floors;
@@ -67,14 +67,14 @@ public class RealBuilding {
     public void renderBackground(Graphics2D g, int floor) {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, maxWidth * MULTI, maxDepth * MULTI);
-        
+
         //first draw obstacles
         for (RealObject obj : getObjectsOnFloor(floor)) {
             if (obj instanceof RealObstacle && !(obj instanceof RealHuman)) {
                 obj.renderObject(g);
             }
         }
-        
+
         //then draw walls over those
         for (RealObject obj : getObjectsOnFloor(floor)) {
             if (obj instanceof RealWall) {
@@ -235,22 +235,24 @@ public class RealBuilding {
     /**
      * Returns the RealObject that is obstructing the destination point.
      * If the obstruction is as RealWall it is marked as seen.
+     *
      * @param destination the destination to check for obstructing
-     * @param floor the floor on which the destination is
+     * @param floor       the floor on which the destination is
      * @return the found obstruction
      */
-    public RealObject destinationObstructed(Point2D destination, int floor){
+    public RealObject destinationObstructed(Point2D destination, int floor) {
         return destinationObstructed(destination, floor, false);
     }
 
     /**
      * Returns the RealObject that is obstructing the destination point.
-     * @param destination the destination to check for obstructing
-     * @param floor the floor on which the destination is
+     *
+     * @param destination  the destination to check for obstructing
+     * @param floor        the floor on which the destination is
      * @param markDetected whether to tell the wall (if the obstruction is one) to mark itself seen
      * @return the found obstruction
      */
-    public RealObject destinationObstructed(Point2D destination, int floor, boolean markDetected){
+    public RealObject destinationObstructed(Point2D destination, int floor, boolean markDetected) {
         RealObject obstruction = null;
 
         // get walls in range crossing the path
@@ -262,7 +264,8 @@ public class RealBuilding {
         if (blockingWalls.size() > 0) {
             // there is a wall
             RealWall realWall = blockingWalls.stream()
-                    .min(Comparator.comparingDouble(o -> o.toLine().ptSegDist(destination))).orElse(null);
+                    .min(Comparator.comparingDouble(o -> o.toLine().ptSegDist(destination)))
+                    .orElse(null);
 
             if (markDetected) {
                 //tell wall it is detected
@@ -293,7 +296,7 @@ public class RealBuilding {
     public RealDrone getDrone(int id) {
         return objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast)
                 .filter(d -> d.getId() == id).findFirst()
-                .orElseThrow(() -> new IllegalStateException("WOWOWO"));
+                .orElseThrow(() -> new IllegalStateException("dont have drone" + id));
     }
 
     public void update(boolean movement) {
@@ -301,7 +304,7 @@ public class RealBuilding {
             objects.removeAll(toRemove);
             toRemove.clear();
         }
-        if (movement){
+        if (movement) {
             objects.stream().filter(d -> d instanceof RealDrone).map(RealDrone.class::cast)
                     .forEach(RealDrone::update);
             objects.stream().filter(o -> o instanceof RealHuman).map(RealHuman.class::cast)
@@ -332,9 +335,12 @@ public class RealBuilding {
         }
     }
 
-    /** Whether there is a worker at the specified location */
+    /**
+     * Whether there is a worker at the specified location
+     */
     public boolean hasWorkerAt(int x, int y, int z) {
         return getObjectsOnFloor(z).stream().
-                anyMatch(o -> o instanceof RealHuman && ((RealHuman) o).covers(new Point2D.Double(x,y)));
+                anyMatch(o -> o instanceof RealHuman &&
+                        ((RealHuman) o).covers(new Point2D.Double(x, y)));
     }
 }

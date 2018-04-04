@@ -4,7 +4,12 @@ import nl.tue.robots.drones.common.Node;
 import nl.tue.robots.drones.common.Transition;
 import nl.tue.robots.drones.model.Model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 public class Algorithm {
 
@@ -13,7 +18,7 @@ public class Algorithm {
     // the distance from it to the root,
     // the expected distance from it to the destination
     // a parentExpandedNode
-    private static ExpandedNode emptyNode = new ExpandedNode(null, 0, 0, null);
+    private static final ExpandedNode emptyNode = new ExpandedNode(null, 0, 0, null);
 
     /**
      * Function findPath
@@ -155,12 +160,13 @@ public class Algorithm {
     /**
      * Finds the quickest way to get inside the building for the given node.
      * Uses breadth first search to find a node which is inside the building
+     *
      * @param startNode the node from which to get inside
      * @return the nodes on the inside which is the quickest to go to or {@code null} if no such node exists
      */
     public static Node findQuickestPathInside(Node startNode) {
         // Setup the expanded node list
-        ExpandedNode rootNode = new ExpandedNode(startNode, 0,0, emptyNode);
+        ExpandedNode rootNode = new ExpandedNode(startNode, 0, 0, emptyNode);
         Set<Node> seenNodes = new HashSet<>();
         seenNodes.add(startNode);
 
@@ -177,7 +183,8 @@ public class Algorithm {
             for (Node n : inspect.getNode().getConnectedNodes()) {
                 if (!seenNodes.contains(n)) {
                     // if not seen before, add to frontier
-                    ExpandedNode expNode = new ExpandedNode(n, inspect.getDistanceTravelled() + 1, 0, inspect);
+                    ExpandedNode expNode =
+                            new ExpandedNode(n, inspect.getDistanceTravelled() + 1, 0, inspect);
                     if (!n.isOutside()) {
                         // we found a node inside
                         foundDestination = expNode;

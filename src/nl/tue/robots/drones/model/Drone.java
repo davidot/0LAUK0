@@ -23,7 +23,7 @@ public class Drone {
     private Node currentNode;
     private Transition currentTransition;
 
-    private Deque<Node> currentGoals = new ArrayDeque<>();
+    private final Deque<Node> currentGoals = new ArrayDeque<>();
     private boolean stuck;
     private boolean emergency = false;
 

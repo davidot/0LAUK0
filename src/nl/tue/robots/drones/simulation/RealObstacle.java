@@ -12,7 +12,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class RealObstacle extends RealObject {
 
-    protected Rectangle2D bounds;
+    protected final Rectangle2D bounds;
 
     public RealObstacle(int floor, int x1, int y1, int x2, int y2) {
         super(floor);
@@ -54,6 +54,7 @@ public class RealObstacle extends RealObject {
 
     /**
      * Whether the specified point lies underneath the obstacle.
+     *
      * @param p the point to check
      * @return {@code true} if the point is underneath the obstacle or on its edges
      */
@@ -84,12 +85,14 @@ public class RealObstacle extends RealObject {
 
     /**
      * Moves the obstacle to the given (x,y) point on the same floor
+     *
      * @param x
      * @param y
      */
     public void move(int x, int y) {
         int dx = x - getX();
         int dy = y - getY();
-        bounds.setFrame(bounds.getX() + dx, bounds.getY() + dy, bounds.getWidth(), bounds.getHeight());
+        bounds.setFrame(bounds.getX() + dx, bounds.getY() + dy, bounds.getWidth(),
+                bounds.getHeight());
     }
 }

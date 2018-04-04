@@ -23,7 +23,7 @@ import java.util.PriorityQueue;
 public class RealHuman extends RealObstacle {
 
     private BufferedImage humanIcon;
-    private LinkedList<Point2D> destinations;
+    private final LinkedList<Point2D> destinations;
     private LinkedList<Point2D> path;
 
     private static final int VISION_RANGE = 1;
@@ -59,19 +59,21 @@ public class RealHuman extends RealObstacle {
 
     /**
      * Tell the worker to move to a location.
+     *
      * @param destination the point the worker should move to
      */
     public void moveTo(Point2D destination) {
-        path = calcPath(getX(),getY(), destination);
+        path = calcPath(getX(), getY(), destination);
         if (path.size() == 0) {
             System.out.printf("Worker at (%d,%d) cannot reach destination (%d,%d)%n",
-                    getX(), getY(), (int)destination.getX(), (int)destination.getY());
+                    getX(), getY(), (int) destination.getX(), (int) destination.getY());
         } else {
             this.destinations.add(destination);
         }
     }
 
     private int c = 0;
+
     public void update() {
         if (c <= 0) {
             c = 2;
@@ -83,36 +85,40 @@ public class RealHuman extends RealObstacle {
             int x = getX();
             int y = getY();
             Point2D nextStep = path.poll();
+            if (nextStep != null) {
 
-            //Get the approaching direction
-            int dirX = (int) nextStep.getX() - x;
-            int dirY = (int) nextStep.getY() - y;//Integer.compare(destinationY, y);
+                //Get the approaching direction
+                int dirX = (int) nextStep.getX() - x;
+                int dirY = (int) nextStep.getY() - y;//Integer.compare(destinationY, y);
 
-            // Check for nearby obstacles in the direction we're moving to
-            RealObject obstacle =
-                    getRealBuilding().pathObstructionInRange(new Point2D.Double(x, y),
-                            new Point2D.Double(x + (2 * dirX), y + (2 * dirY)), getFloor(), VISION_RANGE);
+                // Check for nearby obstacles in the direction we're moving to
+                RealObject obstacle =
+                        getRealBuilding().pathObstructionInRange(new Point2D.Double(x, y),
+                                new Point2D.Double(x + (2 * dirX), y + (2 * dirY)), getFloor(),
+                                VISION_RANGE);
 
-            if (obstacle != null && !(obstacle instanceof RealHuman)) {
-                path = calcPath(x,y,destinations.peek()); // recalculate path
-                if (path.size() == 0) {
-                    System.out.printf("Worker at (%d,%d) cannot reach destination (%d,%d)%n",
-                            getX(), getY(), (int)destinations.peek().getX(), (int)destinations.peek().getY());
-                    destinations.removeFirst();
+                if (obstacle != null && !(obstacle instanceof RealHuman)) {
+                    path = calcPath(x, y, destinations.peek()); // recalculate path
+                    if (path.size() == 0) {
+                        System.out.printf("Worker at (%d,%d) cannot reach destination (%d,%d)%n",
+                                getX(), getY(), (int) destinations.peek().getX(),
+                                (int) destinations.peek().getY());
+                        destinations.removeFirst();
+                    }
+                    return;
                 }
-                return;
+
+                //Move
+                move(x + dirX, y + dirY);
             }
-
-            //Move
-            move(x + dirX, y + dirY);
-
-        } else if (destinations.size() > 0){
+        } else if (destinations.size() > 0) {
             destinations.removeFirst();
             if (destinations.size() > 0) {
-                path = calcPath(getX(),getY(), destinations.peek());
+                path = calcPath(getX(), getY(), destinations.peek());
                 if (path.size() == 0) {
                     System.out.printf("Worker at (%d,%d) cannot reach destination (%d,%d)%n",
-                            getX(), getY(), (int)destinations.peek().getX(), (int)destinations.peek().getY());
+                            getX(), getY(), (int) destinations.peek().getX(),
+                            (int) destinations.peek().getY());
                     destinations.removeFirst();
                 }
             }
@@ -121,25 +127,27 @@ public class RealHuman extends RealObstacle {
 
     /**
      * Performs a double breadth first search to arrive at a path over the grid for the human.
-     * @param x the X coordinate of the current location
-     * @param y the Y coordinate of the current location
+     *
+     * @param x           the X coordinate of the current location
+     * @param y           the Y coordinate of the current location
      * @param destination the destination for this worker
      * @return a list of points to move to in order to reach the destination or an empty list if none exists
      */
     private LinkedList<Point2D> calcPath(int x, int y, Point2D destination) {
         LinkedList<Point2D> newPath = new LinkedList<>();
-        if (!(x < 0 || x > getRealBuilding().getWidth() || y < 0 || y > getRealBuilding().getDepth() ||
+        if (!(x < 0 || x > getRealBuilding().getWidth() || y < 0 ||
+                y > getRealBuilding().getDepth() ||
                 destination.getX() < 0 || destination.getX() > getRealBuilding().getWidth() ||
                 destination.getY() < 0 || destination.getY() > getRealBuilding().getDepth())) {
 
             // both point are inside the building
             PriorityQueue<ExpandedGridPoint> queueA = new PriorityQueue<>();
-            PriorityQueue<ExpandedGridPoint>  queueB = new PriorityQueue<>();
+            PriorityQueue<ExpandedGridPoint> queueB = new PriorityQueue<>();
             HashMap<Point2D, Point2D> childParentMapA = new HashMap<>();
             HashMap<Point2D, Point2D> childParentMapB = new HashMap<>();
 
             // set up queues and maps with location and destination
-            Point2D location = new Point2D.Double(x,y);
+            Point2D location = new Point2D.Double(x, y);
             queueA.add(new ExpandedGridPoint(location, 0, location.distance(destination)));
             queueB.add(new ExpandedGridPoint(destination, 0, destination.distance(location)));
             childParentMapA.put(location, null);
@@ -157,7 +165,8 @@ public class RealHuman extends RealObstacle {
                     if (!childParentMapA.containsKey(n)) {
                         // unseen point
                         childParentMapA.put(n, A.gridPoint); // mark A as parent of n
-                        RealObject obstacle = getRealBuilding().destinationObstructed(n, getFloor(), false);
+                        RealObject obstacle =
+                                getRealBuilding().destinationObstructed(n, getFloor(), false);
                         if (obstacle == null || obstacle instanceof RealHuman) {
                             // the point is not obstructed so it can be in our path since we can move there
                             if (childParentMapB.containsKey(n)) {
@@ -165,7 +174,8 @@ public class RealHuman extends RealObstacle {
                                 commonPoint = n;
                             } else {
                                 ExpandedGridPoint newPoint = new ExpandedGridPoint(
-                                        n, A.travel + n.distance(A.gridPoint), n.distance(destination));
+                                        n, A.travel + n.distance(A.gridPoint),
+                                        n.distance(destination));
                                 queueA.add(newPoint);
                             }
                         }
@@ -177,7 +187,8 @@ public class RealHuman extends RealObstacle {
                     if (!childParentMapB.containsKey(n)) {
                         // unseen point
                         childParentMapB.put(n, B.gridPoint); // mark B as parent of n
-                        RealObject obstacle = getRealBuilding().destinationObstructed(n, getFloor(), false);
+                        RealObject obstacle =
+                                getRealBuilding().destinationObstructed(n, getFloor(), false);
                         if (obstacle == null) {
                             // the point is not obstructed so it can be in our path since we can move there
                             if (childParentMapA.containsKey(n)) {
@@ -185,7 +196,8 @@ public class RealHuman extends RealObstacle {
                                 commonPoint = n;
                             } else {
                                 ExpandedGridPoint newPoint = new ExpandedGridPoint(
-                                        n, B.travel + n.distance(B.gridPoint), n.distance(location));
+                                        n, B.travel + n.distance(B.gridPoint),
+                                        n.distance(location));
                                 queueB.add(newPoint);
                             }
                         }
@@ -219,6 +231,7 @@ public class RealHuman extends RealObstacle {
 
     /**
      * Finds the surrounding grid points that lie are part of the building.
+     *
      * @param p the point whose neighbours to find
      * @return a list of points which neighbour {@code p} or an empty list if {@code p} is not in building
      */
@@ -274,19 +287,19 @@ public class RealHuman extends RealObstacle {
     private class ExpandedGridPoint implements Comparable<ExpandedGridPoint> {
         final Point2D gridPoint;
         final double travel;
-        final double heur;
+        final double heuristic;
 
         ExpandedGridPoint(Point2D p, double traveled, double heuristic) {
             this.gridPoint = p;
             this.travel = traveled;
-            this.heur = heuristic;
+            this.heuristic = heuristic;
         }
 
 
         @Override
         public int compareTo(ExpandedGridPoint o) {
             if (this.travel == o.travel) {
-                return Double.compare(this.heur, o.heur);
+                return Double.compare(this.heuristic, o.heuristic);
             } else {
                 return Double.compare(this.travel, o.travel);
             }

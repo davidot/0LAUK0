@@ -9,7 +9,12 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
 
-import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.*;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.DESTINATION;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.MOVEMENT;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.OBSTACLE;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.REMOVE;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.WALL;
+import static nl.tue.robots.drones.gui.GUIMenuPanel.MenuPanelButton.WORKER;
 
 public class GUIMenuPanel extends Canvas {
 
@@ -20,17 +25,17 @@ public class GUIMenuPanel extends Canvas {
     public static final int BUTTON_MARGIN = 5;
     public static final int INNER_MARGIN = 5;
 
-    private Rectangle2D destination = new Rectangle2D.Double();
+    private final Rectangle2D destination = new Rectangle2D.Double();
     private boolean destinationActive = false;
-    private Rectangle2D worker = new Rectangle2D.Double();
+    private final Rectangle2D worker = new Rectangle2D.Double();
     private boolean workerActive = false;
-    private Rectangle2D wall = new Rectangle2D.Double();
+    private final Rectangle2D wall = new Rectangle2D.Double();
     private boolean wallActive = false;
-    private Rectangle2D obstacle = new Rectangle2D.Double();
+    private final Rectangle2D obstacle = new Rectangle2D.Double();
     private boolean obstacleActive = false;
-    private Rectangle2D movement = new Rectangle2D.Double();
+    private final Rectangle2D movement = new Rectangle2D.Double();
     private boolean movementActive = false;
-    private Rectangle2D remove = new Rectangle2D.Double();
+    private final Rectangle2D remove = new Rectangle2D.Double();
     private boolean removeActive = false;
     private String status = "";
     private Color statusColor = Color.BLACK;
@@ -57,17 +62,17 @@ public class GUIMenuPanel extends Canvas {
             public void mouseClicked(MouseEvent e) {
                 int x = e.getX();
                 int y = e.getY();
-                if (destination.contains(x,y)) {
+                if (destination.contains(x, y)) {
                     activate(DESTINATION);
-                } else if (worker.contains(x,y)) {
+                } else if (worker.contains(x, y)) {
                     activate(WORKER);
-                } else if (wall.contains(x,y)) {
+                } else if (wall.contains(x, y)) {
                     activate(WALL);
-                } else if (obstacle.contains(x,y)) {
+                } else if (obstacle.contains(x, y)) {
                     activate(OBSTACLE);
-                } else if (movement.contains(x,y)) {
+                } else if (movement.contains(x, y)) {
                     activate(MOVEMENT);
-                } else if (remove.contains(x,y)) {
+                } else if (remove.contains(x, y)) {
                     activate(REMOVE);
                 }
                 e.getComponent().repaint();
@@ -91,12 +96,13 @@ public class GUIMenuPanel extends Canvas {
 
     /**
      * Sets the given button as active.
+     *
      * @param b the button to set as active
      */
     protected void activate(MenuPanelButton b) {
         mcl.cancelAction();
         deactivate();
-        switch (b) {
+        switch(b) {
             case DESTINATION:
                 destinationActive = true;
                 setStatus("Picking destination");
@@ -137,6 +143,7 @@ public class GUIMenuPanel extends Canvas {
 
     /**
      * Puts the specified text in the status bar.
+     *
      * @param s the text to display
      */
     public void setStatus(String s) {
@@ -145,6 +152,7 @@ public class GUIMenuPanel extends Canvas {
 
     /**
      * Puts the specified text in the status bar with the specified colour.
+     *
      * @param s the text to display
      * @param c the colour in which to show the text
      */
@@ -163,7 +171,7 @@ public class GUIMenuPanel extends Canvas {
         Graphics2D g = (Graphics2D) buffer.getDrawGraphics();
 
         g.setColor(getBackground());
-        g.fillRect(0,0, getWidth(), getHeight());
+        g.fillRect(0, 0, getWidth(), getHeight());
 
         // draw buttons
         g.setColor(Color.BLACK);
@@ -179,10 +187,12 @@ public class GUIMenuPanel extends Canvas {
 
         // draw status bar
         g.setColor(Color.BLACK);
-        g.drawRect((int) remove.getX() + BUTTON_WIDTH + BUTTON_MARGIN, BUTTON_MARGIN, 3 * BUTTON_WIDTH, BUTTON_HEIGHT);
+        g.drawRect((int) remove.getX() + BUTTON_WIDTH + BUTTON_MARGIN, BUTTON_MARGIN,
+                3 * BUTTON_WIDTH, BUTTON_HEIGHT);
         if (!status.equals("")) {
             g.setColor(statusColor);
-            g.drawString(status, (int) remove.getX() + BUTTON_WIDTH + BUTTON_MARGIN + INNER_MARGIN, BUTTON_HEIGHT + BUTTON_MARGIN - INNER_MARGIN);
+            g.drawString(status, (int) remove.getX() + BUTTON_WIDTH + BUTTON_MARGIN + INNER_MARGIN,
+                    BUTTON_HEIGHT + BUTTON_MARGIN - INNER_MARGIN);
         }
 
         g.dispose();
@@ -199,25 +209,47 @@ public class GUIMenuPanel extends Canvas {
         g.fillRect((int) movement.getX(), (int) movement.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
         g.fillRect((int) remove.getX(), (int) remove.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
         // give active one a darker shade
-        if (destinationActive || workerActive || wallActive || obstacleActive || movementActive || removeActive) {
+        if (destinationActive || workerActive || wallActive || obstacleActive || movementActive ||
+                removeActive) {
             g.setColor(Color.GRAY);
-            if (destinationActive) { g.fillRect((int) destination.getX(), (int) destination.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
-            if (workerActive) { g.fillRect((int) worker.getX(), (int) worker.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
-            if (wallActive) { g.fillRect((int) wall.getX(), (int) wall.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
-            if (obstacleActive) { g.fillRect((int) obstacle.getX(), (int) obstacle.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
-            if (movementActive) { g.fillRect((int) movement.getX(), (int) movement.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
-            if (removeActive) { g.fillRect((int) remove.getX(), (int) remove.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);}
+            if (destinationActive) {
+                g.fillRect((int) destination.getX(), (int) destination.getY(), BUTTON_WIDTH,
+                        BUTTON_HEIGHT);
+            }
+            if (workerActive) {
+                g.fillRect((int) worker.getX(), (int) worker.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
+            }
+            if (wallActive) {
+                g.fillRect((int) wall.getX(), (int) wall.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
+            }
+            if (obstacleActive) {
+                g.fillRect((int) obstacle.getX(), (int) obstacle.getY(), BUTTON_WIDTH,
+                        BUTTON_HEIGHT);
+            }
+            if (movementActive) {
+                g.fillRect((int) movement.getX(), (int) movement.getY(), BUTTON_WIDTH,
+                        BUTTON_HEIGHT);
+            }
+            if (removeActive) {
+                g.fillRect((int) remove.getX(), (int) remove.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
+            }
         }
     }
 
     private void drawButtonTexts(Graphics g) {
         // put text on buttons
         g.setColor(Color.BLACK);
-        g.drawString(MouseClickListener.DRONE_TEXT, (int) destination.getX() + INNER_MARGIN, (int) destination.getMaxY() - INNER_MARGIN);
-        g.drawString(MouseClickListener.HUMAN_TEXT, (int) worker.getX() + INNER_MARGIN, (int) worker.getMaxY() - INNER_MARGIN);
-        g.drawString(MouseClickListener.WALL_TEXT, (int) wall.getX() + INNER_MARGIN, (int) wall.getMaxY() - INNER_MARGIN);
-        g.drawString(MouseClickListener.OBSTACLE_TEXT, (int) obstacle.getX() + INNER_MARGIN, (int) obstacle.getMaxY() - INNER_MARGIN);
-        g.drawString(MouseClickListener.MOVEMENT_TEXT, (int) movement.getX() + INNER_MARGIN, (int) movement.getMaxY() - INNER_MARGIN);
-        g.drawString(MouseClickListener.REMOVE_TEXT, (int) remove.getX() + INNER_MARGIN, (int) remove.getMaxY() - INNER_MARGIN);
+        g.drawString(MouseClickListener.DRONE_TEXT, (int) destination.getX() + INNER_MARGIN,
+                (int) destination.getMaxY() - INNER_MARGIN);
+        g.drawString(MouseClickListener.HUMAN_TEXT, (int) worker.getX() + INNER_MARGIN,
+                (int) worker.getMaxY() - INNER_MARGIN);
+        g.drawString(MouseClickListener.WALL_TEXT, (int) wall.getX() + INNER_MARGIN,
+                (int) wall.getMaxY() - INNER_MARGIN);
+        g.drawString(MouseClickListener.OBSTACLE_TEXT, (int) obstacle.getX() + INNER_MARGIN,
+                (int) obstacle.getMaxY() - INNER_MARGIN);
+        g.drawString(MouseClickListener.MOVEMENT_TEXT, (int) movement.getX() + INNER_MARGIN,
+                (int) movement.getMaxY() - INNER_MARGIN);
+        g.drawString(MouseClickListener.REMOVE_TEXT, (int) remove.getX() + INNER_MARGIN,
+                (int) remove.getMaxY() - INNER_MARGIN);
     }
 }

@@ -48,7 +48,7 @@ public class Simulation {
     private int from = 0;
     private boolean renderModel = true;
     private boolean paused = false;
-    private Queue<RealObject> addQueue = new LinkedList<>();
+    private final Queue<RealObject> addQueue = new LinkedList<>();
 
     public Simulation(File file) throws FileNotFoundException, MalformedWallFileException {
         //This is where a real application would open the file.
@@ -67,8 +67,8 @@ public class Simulation {
         }
 
         //hardcoded yes i know its bad todo fix
-        movingHumanR = new RealHuman(WALK_X_R, 33,1);
-        movingHumanL = new RealHuman(WALK_X_L, 33,1);
+        movingHumanR = new RealHuman(WALK_X_R, 33, 1);
+        movingHumanL = new RealHuman(WALK_X_L, 33, 1);
         moveRng = new Random();
         building.addObject(movingHumanR);
         building.addObject(movingHumanL);
@@ -124,6 +124,7 @@ public class Simulation {
 
     /**
      * Pauses/unpauses the simulation.
+     *
      * @return whether the simulation is paused after this toggle
      */
     public boolean togglePause() {
@@ -162,7 +163,7 @@ public class Simulation {
     public int[] screenToCoords(int x, int y) {
         int floor = x / ((building.getWidth() + FLOORS_OFFSET) * MULTIPLIER - MULTIPLIER / 2) - 1;
         if (floor < 0 || floor >= FLOORS) {
-            return new int[] {-1, -1, -1};
+            return new int[]{-1, -1, -1};
         }
         int xF = ((x + (MULTIPLIER / 2)) / MULTIPLIER) % (building.getWidth() + FLOORS_OFFSET);
         int yF = ((y + (MULTIPLIER / 2)) - PADDING) / MULTIPLIER;
@@ -278,8 +279,9 @@ public class Simulation {
 
     /**
      * Tells the worker at the given location to move to the specified destination.
-     * @param floor the floor on which the worker is
-     * @param location the location of the worker which is to move
+     *
+     * @param floor       the floor on which the worker is
+     * @param location    the location of the worker which is to move
      * @param destination the destination for the worker
      */
     public void moveWorker(int floor, Point2D location, Point2D destination) {

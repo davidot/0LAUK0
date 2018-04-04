@@ -24,9 +24,9 @@ public class Building {
     private static final int MULTIPLIER = GUI.MULTIPLIER;
     private static final int NODE_R = 4;
     //id to node
-    private HashMap<Integer, Node> nodes = new HashMap<>();
-    private Map<Integer, Set<Node>> floorList = new HashMap<>();
-    private List<Transition> transitions = new ArrayList<>();
+    private final HashMap<Integer, Node> nodes = new HashMap<>();
+    private final Map<Integer, Set<Node>> floorList = new HashMap<>();
+    private final List<Transition> transitions = new ArrayList<>();
 
     public List<Node> getAllNodes() {
         return new ArrayList<>(nodes.values());
@@ -104,11 +104,11 @@ public class Building {
                 int timeLocked = t.getTimeLocked();
                 if (timeLocked < Transition.TEMP_TIMEOUT) {
                     g.setColor(new Color(76, 255, 160));
-                } else if (timeLocked < 2*Transition.TEMP_TIMEOUT) {
+                } else if (timeLocked < 2 * Transition.TEMP_TIMEOUT) {
                     g.setColor(new Color(52, 176, 111));
                 } else if (timeLocked < 4 * Transition.TEMP_TIMEOUT) {
                     g.setColor(Color.ORANGE);
-                } else{
+                } else {
                     g.setColor(Color.YELLOW);
                 }
             } else if (t.isOutside()) {
