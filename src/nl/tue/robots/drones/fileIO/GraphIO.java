@@ -9,10 +9,10 @@ import nl.tue.robots.drones.simulation.RealWall;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -25,14 +25,14 @@ public class GraphIO {
     /**
      * Reads and parses the file and creates a Building out of it.
      *
-     * @param buildFile the file to read
+     * @param in the file to read
      * @return The Building created from the contents of the file
      */
-    public static Building readBuilding(File buildFile) throws FileNotFoundException {
+    public static Building readBuilding(InputStream in) throws FileNotFoundException {
         Building build = new Building();
 
         try(BufferedReader fileReader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(buildFile), "UTF-8"))) {
+                new InputStreamReader(in, "UTF-8"))) {
 
             while (fileReader.ready()) {
                 // start reading nodes
@@ -80,7 +80,7 @@ public class GraphIO {
             if (ex instanceof FileNotFoundException) {
                 throw (FileNotFoundException) ex;
             } else {
-                System.err.println("Could not read file" + buildFile.getName());
+                System.err.println("Could not read file");
             }
         }
 
@@ -152,16 +152,16 @@ public class GraphIO {
     /**
      * Reads the wall map from file and constructs a RealBuilding out of it.
      *
-     * @param wallsFile The file from which to read
+     * @param in The file from which to read
      * @return The constructed RealBuilding or {@code null} if the building could not be constructed.
      *
      * @throws FileNotFoundException      If the given file cannot be opened for reading.
      * @throws MalformedWallFileException If the given file does not properly specify the building.
      */
     public static RealBuilding readWalls(
-            File wallsFile) throws FileNotFoundException, MalformedWallFileException {
+            InputStream in) throws FileNotFoundException, MalformedWallFileException {
         try(BufferedReader fileReader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(wallsFile), "UTF-8"))) {
+                new InputStreamReader(in, "UTF-8"))) {
             ArrayList<RealWall> walls = new ArrayList<>();
             int maxFloor;
             int maxX;
@@ -237,7 +237,7 @@ public class GraphIO {
             if (ex instanceof FileNotFoundException) {
                 throw (FileNotFoundException) ex;
             } else {
-                System.err.println("Could not read file" + wallsFile.getName());
+                System.err.println("Could not read file");
             }
         }
 

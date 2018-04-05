@@ -19,7 +19,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 
@@ -183,7 +182,7 @@ public class GUI extends Canvas implements Runnable {
     //private init since it should only be called once
     private void init() {
         try {
-            simulation = new Simulation(new File("tests/Floorplan 9.csv"));
+            simulation = new Simulation("tests/Floorplan 9");
             internalResize(simulation.getSize());
         } catch (FileNotFoundException | MalformedWallFileException e) {
             e.printStackTrace();
@@ -262,7 +261,7 @@ public class GUI extends Canvas implements Runnable {
     private void tick() {
         if (reload) {
             try {
-                simulation = new Simulation(new File("tests/Floorplan 9.csv"));
+                simulation = new Simulation("tests/Floorplan 9");
             } catch (FileNotFoundException | MalformedWallFileException e) {
                 e.printStackTrace();
             }

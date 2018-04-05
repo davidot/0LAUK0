@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -31,7 +30,7 @@ public class RealHuman extends RealObstacle {
     public RealHuman(int x, int y, int floor) {
         super(floor, x - 1, y - 1, x + 1, y + 1);
         try {
-            humanIcon = ImageIO.read(new File("res/construction-worker.png"));
+            humanIcon = ImageIO.read(Simulation.class.getResourceAsStream("res/construction-worker.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }

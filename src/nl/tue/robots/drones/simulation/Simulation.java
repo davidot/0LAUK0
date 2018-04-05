@@ -13,7 +13,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -50,11 +49,10 @@ public class Simulation {
     private boolean paused = false;
     private final Queue<RealObject> addQueue = new LinkedList<>();
 
-    public Simulation(File file) throws FileNotFoundException, MalformedWallFileException {
+    public Simulation(String name) throws FileNotFoundException, MalformedWallFileException {
         //This is where a real application would open the file.
-        model = new Model(this, GraphIO.readBuilding(file), NUM_DRONES);
-        File wallsFile = new File(file.getParent(), file.getName().replace(".csv", ".walls"));
-        building = GraphIO.readWalls(wallsFile);
+        model = new Model(this, GraphIO.readBuilding(Simulation.class.getResourceAsStream(name + ".csv")), NUM_DRONES);
+        building = GraphIO.readWalls(Simulation.class.getResourceAsStream(name + ".walls"));
 
         Node start = model.getStartingNode();
 

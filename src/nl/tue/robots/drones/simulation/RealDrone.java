@@ -12,7 +12,6 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,8 +51,7 @@ public class RealDrone extends RealObject {
     private static final BufferedImage[] frames = new BufferedImage[DEFAULT_IMAGE_SEQUENCE.length];
 
     //Alert rendering
-    private static final String[] DEFAULT_ALERT_SEQUENCE =
-            {"alert_yellow.png", "alert_red.png"};
+    private static final String[] DEFAULT_ALERT_SEQUENCE = {"alert_yellow.png", "alert_red.png"};
     private static final BufferedImage[] alertSequence = new BufferedImage[DEFAULT_ALERT_SEQUENCE.length];
 
 
@@ -81,7 +79,7 @@ public class RealDrone extends RealObject {
 
             //Open up all the frames and store them
             for (int i = 0; i < frames.length; i++) {
-                frames[i] = ImageIO.read(new File("res/" + DEFAULT_IMAGE_SEQUENCE[i]));
+                frames[i] = ImageIO.read(Simulation.class.getResourceAsStream("res/" + DEFAULT_IMAGE_SEQUENCE[i]));
                 if (i == 0) {
                     nWidth = frames[i].getWidth();
                     nHeight = frames[i].getHeight();
@@ -90,7 +88,7 @@ public class RealDrone extends RealObject {
 
             //Open up all the alert frames and store them
             for (int i = 0; i < DEFAULT_ALERT_SEQUENCE.length; i++) {
-                alertSequence[i] = ImageIO.read(new File("res/" + DEFAULT_ALERT_SEQUENCE[i]));
+                alertSequence[i] = ImageIO.read(Simulation.class.getResourceAsStream("res/" + DEFAULT_ALERT_SEQUENCE[i]));
             }
 
         } catch (IOException e) {
